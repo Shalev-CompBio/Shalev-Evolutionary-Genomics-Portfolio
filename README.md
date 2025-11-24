@@ -1,4 +1,4 @@
-# GitHub Portfolio — Computational Biology Projects
+# GitHub Portfolio - Computational Biology Projects
 
 Curated, gradual, and private-for-now portfolio of my computational genomics work.
 
