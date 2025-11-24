@@ -9,9 +9,9 @@ Document clean, stable, well-explained versions of analyses (no live lab data).
 Private (WIP). Will be made public when first projects are ready.
 
 ## Projects (coming soon)
-- cilia_clusters (demo)
+- cilia_clusters
 - local_barcode_analysis (demo)
-- heatmap_visualization (demo)
+- heatmap_visualization
 
 ## Structure
 `projects/` per project (scripts + demo results) • `notebooks/` for light exploration.
