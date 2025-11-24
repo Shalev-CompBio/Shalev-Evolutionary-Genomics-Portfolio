@@ -174,6 +174,9 @@ Outputs are saved to timestamped files in:
 - **Cluster Plots**: PCA/UMAP projections colored by cluster
 - **Quality Metrics**: Silhouette scores and stability plots
 
+Kay example:
+projects/ird-phenotype-clustering/outputs/demo/demo_heatmap_clustering.png
+
 ### Reports
 - **QC Reports**: Data quality and validation summaries
 - **Cluster Summaries**: Statistics and metrics for each cluster
@@ -283,4 +286,5 @@ This pipeline is provided for research purposes. Please ensure compliance with:
 - **Synthetic Data**: All demo figures and example outputs are generated from randomly created synthetic data for portfolio demonstration purposes.
 - **Production Use**: For production use with real data, ensure all input files are properly formatted and placed in the correct directories.
 - **Data Privacy**: Real research data cannot be shared publicly. The demonstration cells in the notebook show the pipeline workflow using synthetic examples.
+
 
