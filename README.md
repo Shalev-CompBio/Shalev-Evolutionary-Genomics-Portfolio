@@ -1,6 +1,6 @@
 # GitHub Portfolio - Computational Biology Projects
 
-Curated, gradual, and private-for-now portfolio of my computational genomics work.
+Curated, gradual, and partial-private (for-now) portfolio of my computational genomics work.
 
 ## Purpose
 Document clean, stable, well-explained versions of analyses (no live lab data).
