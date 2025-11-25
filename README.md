@@ -4,17 +4,6 @@
 ![Language](https://img.shields.io/badge/Languages-Python_%7C_R-FF9800)
 ![Institution](https://img.shields.io/badge/Institution-Hebrew_University_of_Jerusalem-00695C)
 
-![Genomics](https://img.shields.io/badge/Focus-Genomics_%26_Bioinformatics-003366)
-![Language](https://img.shields.io/badge/Languages-Python_%7C_R-444444)
-![Institution](https://img.shields.io/badge/Institution-Hebrew_University-bf9b30)
-
-![Genomics](https://img.shields.io/badge/Focus-Genomics_%26_Bioinformatics-5a4b81)
-![Language](https://img.shields.io/badge/Languages-Python_%7C_R-008080)
-![Institution](https://img.shields.io/badge/Institution-Hebrew_University-4682b4)
-
-![Genomics](https://img.shields.io/badge/Focus-Genomics_%26_Bioinformatics-black)
-![Language](https://img.shields.io/badge/Languages-Python_%7C_R-3b82f6)
-![Institution](https://img.shields.io/badge/Institution-Hebrew_University-gray)
 
 ### 🧬 Decoding Disease Architecture Through Evolutionary Signals
 
