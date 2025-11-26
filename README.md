@@ -26,8 +26,8 @@ My work focuses on addressing **missing heritability** in genetic disorders. By 
 
 To quickly explore my work visually, check out the interactive portfolio:
 
-> **Interactive View:** [**Click here to launch**](https://shalev-compbio.github.io/Shalev-Evolutionary-Genomics-Portfolio/Visual_Portfolio/shalev_yaacov_portfolio.html)
-> > 
+> **Interactive View:** [**Click here to launch**](https://shalev-compbio.github.io/Shalev-Evolutionary-Genomics-Portfolio/Visual_Portfolio/)
+> > > 
 (It includes evolutionary genomics tools, multi-omics visualizations, and project overviews.)
 
 ---
