@@ -30,16 +30,6 @@ To quickly explore my work visually, check out the interactive portfolio:
 
 (It includes evolutionary genomics tools, multi-omics visualizations, and project overviews.)
 
-## 🎨 Visual Summary of My Evolutionary Genomics Portfolio
-
-To quickly explore my work visually, check out the interactive portfolio:
-
-[![Portfolio Preview](https://github.com/shalev-compbio/Shalev-Evolutionary-Genomics-Portfolio/blob/main/Visual_Portfolio/portfolio_thumbnail.png?raw=true)](https://shalev-compbio.github.io/Shalev-Evolutionary-Genomics-Portfolio/Visual_Portfolio/)
-
-> **👉 [Click here to launch the Interactive View](https://shalev-compbio.github.io/Shalev-Evolutionary-Genomics-Portfolio/Visual_Portfolio/)**
->
-> *(Includes evolutionary genomics tools, multi-omics visualizations, and project overviews.)*
-
 ---
 
 ## 🔬 Key Projects
