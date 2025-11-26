@@ -97,6 +97,9 @@ In the real workflow, identifying such segments is guided by visual examination 
 A demonstration of this heatmap-based rationale appears in the **Heatmap Visualization** project:  
 https://github.com/Shalev-CompBio/Shalev-Evolutionary-Genomics-Portfolio/tree/main/projects/heatmap_visualization
 
+> Figure: Example phylogenetic heatmap used to guide LBS selection
+> ![Example phylogenetic heatmap used to guide LBS selection](../heatmap_visualization/results/NPP_7_genes_HeatMap_2025.png)
+> 
 > **LBS Segment (Synthetic Demonstration):**  
 > In this public synthetic demonstration, the LBS is represented by a structured 7-gene synthetic block designed to emulate the properties of such coherent evolutionary intervals.  
 > An automated computational module for detecting LBS regions is currently under development and will be integrated into the full evolutionary profiling pipeline.
@@ -268,4 +271,5 @@ Synthetic data emulate realistic evolutionary patterns while ensuring full confi
 ---
 
 *This project is part of the Evolutionary Genomics & Multi-Omics Portfolio.*
+
 
