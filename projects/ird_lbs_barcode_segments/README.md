@@ -94,9 +94,10 @@ Synthetic similarity scores simulate how phylogenetic heatmaps identify coherent
 
 As part of the broader profiling framework I developed, an LBS (“Local evolutionary barcode segment”) represents a short evolutionary interval showing coherent conservation signals.  
 In the real workflow, identifying such segments is guided by visual examination of phylogenetic heatmaps to locate regions that display consistent co-evolutionary behavior.  
-A demonstration of this heatmap-based rationale appears in the **Heatmap Visualization** project:  
-https://github.com/Shalev-CompBio/Shalev-Evolutionary-Genomics-Portfolio/tree/main/projects/heatmap_visualization
+A demonstration of this heatmap-based rationale appears in the **Heatmap Visualization** project.
 
+> https://github.com/Shalev-CompBio/Shalev-Evolutionary-Genomics-Portfolio/tree/main/projects/heatmap_visualization
+> 
 > Figure: Example phylogenetic heatmap used to guide LBS selection
 > ![Example phylogenetic heatmap used to guide LBS selection](../heatmap_visualization/results/NPP_7_genes_HeatMap_2025.png)
 > 
@@ -271,5 +272,6 @@ Synthetic data emulate realistic evolutionary patterns while ensuring full confi
 ---
 
 *This project is part of the Evolutionary Genomics & Multi-Omics Portfolio.*
+
 
 
