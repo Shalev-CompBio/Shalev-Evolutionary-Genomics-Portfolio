@@ -78,9 +78,5 @@ My work focuses on addressing **missing heritability** in genetic disorders. By 
 * **Role:** M.Sc. Candidate in Genomics & Bioinformatics.
 * **Location:** Jerusalem, Israel.
 
-### 📄 View My Full Portfolio  
-[Click here to open the interactive version](https://USERNAME.github.io/REPO_NAME/)
-
-
 ---
 *This repository evolves alongside my thesis research and will continue to expand with new analyses, tools, and polished workflows.*
