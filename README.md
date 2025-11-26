@@ -12,6 +12,24 @@
 
 ---
 
+<iframe 
+   src="https://shalev-compbio.github.io/Shalev-Evolutionary-Genomics-Portfolio/Visual_Portfolio/" 
+   width="100%" 
+   height="1200px" 
+   style="border:none;">
+</iframe>
+
+
+## 🔬 Visual Summary of My Evolutionary Genomics Portfolio
+
+To quickly explore my work visually, check out the interactive portfolio:
+
+👉 **https://shalev-compbio.github.io/Shalev-Evolutionary-Genomics-Portfolio/Visual_Portfolio/**
+
+(It includes evolutionary genomics tools, multi-omics visualizations, and project overviews.)
+
+
+
 ## 📌 Overview
 
 This portfolio gathers the computational frameworks, pipelines, and visualization tools I develop for studying **Inherited Retinal Diseases (IRD)** and **Ciliopathies**.
