@@ -25,29 +25,38 @@ My work focuses on addressing **missing heritability** in genetic disorders. By 
 ## 🔬 Key Projects
 
 ### 1. 🦠 [Cilia Cluster Analysis](./projects/cilia_clusters)
-* **Goal:** Systematic characterization of precomputed ciliary gene clusters.
-* **Approach:** Analytical pipeline that evaluates cluster composition, annotates gene sets, tests for enrichment, and assesses evolutionary or phenotypic coherence.
+* **Goal:** Systematic characterization of precomputed ciliary gene clusters using evolutionary and functional annotations.
+* **Approach:** Modular analytical pipeline evaluating cluster composition, annotations, enrichment, and evolutionary or phenotypic coherence.
 * **Includes:**
-    * Automated annotation & GO-term enrichment.
-    * Similarity and internal-distance metrics.
+    * Automated annotation and GO-term enrichment.
+    * Internal-distance and similarity metrics.
     * Detection of submodules and coherent functional subsets.
     * Visualizations of gene-gene relationships and conserved signatures.
 
+---
+
 ### 2. 👁️ [IRD Phenotype Integration](./projects/IRD_Phenotype_Clustering)
-* **Goal:** Link genotype-phenotype relationships in retinal disorders.
-* **Approach:** Phenotype-driven clustering combined with co-evolutionary signals.
+* **Goal:** Identify phenotype-driven gene modules within IRD-associated gene sets.
+* **Approach:** Semantic similarity-based clustering using HPO annotations, designed for integration within a broader multi-omics framework.
 * **Includes:**
-    * Silhouette validation.
-    * Phenotype similarity matrices.
-    * Prioritization of unsolved IRD gene candidates.
+    * Silhouette validation and stability assessment.
+    * Phenotype similarity matrices and semantic clustering.
+    * Prioritization support for unsolved IRD gene candidates (synthetic demonstration only).
+
+---
 
 ### 3. 📊 [High-Dimensional Visualization](./projects/heatmap_visualization)
-* **Goal:** Generate clear, publication-ready visualizations for multi-omics datasets.
-* **Tools:** Custom Python and R scripts for similarity matrices, clustered heatmaps, and annotation layers.
+* **Goal:** Create clear, publication-ready heatmaps and similarity visualizations supporting exploratory multi-omics analyses.
+* **Tools:** Custom Python and R scripts for species-aligned matrices, clustered heatmaps, annotation layers, and comparison plots.
+
+---
 
 ### 4. 🧬 [Genomic Segmentation Demo](./projects/ird_lbs_barcode_segments)
-* **Goal:** Demonstrate Local Barcode Segmentation (LBS) methods.
-* **Content:** Synthetic datasets, exploratory segmentation pipelines, and signal-to-noise experiments.
+* **Goal:** Demonstrate Local Barcode Segmentation (LBS)-inspired evolutionary profiling using synthetic data.
+* **Includes:**
+    * Synthetic NPP matrices and barcode segments.
+    * Segmentation and consensus-profile workflows.
+    * Signal vs. noise validation and benchmarking experiments.
 
 ---
 
