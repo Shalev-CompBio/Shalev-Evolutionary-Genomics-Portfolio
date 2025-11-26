@@ -97,26 +97,9 @@ In the real workflow, identifying such segments is guided by visual examination 
 A demonstration of this heatmap-based rationale appears in the **Heatmap Visualization** project:  
 https://github.com/Shalev-CompBio/Shalev-Evolutionary-Genomics-Portfolio/tree/main/projects/heatmap_visualization
 
-In this public synthetic demonstration, the LBS is represented by a structured 7-gene synthetic block designed to emulate the properties of such coherent intervals.  
-An automated computational module for detecting LBS regions is currently under development and will be integrated into the full evolutionary profiling pipeline.
-
 > **LBS Segment (Synthetic Demonstration):**  
 > In this public synthetic demonstration, the LBS is represented by a structured 7-gene synthetic block designed to emulate the properties of such coherent evolutionary intervals.  
 > An automated computational module for detecting LBS regions is currently under development and will be integrated into the full evolutionary profiling pipeline.
-
-> In this public synthetic demonstration, the LBS is represented by a structured 7-gene synthetic block designed to emulate the properties of such coherent evolutionary intervals.  
-> An automated computational module for detecting LBS regions is currently under development and will be integrated into the full evolutionary profiling pipeline.
-
-### **Step 3 — Segment Extraction**
-
-As part of the broader profiling framework I developed, an LBS (“Local evolutionary barcode segment”) represents a short evolutionary interval showing coherent conservation signals.  
-In the real workflow, identifying such segments is guided by visual examination of phylogenetic heatmaps to locate regions that display consistent co-evolutionary behavior.  
-A demonstration of this heatmap-based rationale appears in the **Heatmap Visualization** project:  
-https://github.com/Shalev-CompBio/Shalev-Evolutionary-Genomics-Portfolio/tree/main/projects/heatmap_visualization
-
-> In this public synthetic demonstration, the LBS is represented by a structured 7-gene synthetic block designed to emulate the properties of such coherent evolutionary intervals.  
-> An automated computational module for detecting LBS regions is currently under development and will be integrated into the full evolutionary profiling pipeline.
-
 
 ---
 
@@ -285,3 +268,4 @@ Synthetic data emulate realistic evolutionary patterns while ensuring full confi
 ---
 
 *This project is part of the Evolutionary Genomics & Multi-Omics Portfolio.*
+
