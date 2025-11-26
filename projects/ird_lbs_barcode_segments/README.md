@@ -136,6 +136,15 @@ Different consensus strategies emphasize different aspects of co-evolving genes.
 
 ---
 
+> **Figure — Visual comparison of the five consensus profiling methods** *(synthetic demo)*
+> This figure illustrates how the five consensus strategies (Mean, Median, Trimmed Mean, Medoid, PC1) aggregate the same 7-gene LBS segment.  
+> Individual gene profiles are shown in light gray, and the resulting consensus vector is highlighted in color.  
+> The comparison demonstrates how each method captures different aspects of the shared evolutionary signal and differs in robustness to noise and outlier patterns.  
+>  
+> ![Consensus method comparison](outputs/demo_figures/consensus_comparison.png)
+
+---
+
 ## 📈 Step 5 — Correlation-Based Genome-Wide Ranking
 
 For each consensus vector:
@@ -272,6 +281,3 @@ Synthetic data emulate realistic evolutionary patterns while ensuring full confi
 ---
 
 *This project is part of the Evolutionary Genomics & Multi-Omics Portfolio.*
-
-
-
