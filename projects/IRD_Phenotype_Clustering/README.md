@@ -243,9 +243,10 @@ All outputs included here are **synthetic and demonstration-only**.
 # ⚠️ **Data & Privacy Disclaimer**
 
 > **This repository contains synthetic demonstration data only.**
-> No real IRD, phenotype, or similarity data are included.
-> The internal research pipeline uses confidential datasets not provided here.
+No real IRD, phenotype, or similarity data are included.
+The internal research pipeline uses confidential datasets not provided here.
 
 ---
 
 *This project is part of the Evolutionary Genomics & Multi-Omics Portfolio.*
+
