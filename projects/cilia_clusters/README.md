@@ -20,16 +20,6 @@
 > **Our Solution:**  
 > This repository documents the full step-by-step framework applied in this case study. The scripts are not standalone utilities; they function as modular components of a structured multi-step pipeline that ingests both precomputed ciliary clusters and raw NPP data, systematically filters and annotates each cluster, quantifies evolutionary and functional coherence, integrates multi-omic evidence, and culminates in a distilled set of high-confidence genes. The workflow expands known ciliary modules and identifies new candidates supported by coherent evolutionary, functional, and phenotypic signals.
 
-
-## 📌 Overview
-
-**Purpose:** This project illustrates a complete computational framework designed to address a common challenge in genomics: transforming large-scale phylogenetic profiles and preliminary cluster assignments into a validated, functionally enriched, and publication-ready analysis.
-
-### 📉 The Challenge
-In computational biology, moving from raw NPP matrices and heterogeneous gene clusters into actionable insight is rarely linear. The process is often noisy, iterative, and poorly documented. The challenge is to construct a workflow that remains scientifically rigorous while also being transparent, modular, and fully reproducible.
-
-### 💡 Our Solution
-This repository documents the step-by-step framework applied in this case study. The scripts serve as modular components of a structured pipeline that ingests precomputed ciliary clusters, filters and annotates them, and culminates in a distilled set of high-confidence genes.
 ---
 
 ## 🔬 Scientific Rationale
