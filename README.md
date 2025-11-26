@@ -26,18 +26,10 @@ My work focuses on addressing **missing heritability** in genetic disorders. By 
 
 To quickly explore my work visually, check out the interactive portfolio:
 
-👉 **https://shalev-compbio.github.io/Shalev-Evolutionary-Genomics-Portfolio/Visual_Portfolio/**
+> **Interactive View:** **https://shalev-compbio.github.io/Shalev-Evolutionary-Genomics-Portfolio/Visual_Portfolio/**
 
 (It includes evolutionary genomics tools, multi-omics visualizations, and project overviews.)
 
-
-## 🔬 Visual Summary of My Evolutionary Genomics Portfolio
-
-To quickly explore my work visually, check out the interactive portfolio:
-
-[![Portfolio Preview](https://github.com/shalev-compbio/Shalev-Evolutionary-Genomics-Portfolio/blob/main/Visual_Portfolio/portfolio_thumbnail.png?raw=true)](https://shalev-compbio.github.io/Shalev-Evolutionary-Genomics-Portfolio/Visual_Portfolio/)
-
-> **Interactive View:** [Click here to launch the live portfolio](https://shalev-compbio.github.io/Shalev-Evolutionary-Genomics-Portfolio/Visual_Portfolio/) containing interactive multi-omics visualizations and project breakdowns.
 ---
 
 ## 🔬 Key Projects
