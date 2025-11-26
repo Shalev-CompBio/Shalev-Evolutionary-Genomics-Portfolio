@@ -274,10 +274,11 @@ It accurately reflects the computational logic behind real phylogenetic profilin
 ## ⚠️ Data & Privacy Disclaimer
 
 > **All data used in this project are fully synthetic and included solely for demonstration.**
-> **No real genomic, evolutionary, or disease-related datasets are used.**
+**No real genomic, evolutionary, or disease-related datasets are used.**
 
 Synthetic data emulate realistic evolutionary patterns while ensuring full confidentiality and portfolio suitability.
 
 ---
 
 *This project is part of the Evolutionary Genomics & Multi-Omics Portfolio.*
+
