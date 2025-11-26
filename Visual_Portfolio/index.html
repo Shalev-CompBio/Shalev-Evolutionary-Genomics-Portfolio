@@ -10,27 +10,22 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* * GLOBAL VARIABLES - SOFT DARK THEME
-         * Lower contrast, pastel accents, charcoal backgrounds.
-         */
+        /* * GLOBAL VARIABLES - MEDIUM/DIM DARK THEME */
         :root {
-            /* Backgrounds: Softer Slate/Charcoal tones */
-            --bg-body: #202428;        /* Soft charcoal layout background */
-            --bg-container: #2b3036;   /* Main container background */
-            --bg-sidebar: #252a2f;     /* Slightly darker sidebar */
-            --bg-card: #323840;        /* Lighter card background */
+            --bg-body: #404b5a;        
+            --bg-container: #4b5666;   
+            --bg-sidebar: #46505f;     
+            --bg-card: #586475;        
             
-            /* Accents: Muted/Pastel versions for eye comfort */
-            --color-genomics: #b39ddb; /* Soft Lavender (was bright purple) */
-            --color-lang: #ffcc80;     /* Soft Apricot (was bright orange) */
-            --color-huji: #80cbc4;     /* Sage/Soft Teal (was bright cyan) */
+            --color-genomics: #d1c4e9; 
+            --color-lang: #ffcc80;     
+            --color-huji: #80deea;     
             
-            /* Text Colors: Reduced brightness */
-            --text-main: #eceff1;      /* Soft White/Light Grey */
-            --text-muted: #b0bec5;     /* Blue-grey for secondary text */
-            --text-dark: #263238;      /* Dark text for inside badges */
+            --text-main: #f0f4f8;      
+            --text-muted: #dbeafe;     
+            --text-dark: #263238;      
 
-            --border-color: #3e454d;   /* Subtle borders */
+            --border-color: #64748b;   
         }
 
         * {
@@ -47,33 +42,44 @@
             padding: 40px;
             display: flex;
             justify-content: center;
+            min-height: 100vh;
+            position: relative; /* For Canvas positioning */
         }
 
-        /* * MAIN CONTAINER
-         */
+        /* * BACKGROUND ANIMATION CANVAS */
+        #networkCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* Behind everything */
+            opacity: 0.6;
+        }
+
+        /* * MAIN CONTAINER */
         .container {
-            background-color: var(--bg-container);
+            background-color: rgba(75, 86, 102, 0.95); /* Slight transparency for background effect */
             width: 100%;
             max-width: 1200px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.25); /* Softer shadow */
-            border-radius: 8px; /* Slightly more rounded for "pleasant" feel */
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3); 
+            border-radius: 8px;
             overflow: hidden;
             border: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
+            backdrop-filter: blur(5px); /* Modern glassmorphism effect */
+            z-index: 1;
         }
 
-        /* * HEADER SECTION
-         */
+        /* * HEADER SECTION */
         header {
             padding: 40px;
-            /* Very subtle gradient */
-            background: linear-gradient(180deg, #2f353c 0%, #2b3036 100%);
+            background: linear-gradient(180deg, rgba(80, 92, 109, 0.9) 0%, rgba(75, 86, 102, 0) 100%);
             border-bottom: 1px solid var(--border-color);
             position: relative;
         }
 
-        /* Top accent line - thinner and pastel */
         header::before {
             content: '';
             position: absolute;
@@ -82,7 +88,7 @@
             right: 0;
             height: 3px;
             background: linear-gradient(90deg, var(--color-genomics), var(--color-huji), var(--color-lang));
-            opacity: 0.8;
+            opacity: 0.9;
         }
 
         .badges-container {
@@ -97,13 +103,13 @@
             align-items: center;
             padding: 5px 12px;
             border-radius: 6px;
-            color: var(--bg-body);
+            color: #37474f;
             font-size: 0.75rem;
-            font-weight: 600;
+            font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             font-family: 'JetBrains Mono', monospace;
-            opacity: 0.9; /* Slightly muted */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         
         .badge-genomics { background-color: var(--color-genomics); }
@@ -116,7 +122,7 @@
             color: #ffffff;
             margin-bottom: 10px;
             letter-spacing: -0.5px;
-            /* Removed harsh text shadow */
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
 
         .subtitle {
@@ -128,18 +134,16 @@
             align-items: center;
             gap: 12px;
             font-family: 'Montserrat', sans-serif;
-            opacity: 0.9;
         }
 
         .researcher-info {
             font-size: 1rem;
             color: var(--text-muted);
-            border-left: 3px solid rgba(128, 203, 196, 0.4); /* Very subtle border */
+            border-left: 3px solid rgba(128, 222, 234, 0.5);
             padding-left: 15px;
         }
 
-        /* * LAYOUT GRID
-         */
+        /* * LAYOUT GRID */
         .content-wrapper {
             display: grid;
             grid-template-columns: 300px 1fr;
@@ -147,10 +151,9 @@
             flex-grow: 1;
         }
 
-        /* * SIDEBAR STYLES
-         */
+        /* * SIDEBAR STYLES */
         aside {
-            background-color: var(--bg-sidebar);
+            background-color: rgba(70, 80, 95, 0.6);
             padding: 35px;
             border-right: 1px solid var(--border-color);
             font-size: 0.95rem;
@@ -162,16 +165,14 @@
             text-transform: uppercase;
             letter-spacing: 1.2px;
             color: var(--color-huji);
-            border-bottom: 1px solid rgba(128, 203, 196, 0.3);
+            border-bottom: 1px solid rgba(128, 222, 234, 0.4);
             padding-bottom: 8px;
             margin-bottom: 20px;
             margin-top: 5px;
             font-weight: 600;
         }
 
-        .sidebar-section {
-            margin-bottom: 40px;
-        }
+        .sidebar-section { margin-bottom: 40px; }
 
         .sidebar-text {
             color: var(--text-muted);
@@ -179,9 +180,7 @@
             line-height: 1.7;
         }
 
-        .tech-list, .contact-list {
-            list-style: none;
-        }
+        .tech-list, .contact-list { list-style: none; }
 
         .tech-list li, .contact-list li {
             margin-bottom: 14px;
@@ -196,29 +195,28 @@
             margin-top: 5px;
             width: 20px;
             text-align: center;
-            opacity: 0.8;
+            opacity: 0.9;
         }
 
         .tech-list strong {
-            color: #f5f5f5;
-            font-weight: 500;
+            color: #ffffff;
+            font-weight: 600;
         }
 
         .disclaimer-box {
-            background-color: rgba(255, 204, 128, 0.08); /* Extremely subtle orange tint */
+            background-color: rgba(255, 204, 128, 0.1);
             border: 1px solid rgba(255, 204, 128, 0.3);
             padding: 15px;
             font-size: 0.85rem;
-            color: #ffcc80; /* Pastel orange text */
+            color: #ffe0b2;
             border-radius: 6px;
             margin-top: 30px;
         }
 
-        /* * MAIN CONTENT
-         */
+        /* * MAIN CONTENT */
         main {
             padding: 40px;
-            background-color: var(--bg-container);
+            background-color: transparent;
         }
 
         .projects-grid {
@@ -232,17 +230,23 @@
             border: 1px solid var(--border-color);
             border-radius: 6px;
             padding: 22px;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             position: relative;
             display: flex;
             flex-direction: column;
         }
 
         .project-card:hover {
-            transform: translateY(-3px);
-            border-color: rgba(128, 203, 196, 0.4);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-            background-color: #363d45; /* Slight lighten on hover */
+            transform: translateY(-5px);
+            border-color: var(--color-huji);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+            background-color: #606d80;
+        }
+
+        .project-card:hover .project-icon {
+            background-color: var(--color-huji);
+            color: var(--bg-body);
+            transform: rotateY(180deg);
         }
 
         .project-header {
@@ -251,7 +255,7 @@
             gap: 12px;
             margin-bottom: 12px;
             padding-bottom: 12px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
 
         .project-icon {
@@ -261,9 +265,10 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: rgba(128, 203, 196, 0.1);
+            background-color: rgba(128, 222, 234, 0.15);
             color: var(--color-huji);
             border-radius: 6px;
+            transition: all 0.5s ease;
         }
 
         .project-title {
@@ -284,7 +289,7 @@
 
         .project-details {
             font-size: 0.95rem;
-            color: var(--text-muted);
+            color: var(--text-main);
             margin-bottom: 15px;
             flex-grow: 1;
             line-height: 1.6;
@@ -294,10 +299,11 @@
             margin-left: 0;
             list-style: none;
             font-size: 0.85rem;
-            color: #cfd8dc;
-            background-color: rgba(0, 0, 0, 0.15); /* Softer darker block */
+            color: #eceff1;
+            background-color: rgba(0, 0, 0, 0.15);
             padding: 12px;
             border-radius: 6px;
+            margin-bottom: 15px;
         }
 
         .feature-list li {
@@ -312,41 +318,74 @@
             font-weight: bold;
         }
 
-        /* * FOOTER
-         */
-        footer {
-            background-color: #1c2024;
-            color: #78909c;
+        /* * BUTTONS */
+        .btn-project {
+            display: inline-block;
             text-align: center;
-            padding: 20px;
+            background-color: transparent;
+            border: 1px solid var(--color-huji);
+            color: var(--color-huji);
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            margin-top: auto;
+            text-transform: uppercase;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .btn-project:hover {
+            background-color: var(--color-huji);
+            color: var(--bg-body);
+        }
+
+        /* * FOOTER */
+        footer {
+            background-color: #37474f;
+            color: #b0bec5;
+            text-align: center;
+            padding: 25px;
             font-size: 0.85rem;
             font-family: 'Roboto', sans-serif;
             border-top: 1px solid var(--border-color);
         }
+        
+        .footer-links {
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        .footer-links a {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: var(--color-huji);
+        }
 
         @media print {
-            body { 
-                padding: 0; 
-                background: #2b3036; 
-                -webkit-print-color-adjust: exact; 
-            }
-            .container { 
-                box-shadow: none; 
-                width: 100%; 
-                max-width: none;
-                border: none;
-            }
+            #networkCanvas { display: none; }
+            .container { box-shadow: none; border: none; }
+            .btn-project { display: none; }
         }
 
         @media (max-width: 900px) {
             .content-wrapper { grid-template-columns: 1fr; }
             .projects-grid { grid-template-columns: 1fr; }
             aside { border-right: none; border-bottom: 1px solid var(--border-color); }
-            h1 { font-size: 2rem; }
         }
     </style>
 </head>
 <body>
+
+    <!-- Animated Background -->
+    <canvas id="networkCanvas"></canvas>
 
     <div class="container">
         
@@ -377,7 +416,7 @@
                 <div class="sidebar-section">
                     <h3 class="section-title">Overview</h3>
                     <p class="sidebar-text">
-                        Developing computational frameworks to address <strong style="color:var(--text-main)">missing heritability</strong> in genetic disorders.
+                        Developing computational frameworks to address <strong style="color:white">missing heritability</strong> in genetic disorders.
                     </p>
                     <p class="sidebar-text">
                         By integrating <strong style="color:var(--color-huji)">Normalized Phylogenetic Profiling (NPP)</strong> with multi-omics datasets, I aim to uncover conserved gene modules for Inherited Retinal Diseases (IRD) and Ciliopathies.
@@ -428,9 +467,11 @@
                         </p>
                         <ul class="feature-list">
                             <li>Automated GO-term enrichment.</li>
-                            <li>Internal-distance & similarity metrics.</li>
+                            <li>Internal-distance metrics.</li>
                             <li>Detection of functional submodules.</li>
                         </ul>
+                        <!-- Path corrected: Up one level from Visual_Portfolio, then into projects -->
+                        <a href="../projects/cilia_clusters" class="btn-project">View Analysis <i class="fas fa-arrow-right"></i></a>
                     </div>
 
                     <!-- Project 2 -->
@@ -448,6 +489,7 @@
                             <li>Phenotype similarity matrices.</li>
                             <li>Prioritization of IRD candidates.</li>
                         </ul>
+                        <a href="../projects/IRD_Phenotype_Clustering" class="btn-project">View Workflow <i class="fas fa-arrow-right"></i></a>
                     </div>
 
                     <!-- Project 3 -->
@@ -465,6 +507,7 @@
                             <li>Clustered heatmaps & comparison plots.</li>
                             <li>Multi-omics visual layering.</li>
                         </ul>
+                        <a href="../projects/heatmap_visualization" class="btn-project">See Scripts <i class="fas fa-code"></i></a>
                     </div>
 
                     <!-- Project 4 -->
@@ -482,6 +525,7 @@
                             <li>Signal vs. Noise validation.</li>
                             <li>Benchmarking experiments.</li>
                         </ul>
+                        <a href="../projects/ird_lbs_barcode_segments" class="btn-project">Explore Demo <i class="fas fa-flask"></i></a>
                     </div>
 
                 </div>
@@ -489,9 +533,100 @@
         </div>
 
         <footer>
-            This repository evolves alongside my thesis research and will continue to expand with new analyses.
+            <div>This repository evolves alongside my thesis research and will continue to expand with new analyses.</div>
+            <div class="footer-links">
+                <!-- Links updated to point to the actual profile/repo -->
+                <a href="https://github.com/shalev-compbio" target="_blank" title="GitHub"><i class="fab fa-github"></i></a>
+                <a href="https://linkedin.com/in/shalev-yaacov" target="_blank" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                <!-- Updated with a likely correct HUJI mail format -->
+                <a href="mailto:shalev.yaacov@mail.huji.ac.il" title="Email"><i class="fas fa-envelope"></i></a>
+            </div>
         </footer>
     </div>
 
+    <!-- Script for Network Background Animation -->
+    <script>
+        const canvas = document.getElementById('networkCanvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let particles = [];
+
+        // Configuration
+        const particleCount = 60; // Not too crowded
+        const connectionDistance = 150;
+        const speed = 0.3;
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * speed;
+                this.vy = (Math.random() - 0.5) * speed;
+                this.size = Math.random() * 2 + 1;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                if (this.x < 0 || this.x > width) this.vx *= -1;
+                if (this.y < 0 || this.y > height) this.vy *= -1;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(128, 222, 234, 0.4)'; // Teal color from theme
+                ctx.fill();
+            }
+        }
+
+        function init() {
+            particles = [];
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+
+                // Draw connections
+                for (let j = i; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < connectionDistance) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(128, 222, 234, ${0.15 * (1 - distance / connectionDistance)})`;
+                        ctx.lineWidth = 1;
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', () => {
+            resize();
+            init();
+        });
+
+        resize();
+        init();
+        animate();
+    </script>
 </body>
 </html>
