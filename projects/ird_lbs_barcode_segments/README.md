@@ -1,493 +1,287 @@
-# Consensus Phylogenetic Profile Analysis - Synthetic Demo
+# **Consensus Phylogenetic Profile Analysis – Synthetic Demo**
 
-**Portfolio-ready demonstration using fully synthetic data**
+![Language](https://img.shields.io/badge/Language-Python-3776AB)
+![Focus](https://img.shields.io/badge/Focus-Consensus_Phylogenetic_Profiling-7B1FA2)
+![Status](https://img.shields.io/badge/Status-Portfolio_Demo-00695C)
 
----
+### 🧬 Benchmarking Consensus-Based Evolutionary Gene Ranking
 
-## 🔒 Privacy Disclaimer
-
-> **All data in this repository are fully synthetic and included for demonstration only.**
->
-> **No real genomic, evolutionary, or disease-related data are included.**
-
-This repository contains a computational framework demonstration for building consensus phylogenetic profiles. All gene names, species names, and data values are synthetically generated for methodological illustration purposes.
+**Shalev Yaacov** | M.Sc. Researcher @ Hebrew University (Tabach Lab)
+*A complete synthetic demonstration of consensus phylogenetic profiling, co-evolutionary ranking, and coherence validation across multiple statistical methods.*
 
 ---
 
-## 📋 Table of Contents
+## 📌 Overview
 
-1. [Scientific Background](#scientific-background)
-2. [Project Overview](#project-overview)
-3. [Synthetic Data Structure](#synthetic-data-structure)
-4. [Pipeline Methodology](#pipeline-methodology)
-5. [Running the Demo](#running-the-demo)
-6. [Output Files](#output-files)
-7. [Visualizations](#visualizations)
+This project demonstrates a full consensus-based phylogenetic profiling workflow using **synthetic but structurally realistic data**. It showcases the computational logic behind identifying genes that co-evolve with an input gene set using:
 
----
+* A two-level matrix architecture (full matrix + coherent species subset)
+* A synthetic 7-gene “barcode” segment - 'LBS'
+* Five consensus vector strategies
+* Genome-wide correlation search (20,000 genes)
+* Dual correlation metrics (Pearson & Spearman)
+* Quantitative coherence validation
+* Noise-based negative control
 
-## 🧬 Scientific Background
-
-### Consensus Phylogenetic Profiling
-
-Phylogenetic profiling is a computational method that identifies functionally related genes by analyzing their co-occurrence patterns across species. The core principle is that genes involved in the same biological pathway or complex tend to be present or absent together across evolutionary lineages.
-
-**Consensus profiling** extends this approach by:
-
-1. **Starting with a known gene set** (e.g., 7 genes associated with a disease pathway)
-2. **Building multiple consensus profiles** using different statistical methods
-3. **Searching a large gene database** (~20,000 genes) to find genes with similar evolutionary patterns
-4. **Validating results** by measuring internal coherence of top-ranked gene lists
-
-This methodology is particularly useful for:
-- Identifying novel disease-associated genes
-- Discovering functional gene modules
-- Validating pathway predictions
-- Comparative genomics analysis
+The methodology mirrors real large-scale evolutionary analyses while remaining safe for public use.
 
 ---
 
-## 📊 Project Overview
+## 🔬 Scientific Background
 
-This synthetic demonstration implements a complete computational pipeline for consensus phylogenetic profile analysis. The workflow includes:
+Phylogenetic profiling identifies functionally related genes by analyzing their co-evolution across species. Genes involved in the same biological pathway tend to share similar phylogenetic presence/absence or normalized signal profiles.
 
-### Key Components
+**Consensus phylogenetic profiling** enhances this by:
 
-1. **Synthetic Data Generation**
-   - Full NPP matrix: 20,000 genes × 1,900 species
-   - Structured patterns to mimic evolutionary signal
-   - Block-based correlation structure
+* Aggregating multiple gene profiles into a unified vector
+* Reducing noise and gene-specific variance
+* Increasing ranking stability in large search spaces
+* Providing interpretable evolutionary signatures
 
-2. **Species Subset Selection**
-   - Synthetic similarity-based selection
-   - ~400 species subset (mimicking phylogenetic clustering)
-   - Reproduces the methodology of selecting species based on phylogenetic heatmaps
-
-3. **Consensus Profile Generation**
-   - 5 different statistical methods
-   - Robust comparison across methods
-
-4. **Correlation-Based Ranking**
-   - Genome-wide search (~20,000 genes)
-   - Restricted to selected species subset
-   - Dual correlation metrics (Pearson & Spearman)
-
-5. **Coherence Validation**
-   - Internal pairwise correlation analysis
-   - Multiple top-N thresholds (50, 100, 200)
-   - Quantitative validation of co-evolving groups
-
-6. **Negative Control**
-   - Randomized segment demonstration
-   - Coherence collapse validation
+This synthetic demo models the real workflow used to discover novel gene candidates, validate evolutionary modules, and evaluate functional coherence.
 
 ---
 
-## 🗂️ Synthetic Data Structure
+## 🧱 Synthetic Data Architecture (Two-Level Structure)
 
-### Two-Level Matrix Architecture
+A realistic, structured evolutionary dataset is simulated:
 
-The pipeline uses a **two-level matrix structure** that mirrors real phylogenetic profiling workflows:
+### **1. Full Synthetic NPP Matrix (20,000 × 1,900)**
 
-#### A. Full Synthetic NPP Matrix
-- **Size**: 20,000 genes × 1,900 species
-- **Structure**:
-  - 50 functional blocks (400 genes per block)
-  - Within-block correlation: 0.3-0.8
-  - Phylogenetic clustering across species
-  - Global noise component
-- **Purpose**: Represents the complete gene database for correlation search
+* 50 functional blocks (400 genes each)
+* Within-block correlation 0.3–0.8
+* Clustered species patterns
+* Noise added for realism
+* Represents the full genome-wide search space
 
-#### B. Species Subset Selection (~400 species)
+### **2. Species Subset (~400 species)**
 
-**In the real analysis**, the 400-species subset is determined using a phylogenetic heatmap that identifies coherent evolutionary clusters.
+Replicates real-world heatmap-based species selection:
 
-**In this synthetic demo**, the subset is selected using synthetic rules that mimic clustered evolutionary behavior:
-- Generate synthetic similarity scores per species
-- Create 8 phylogenetic clusters
-- Select top 400 species based on similarity scores
-- This simulates the process of identifying a coherent phylogenetic region from a heatmap
+* Synthetic similarity clustering
+* 8 phylogenetic species clusters
+* Top 400 species selected
+* Ensures phylogenetic coherence and reduces noise
 
-#### C. Synthetic Segment Extraction
-- **Size**: 7 genes × 400 species
-- **Source**: Extracted from a coherent block in the full matrix
-- **Purpose**: Acts as the synthetic "barcode" used to build consensus profiles
-- **Methodology**: Selects 7 consecutive genes from the middle of a functional block to ensure correlation structure
+### **3. Synthetic 7-Gene Segment (7 × 400)**
 
-#### D. Correlation Search Restriction
+* Extracted from a strongly correlated block
+* Serves as the foundation for consensus profiling
+* Preserves intra-module coherence
 
-When ranking all ~20,000 genes, correlations are computed **only over the 400 selected species**, exactly matching the original methodology. This restriction:
-- Focuses analysis on a coherent phylogenetic region
-- Reduces noise from distantly related species
-- Mimics real-world analysis where species selection is based on phylogenetic relationships
+### **4. Correlation Search Restriction**
+
+Correlation is computed **only across the 400 selected species**, matching real methodology and avoiding artifacts from distantly related species.
 
 ---
 
-## 🔬 Pipeline Methodology
+## ⚙️ Pipeline Methodology (Chronological)
 
-### Step 1: Synthetic Data Generation
+### **Step 1 — Synthetic Data Generation**
 
-Generate a full NPP matrix with structured patterns:
+Structured NPP matrix with functional blocks, phylogenetic species clusters, and noise.
+Creates a controlled environment for benchmarking consensus strategies.
 
-```python
-# 50 functional blocks
-# Each block: 400 genes with correlated profiles
-# Phylogenetic clustering: 10 species clusters per block
-# Correlation strength: 0.3-0.8 within blocks
-```
+---
 
-**Key Features:**
-- Block structure mimics functional gene modules
-- Phylogenetic clustering mimics evolutionary relationships
-- Noise component ensures realistic variability
+### **Step 2 — Species Subset Selection**
 
-### Step 2: Species Subset Selection
+Synthetic similarity scores simulate how phylogenetic heatmaps identify coherent evolutionary regions.
 
-Simulate phylogenetic heatmap-based selection:
+---
 
-```python
-# Generate synthetic similarity scores
-# Create 8 phylogenetic clusters
-# Select top 400 species by similarity
-```
+### **Step 3 — Segment Extraction**
 
-**Note**: In real analysis, this step uses actual phylogenetic heatmaps to identify coherent species clusters. The synthetic version demonstrates the same methodological principle.
+As part of the broader profiling framework I developed, an LBS (“Local evolutionary barcode segment”) represents a short evolutionary interval showing coherent conservation signals.  
+In the real workflow, identifying such segments is guided by visual examination of phylogenetic heatmaps to locate regions that display consistent co-evolutionary behavior.  
+A demonstration of this heatmap-based rationale appears in the **Heatmap Visualization** project:  
+https://github.com/Shalev-CompBio/Shalev-Evolutionary-Genomics-Portfolio/tree/main/projects/heatmap_visualization
 
-### Step 3: Segment Extraction
+In this public synthetic demonstration, the LBS is represented by a structured 7-gene synthetic block designed to emulate the properties of such coherent intervals.  
+An automated computational module for detecting LBS regions is currently under development and will be integrated into the full evolutionary profiling pipeline.
 
-Extract a 7-gene segment from a coherent block:
+> **LBS Segment (Synthetic Demonstration):**  
+> In this public synthetic demonstration, the LBS is represented by a structured 7-gene synthetic block designed to emulate the properties of such coherent evolutionary intervals.  
+> An automated computational module for detecting LBS regions is currently under development and will be integrated into the full evolutionary profiling pipeline.
 
-```python
-# Select from middle of a functional block
-# Ensures genes have correlation structure
-# Restrict to 400 selected species
-```
+> In this public synthetic demonstration, the LBS is represented by a structured 7-gene synthetic block designed to emulate the properties of such coherent evolutionary intervals.  
+> An automated computational module for detecting LBS regions is currently under development and will be integrated into the full evolutionary profiling pipeline.
 
-### Step 4: Consensus Profile Generation
+### **Step 3 — Segment Extraction**
 
-Generate 5 consensus vectors using different statistical methods:
+As part of the broader profiling framework I developed, an LBS (“Local evolutionary barcode segment”) represents a short evolutionary interval showing coherent conservation signals.  
+In the real workflow, identifying such segments is guided by visual examination of phylogenetic heatmaps to locate regions that display consistent co-evolutionary behavior.  
+A demonstration of this heatmap-based rationale appears in the **Heatmap Visualization** project:  
+https://github.com/Shalev-CompBio/Shalev-Evolutionary-Genomics-Portfolio/tree/main/projects/heatmap_visualization
 
-#### 4.1 Mean
-- Simple average across the 7 gene profiles
-- Most straightforward method
-- Sensitive to outliers
+> In this public synthetic demonstration, the LBS is represented by a structured 7-gene synthetic block designed to emulate the properties of such coherent evolutionary intervals.  
+> An automated computational module for detecting LBS regions is currently under development and will be integrated into the full evolutionary profiling pipeline.
 
-#### 4.2 Median
-- Median value across genes for each species
-- Robust to outliers
-- Less sensitive to extreme values
 
-#### 4.3 Trimmed Mean
-- Average after removing 1 minimum and 1 maximum value per species
-- Balances robustness with information retention
-- For 7 genes: removes ~14% of extreme values
+---
 
-#### 4.4 Medoid
-- Selects the most "central" gene profile
-- Based on 1-Pearson correlation distance
-- Gene with minimum sum of distances to all others
-- Represents the most representative individual profile
+## 🔢 Step 4 — Consensus Profile Generation (Five Methods)
 
-#### 4.5 PC1 (Principal Component 1)
-- First principal component of the 7 gene profiles
-- Captures the dominant pattern of variation
-- Standardized before PCA to account for scale differences
-- Represents the direction of maximum variance
+Each method aggregates the 7 gene profiles differently, revealing how method choice affects downstream ranking.
 
-### Step 5: Correlation-Based Ranking
+### 1. **Mean**
 
-For each consensus profile:
+Captures the average signal; sensitive to outliers.
 
-1. **Compute correlations** against all ~20,000 genes
-2. **Restrict to 400 selected species** (critical methodological detail)
-3. **Use both Pearson and Spearman** correlation
-4. **Rank genes** by absolute correlation strength
+### 2. **Median**
 
-**Pearson Correlation:**
-- Linear relationships
-- Sensitive to outliers
-- Assumes normal distribution
+Robust to extreme values; highlights central tendency.
 
-**Spearman Correlation:**
-- Rank-based, non-parametric
-- Robust to outliers
-- Captures monotonic relationships
+### 3. **Trimmed Mean**
 
-### Step 6: Coherence Validation
+Removes one highest and lowest value per species; balances robustness and sensitivity.
 
-For each consensus method and correlation type:
+### 4. **Medoid**
 
-1. **Extract top-N lists** (e.g., top 50, 100, 200)
-2. **Compute pairwise correlations** between all genes in the list
-3. **Calculate mean absolute correlation** as coherence measure
-4. **Validate** that top-ranked genes form coherent groups
+Selects the most representative single gene profile based on correlation-distance.
 
-**Coherence Measure:**
-```
-Coherence = mean(|pairwise_correlations|)
-```
+### 5. **PC1 (Principal Component 1)**
 
-High coherence indicates that top-ranked genes are truly co-evolving, not just individually correlated with the consensus.
+Extracts the dominant co-evolutionary pattern across all input genes.
 
-### Step 7: Negative Control
+**Why compare methods?**
+Different consensus strategies emphasize different aspects of co-evolving genes. Comparing them reveals the most stable and interpretable approach for module detection.
 
-Demonstrate that coherence collapses when signal is removed:
+---
 
-1. **Generate randomized segment** (7 genes × 400 species, pure noise)
-2. **Build consensus** from noise segment
-3. **Compute correlations** and extract top-N lists
-4. **Measure coherence** - should be significantly lower than signal-based lists
+## 📈 Step 5 — Correlation-Based Genome-Wide Ranking
 
-This validates that the coherence measure is detecting real signal, not random correlations.
+For each consensus vector:
+
+* Compute correlations against ~20,000 genes
+* Restrict analysis to the 400 coherent species
+* Run both Pearson (linear) and Spearman (rank-order)
+* Rank genes by absolute correlation strength
+
+This identifies genes with evolutionarily similar trajectories.
+
+---
+
+## 📊 Step 6 — Coherence Validation
+
+To verify the biological plausibility of top-ranked genes:
+
+1. Extract top 50 / 100 / 200 genes
+2. Compute all pairwise correlations
+3. Quantify mean absolute coherence
+4. Compare across consensus methods and metrics
+
+High coherence indicates true evolutionary module structure.
+
+---
+
+## 🚫 Step 7 — Negative Control (Noise-Based)
+
+A randomized 7-gene segment is used to demonstrate:
+
+* Consensus built from noise collapses
+* Rankings lack internal coherence
+* Coherence validation correctly distinguishes signal from randomness
+
+This is essential to confirm methodological correctness.
 
 ---
 
 ## 🚀 Running the Demo
 
-### Prerequisites
+1. Install required packages (NumPy, Pandas, SciPy, scikit-learn, Seaborn, Matplotlib).
+2. Launch Jupyter Notebook.
+3. Open: `notebook/consensus_profile_demo.ipynb`
+4. Run all cells.
 
-```bash
-pip install numpy pandas matplotlib seaborn scipy scikit-learn jupyter
-```
-
-### Required Packages
-
-- `numpy` - Numerical computing
-- `pandas` - Data manipulation
-- `matplotlib` - Plotting
-- `seaborn` - Statistical visualization
-- `scipy` - Statistical functions (trim_mean)
-- `scikit-learn` - PCA and scaling
-- `jupyter` - Notebook interface
-
-### Execution
-
-1. **Navigate to the project directory:**
-   ```bash
-   cd consensus-profile-demo
-   ```
-
-2. **Launch Jupyter Notebook:**
-   ```bash
-   jupyter notebook
-   ```
-
-3. **Open the notebook:**
-   ```
-   notebook/consensus_profile_demo.ipynb
-   ```
-
-4. **Run all cells:**
-   - Use "Run All" from the Cell menu
-   - Or execute cells sequentially (Shift+Enter)
-
-### Expected Runtime
-
-- **Data generation**: ~30-60 seconds
-- **Consensus computation**: ~10-20 seconds
-- **Correlation analysis**: ~2-5 minutes (20,000 genes × 5 methods × 2 correlation types)
-- **Coherence validation**: ~1-2 minutes
-- **Visualizations**: ~30 seconds
-- **Total**: ~5-10 minutes
-
-### Memory Requirements
-
-- **Minimum**: 4 GB RAM
-- **Recommended**: 8 GB RAM
-- Matrix size: ~300 MB in memory
+**Runtime:** ~5–10 minutes
+**RAM:** 4–8 GB recommended
 
 ---
 
 ## 📁 Output Files
 
-### Generated Data Files
+### **Data (in `data/`)**
 
-Located in `data/`:
+* `synthetic_segments.csv` – 7 × 400 segment
+* `synthetic_full_matrix.csv` – 1,000 × 1,900 sample (full matrix held in memory)
 
-1. **`synthetic_segments.csv`**
-   - 7 genes × 400 species
-   - The extracted segment used for consensus building
-   - CSV format with gene names as index
+### **Figures (in `outputs/demo_figures/`)**
 
-2. **`synthetic_full_matrix.csv`**
-   - Sample of first 1,000 genes × 1,900 species
-   - Full matrix is generated in memory but only sample saved (file size considerations)
-   - Demonstrates the structure of the full database
+* Segment heatmap
+* Consensus comparison plot
+* Coherence validation bars
+* Correlation distribution histograms
+* Signal vs. noise coherence comparison
 
-### Generated Figures
-
-Located in `outputs/demo_figures/`:
-
-1. **`synthetic_segment_heatmap.png`**
-   - Heatmap visualization of the 7-gene segment
-   - Shows profile patterns across species
-   - Color-coded by profile value
-
-2. **`consensus_comparison.png`**
-   - Comparison of all 5 consensus methods
-   - Overlays individual gene profiles
-   - Demonstrates method differences
-
-3. **`coherence_boxplot.png`**
-   - Coherence values across methods and top-N thresholds
-   - Includes negative control comparison
-   - Bar chart format for easy comparison
-
-4. **`correlation_distributions.png`**
-   - Distribution of correlation scores for each consensus method
-   - Compares Pearson vs. Spearman
-   - Shows the range of correlations found
-
-5. **`signal_vs_noise_coherence.png`**
-   - Direct comparison: signal-based vs. noise-based coherence
-   - Demonstrates validation of the methodology
-   - Clear visualization of coherence collapse
-
-**All figures include the label: "Synthetic data – demonstration only"**
+All figures are labeled: *Synthetic data – demonstration only*.
 
 ---
 
-## 📈 Visualizations
+## 📉 Visualizations
 
-### 1. Synthetic Segment Heatmap
+### 1. **Segment Heatmap**
 
-Visualizes the 7-gene segment across a sample of species. Shows:
-- Profile patterns and structure
-- Correlation between genes
-- Species clustering patterns
+Shows structure and correlation of the 7-gene module.
 
-### 2. Consensus Profile Comparison
+### 2. **Consensus Comparison**
 
-Side-by-side comparison of all 5 consensus methods:
-- Individual gene profiles (gray, transparent)
-- Consensus profile (blue, bold)
-- Method-specific characteristics visible
+Illustrates differences among the five consensus methods.
 
-### 3. Coherence Validation Plot
+### 3. **Coherence Validation**
 
-Bar chart showing coherence values:
-- X-axis: Consensus method × Correlation type
-- Y-axis: Mean absolute pairwise correlation
-- Multiple bars per method (Top 50, 100, 200)
-- Includes noise control for comparison
+Quantifies internal consistency across top-N sets.
 
-### 4. Correlation Distributions
+### 4. **Correlation Distributions**
 
-Histograms showing the distribution of correlation scores:
-- One subplot per consensus method
-- Overlay of Pearson (blue) and Spearman (orange)
-- Shows the range and shape of correlations
+Pearson vs. Spearman comparison.
 
-### 5. Signal vs. Noise Comparison
+### 5. **Signal vs. Noise**
 
-Direct comparison bar chart:
-- Signal-based coherence (blue)
-- Noise control coherence (coral)
-- Clear demonstration of methodology validation
+Demonstrates collapse of coherence under noise.
 
 ---
 
-## 🔍 Key Methodological Features
+## 🧠 Key Methodological Insights
 
-### Two-Level Matrix Structure
-
-The pipeline correctly implements the two-level structure:
-
-1. **Full matrix** (20,000 × 1,900): Complete database
-2. **Species subset** (400): Phylogenetically coherent region
-3. **Segment** (7 × 400): Representative barcode
-4. **Correlation search**: Restricted to 400 species subset
-
-This structure is critical because:
-- Real analysis uses phylogenetic heatmaps to select species
-- Correlation search must be restricted to coherent regions
-- This prevents spurious correlations from distantly related species
-
-### Species Subset Selection
-
-**Real workflow:**
-- Analyze phylogenetic heatmap
-- Identify coherent clusters
-- Select ~400 species from a specific region
-
-**Synthetic simulation:**
-- Generate synthetic similarity scores
-- Create phylogenetic clusters
-- Select top 400 species
-- **Same methodological principle, synthetic implementation**
-
-### Coherence Validation
-
-The coherence measure validates that top-ranked genes form coherent groups:
-
-- **High coherence**: Genes are truly co-evolving (validated)
-- **Low coherence**: Genes are individually correlated but not coherent (less reliable)
-- **Noise control**: Demonstrates that coherence requires real signal
-
----
-
-## 📝 Notes on Synthetic Data
-
-### Why Synthetic?
-
-This demonstration uses fully synthetic data to:
-- **Protect privacy**: No real genomic data
-- **Demonstrate methodology**: Focus on computational approach
-- **Portfolio-ready**: Safe for public sharing
-- **Reproducible**: Fixed random seeds ensure reproducibility
-
-### Synthetic Data Characteristics
-
-- **Structured patterns**: Blocks and clusters mimic real evolutionary structure
-- **Realistic scale**: 20,000 genes × 1,900 species matches real databases
-- **Controlled correlation**: Known correlation structure allows validation
-- **Noise component**: Realistic variability
-
-### Limitations
-
-Synthetic data cannot capture:
-- True evolutionary relationships
-- Biological pathway complexity
-- Disease-specific patterns
-- Real gene-gene interactions
-
-**Purpose**: Demonstrate computational methodology, not biological discovery.
+* Two-level matrix design mirrors real-world workflows
+* Species restriction is essential for noise reduction
+* Different consensus methods highlight different signal dimensions
+* Coherence validation is a robust diagnostic tool
+* Negative control confirms methodological soundness
 
 ---
 
 ## 🎯 Summary
 
-This synthetic demonstration successfully implements:
+This synthetic demonstration implements a complete consensus phylogenetic profiling pipeline:
 
-✅ **Full pipeline**: Data generation → Consensus → Ranking → Validation
-✅ **Multiple methods**: 5 consensus approaches compared
-✅ **Dual correlations**: Pearson and Spearman
-✅ **Coherence validation**: Quantitative measure of co-evolving groups
-✅ **Negative control**: Demonstrates methodology validation
-✅ **Comprehensive visualizations**: All key results visualized
-✅ **Portfolio-ready**: Fully synthetic, safe for sharing
+* Full NPP generation
+* Species subset extraction
+* Five consensus strategies
+* Genome-wide correlation ranking
+* Pearson + Spearman evaluation
+* Quantitative coherence validation
+* Noise-based control
 
-**All data, gene names, species names, and results are synthetic and for demonstration only.**
+It accurately reflects the computational logic behind real phylogenetic profiling analyses while remaining fully synthetic and portfolio-safe.
 
 ---
 
 ## 📚 References
 
-This methodology is based on established phylogenetic profiling approaches:
-
-- **Phylogenetic Profiling**: Pellegrini et al. (1999), Nature
-- **Consensus Methods**: Various statistical aggregation techniques
-- **Coherence Validation**: Internal correlation analysis for gene set validation
+* Pellegrini et al., *Nature* (1999) — Foundational phylogenetic profiling
+* Standard PCA and consensus aggregation methodologies
 
 ---
 
-## 📧 Contact
+## ⚠️ Data & Privacy Disclaimer
 
-For questions about the methodology or implementation, please refer to the notebook documentation and code comments.
+> **All data used in this project are fully synthetic and included solely for demonstration.**
+> **No real genomic, evolutionary, or disease-related datasets are used.**
+
+Synthetic data emulate realistic evolutionary patterns while ensuring full confidentiality and portfolio suitability.
 
 ---
 
-**Last Updated**: 2025
-**Version**: 1.0
-**Status**: Portfolio-ready synthetic demonstration
-
+*This project is part of the Evolutionary Genomics & Multi-Omics Portfolio.*
