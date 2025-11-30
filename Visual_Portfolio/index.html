@@ -85,6 +85,8 @@
         .typing-cursor::after {
             content: '|';
             animation: blink 1s step-end infinite;
+            color: #2dd4bf; 
+            margin-left: 4px;
         }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
@@ -189,8 +191,10 @@
                     Shalev Yaacov
                 </h1>
                 
-                <h2 class="text-xl md:text-2xl text-gray-400 mb-6 font-light font-mono">
-                    Genomics & Bioinformatics Researcher
+                <!-- Typing Effect Header -->
+                <h2 class="text-xl md:text-2xl text-gray-400 mb-6 font-light font-mono h-8 flex justify-center md:justify-start items-center">
+                    <span class="text-accent-purple mr-2">></span>
+                    <span id="typing-text" class="text-white typing-cursor"></span>
                 </h2>
                 
                 <p class="text-gray-400 text-lg mb-8 max-w-2xl leading-relaxed">
@@ -790,6 +794,20 @@
         window.addEventListener('resize', () => { resize(); initParticles(); });
         resize(); initParticles(); animateParticles();
 
+        // Typing Effect (Same as before)
+        const textElement = document.getElementById('typing-text');
+        const phrases = ["Genomics & Bioinformatics Researcher", "Decoding Missing Heritability", "Multi-Omics Data Integration", "Evolutionary Signal Detection"];
+        let phraseIndex = 0, charIndex = 0, isDeleting = false, typeSpeed = 100;
+        function type() {
+            const currentPhrase = phrases[phraseIndex];
+            if (isDeleting) { textElement.textContent = currentPhrase.substring(0, charIndex - 1); charIndex--; typeSpeed = 50; }
+            else { textElement.textContent = currentPhrase.substring(0, charIndex + 1); charIndex++; typeSpeed = 100; }
+            if (!isDeleting && charIndex === currentPhrase.length) { isDeleting = true; typeSpeed = 2000; }
+            else if (isDeleting && charIndex === 0) { isDeleting = false; phraseIndex = (phraseIndex + 1) % phrases.length; typeSpeed = 500; }
+            setTimeout(type, typeSpeed);
+        }
+        document.addEventListener('DOMContentLoaded', type);
+        
         // Navbar scroll
         window.addEventListener('scroll', () => {
             const nav = document.getElementById('navbar');
