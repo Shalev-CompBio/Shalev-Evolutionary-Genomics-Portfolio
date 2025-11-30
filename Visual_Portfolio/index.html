@@ -1,563 +1,434 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Evolutionary Genomics Portfolio - Shalev Yaacov</title>
-    <!-- Importing Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Montserrat:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <!-- Importing FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Shalev Yaacov | Evolutionary Genomics</title>
     
+    <!-- Tailwind CSS (via CDN for single-file simplicity) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Tailwind Configuration for Custom Colors -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'huji-blue': '#0071bc',
+                        'bio-dark': '#0f172a', /* Slate 900 */
+                        'bio-card': '#1e293b', /* Slate 800 */
+                        'accent-teal': '#2dd4bf', /* Teal 400 */
+                        'accent-purple': '#a78bfa', /* Violet 400 */
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        /* * GLOBAL VARIABLES - MEDIUM/DIM DARK THEME */
-        :root {
-            --bg-body: #404b5a;        
-            --bg-container: #4b5666;   
-            --bg-sidebar: #46505f;     
-            --bg-card: #586475;        
-            
-            --color-genomics: #d1c4e9; 
-            --color-lang: #ffcc80;     
-            --color-huji: #80deea;     
-            
-            --text-main: #f0f4f8;      
-            --text-muted: #dbeafe;     
-            --text-dark: #263238;      
-
-            --border-color: #64748b;   
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
+        /* Custom Styles for Canvas and Scrollbar */
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: var(--bg-body);
-            color: var(--text-main);
-            line-height: 1.6;
-            padding: 40px;
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
-            position: relative; /* For Canvas positioning */
+            background-color: #0f172a;
+            color: #e2e8f0;
+            overflow-x: hidden;
         }
 
-        /* * BACKGROUND ANIMATION CANVAS */
+        /* Animated Background Canvas */
         #networkCanvas {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1; /* Behind everything */
-            opacity: 0.6;
+            z-index: -1;
+            opacity: 0.4;
         }
 
-        /* * MAIN CONTAINER */
-        .container {
-            background-color: rgba(75, 86, 102, 0.95); /* Slight transparency for background effect */
-            width: 100%;
-            max-width: 1200px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3); 
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            backdrop-filter: blur(5px); /* Modern glassmorphism effect */
-            z-index: 1;
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
         }
-
-        /* * HEADER SECTION */
-        header {
-            padding: 40px;
-            background: linear-gradient(180deg, rgba(80, 92, 109, 0.9) 0%, rgba(75, 86, 102, 0) 100%);
-            border-bottom: 1px solid var(--border-color);
-            position: relative;
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
         }
-
-        header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, var(--color-genomics), var(--color-huji), var(--color-lang));
-            opacity: 0.9;
-        }
-
-        .badges-container {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 5px 12px;
-            border-radius: 6px;
-            color: #37474f;
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-family: 'JetBrains Mono', monospace;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .badge-genomics { background-color: var(--color-genomics); }
-        .badge-lang { background-color: var(--color-lang); }
-        .badge-inst { background-color: var(--color-huji); }
-
-        h1 {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 2.5rem;
-            color: #ffffff;
-            margin-bottom: 10px;
-            letter-spacing: -0.5px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        }
-
-        .subtitle {
-            font-size: 1.2rem;
-            color: var(--color-huji);
-            font-weight: 500;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-family: 'Montserrat', sans-serif;
-        }
-
-        .researcher-info {
-            font-size: 1rem;
-            color: var(--text-muted);
-            border-left: 3px solid rgba(128, 222, 234, 0.5);
-            padding-left: 15px;
-        }
-
-        /* * LAYOUT GRID */
-        .content-wrapper {
-            display: grid;
-            grid-template-columns: 300px 1fr;
-            gap: 0;
-            flex-grow: 1;
-        }
-
-        /* * SIDEBAR STYLES */
-        aside {
-            background-color: rgba(70, 80, 95, 0.6);
-            padding: 35px;
-            border-right: 1px solid var(--border-color);
-            font-size: 0.95rem;
-        }
-
-        .section-title {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 0.95rem;
-            text-transform: uppercase;
-            letter-spacing: 1.2px;
-            color: var(--color-huji);
-            border-bottom: 1px solid rgba(128, 222, 234, 0.4);
-            padding-bottom: 8px;
-            margin-bottom: 20px;
-            margin-top: 5px;
-            font-weight: 600;
-        }
-
-        .sidebar-section { margin-bottom: 40px; }
-
-        .sidebar-text {
-            color: var(--text-muted);
-            margin-bottom: 15px;
-            line-height: 1.7;
-        }
-
-        .tech-list, .contact-list { list-style: none; }
-
-        .tech-list li, .contact-list li {
-            margin-bottom: 14px;
-            color: var(--text-main);
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-        }
-
-        .tech-list i, .contact-list i {
-            color: var(--color-huji);
-            margin-top: 5px;
-            width: 20px;
-            text-align: center;
-            opacity: 0.9;
-        }
-
-        .tech-list strong {
-            color: #ffffff;
-            font-weight: 600;
-        }
-
-        .disclaimer-box {
-            background-color: rgba(255, 204, 128, 0.1);
-            border: 1px solid rgba(255, 204, 128, 0.3);
-            padding: 15px;
-            font-size: 0.85rem;
-            color: #ffe0b2;
-            border-radius: 6px;
-            margin-top: 30px;
-        }
-
-        /* * MAIN CONTENT */
-        main {
-            padding: 40px;
-            background-color: transparent;
-        }
-
-        .projects-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
-        }
-
-        .project-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 22px;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            position: relative;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .project-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--color-huji);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-            background-color: #606d80;
-        }
-
-        .project-card:hover .project-icon {
-            background-color: var(--color-huji);
-            color: var(--bg-body);
-            transform: rotateY(180deg);
-        }
-
-        .project-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 12px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .project-icon {
-            font-size: 1.2rem;
-            width: 38px;
-            height: 38px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: rgba(128, 222, 234, 0.15);
-            color: var(--color-huji);
-            border-radius: 6px;
-            transition: all 0.5s ease;
-        }
-
-        .project-title {
-            font-size: 1.15rem;
-            font-weight: 600;
-            color: #ffffff;
-            font-family: 'Montserrat', sans-serif;
-        }
-
-        .project-role {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.75rem;
-            color: var(--color-genomics);
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .project-details {
-            font-size: 0.95rem;
-            color: var(--text-main);
-            margin-bottom: 15px;
-            flex-grow: 1;
-            line-height: 1.6;
-        }
-
-        .feature-list {
-            margin-left: 0;
-            list-style: none;
-            font-size: 0.85rem;
-            color: #eceff1;
-            background-color: rgba(0, 0, 0, 0.15);
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-        }
-
-        .feature-list li {
-            margin-bottom: 5px;
-            display: flex;
-            gap: 8px;
-        }
-        
-        .feature-list li::before {
-            content: "•";
-            color: var(--color-huji);
-            font-weight: bold;
-        }
-
-        /* * BUTTONS */
-        .btn-project {
-            display: inline-block;
-            text-align: center;
-            background-color: transparent;
-            border: 1px solid var(--color-huji);
-            color: var(--color-huji);
-            padding: 8px 12px;
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
             border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.2s ease;
-            margin-top: auto;
-            text-transform: uppercase;
-            font-family: 'JetBrains Mono', monospace;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
         }
 
-        .btn-project:hover {
-            background-color: var(--color-huji);
-            color: var(--bg-body);
-        }
-
-        /* * FOOTER */
-        footer {
-            background-color: #37474f;
-            color: #b0bec5;
-            text-align: center;
-            padding: 25px;
-            font-size: 0.85rem;
-            font-family: 'Roboto', sans-serif;
-            border-top: 1px solid var(--border-color);
+        /* Glassmorphism Utilities */
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
-        .footer-links {
-            margin-top: 10px;
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-        }
-        
-        .footer-links a {
-            color: var(--text-muted);
-            font-size: 1.2rem;
-            transition: color 0.3s;
-        }
-        
-        .footer-links a:hover {
-            color: var(--color-huji);
+        .glass-nav {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        @media print {
-            #networkCanvas { display: none; }
-            .container { box-shadow: none; border: none; }
-            .btn-project { display: none; }
+        /* Typing cursor animation */
+        .typing-cursor::after {
+            content: '|';
+            animation: blink 1s step-end infinite;
         }
-
-        @media (max-width: 900px) {
-            .content-wrapper { grid-template-columns: 1fr; }
-            .projects-grid { grid-template-columns: 1fr; }
-            aside { border-right: none; border-bottom: 1px solid var(--border-color); }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
         }
     </style>
 </head>
-<body>
+<body class="antialiased selection:bg-accent-teal selection:text-bio-dark">
 
-    <!-- Animated Background -->
+    <!-- Canvas Background -->
     <canvas id="networkCanvas"></canvas>
 
-    <div class="container">
-        
-        <!-- HEADER -->
-        <header>
-            <div class="badges-container">
-                <span class="badge badge-genomics">Focus: Genomics & Bioinformatics</span>
-                <span class="badge badge-lang">Python | R</span>
-                <span class="badge badge-inst">Hebrew University of Jerusalem</span>
+    <!-- Navigation Bar -->
+    <nav class="fixed w-full z-50 glass-nav transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0 font-bold text-xl tracking-tight text-white">
+                    <span class="text-accent-teal">SHALEV</span>.GENOMICS
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-8">
+                        <a href="#home" class="hover:text-accent-teal px-3 py-2 rounded-md text-sm font-medium transition-colors">Home</a>
+                        <a href="#about" class="hover:text-accent-teal px-3 py-2 rounded-md text-sm font-medium transition-colors">About & Methodology</a>
+                        <a href="#projects" class="hover:text-accent-teal px-3 py-2 rounded-md text-sm font-medium transition-colors">Projects</a>
+                        <a href="#skills" class="hover:text-accent-teal px-3 py-2 rounded-md text-sm font-medium transition-colors">Skills</a>
+                        <a href="#contact" class="bg-accent-teal text-bio-dark hover:bg-white px-4 py-2 rounded-md text-sm font-bold transition-colors">Contact</a>
+                    </div>
+                </div>
+                <!-- Mobile menu button -->
+                <div class="-mr-2 flex md:hidden">
+                    <button type="button" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
             </div>
-            
-            <h1>Evolutionary Genomics & Multi-Omics Portfolio</h1>
-            <div class="subtitle">
-                <i class="fas fa-dna"></i>
-                Decoding Disease Architecture Through Evolutionary Signals
-            </div>
-            
-            <div class="researcher-info">
-                <strong>Shalev Yaacov</strong> | M.Sc. Researcher @ Hebrew University (Tabach Lab)<br>
-                <span style="color: var(--text-muted); font-size: 0.9em;">Focus: Evolutionary gene clustering, multi-omics integration, and phylogenetic profiling (IRD & Cilia).</span>
-            </div>
-        </header>
-
-        <div class="content-wrapper">
-            
-            <!-- SIDEBAR -->
-            <aside>
-                <div class="sidebar-section">
-                    <h3 class="section-title">Overview</h3>
-                    <p class="sidebar-text">
-                        Developing computational frameworks to address <strong style="color:white">missing heritability</strong> in genetic disorders.
-                    </p>
-                    <p class="sidebar-text">
-                        By integrating <strong style="color:var(--color-huji)">Normalized Phylogenetic Profiling (NPP)</strong> with multi-omics datasets, I aim to uncover conserved gene modules for Inherited Retinal Diseases (IRD) and Ciliopathies.
-                    </p>
-                    
-                    <div class="disclaimer-box">
-                        <i class="fas fa-info-circle"></i> 
-                        <strong>Note:</strong> All datasets in this repository are synthetic, transformed, or strictly demonstrative for confidentiality.
-                    </div>
-                </div>
-
-                <div class="sidebar-section">
-                    <h3 class="section-title">Tech Stack</h3>
-                    <ul class="tech-list">
-                        <li><i class="fab fa-python"></i> <div><strong>Python</strong> <br><span style="font-size:0.85em; color:var(--text-muted)">Pandas, Scikit-learn, SciPy</span></div></li>
-                        <li><i class="fab fa-r-project"></i> <div><strong>R</strong> <br><span style="font-size:0.85em; color:var(--text-muted)">ggplot2, ComplexHeatmap</span></div></li>
-                        <li><i class="fas fa-project-diagram"></i> <strong>Method:</strong> NPP</li>
-                        <li><i class="fas fa-layer-group"></i> Comparative Genomics</li>
-                        <li><i class="fas fa-database"></i> Multi-omics Integration</li>
-                    </ul>
-                </div>
-
-                <div class="sidebar-section">
-                    <h3 class="section-title">Affiliation</h3>
-                    <ul class="contact-list">
-                        <li><i class="fas fa-university"></i> <div><strong>Prof. Yuval Tabach Lab</strong><br><span style="font-size:0.85em; color:var(--text-muted)">Faculty of Medicine, HUJI</span></div></li>
-                        <li><i class="fas fa-user-graduate"></i> <div><strong>M.Sc. Candidate</strong><br><span style="font-size:0.85em; color:var(--text-muted)">Genomics & Bioinformatics</span></div></li>
-                        <li><i class="fas fa-map-marker-alt"></i> Jerusalem, Israel.</li>
-                    </ul>
-                </div>
-            </aside>
-
-            <!-- MAIN CONTENT -->
-            <main>
-                <h3 class="section-title">Key Projects</h3>
-                
-                <div class="projects-grid">
-                    
-                    <!-- Project 1 -->
-                    <div class="project-card">
-                        <div class="project-header">
-                            <div class="project-icon"><i class="fas fa-bacterium"></i></div>
-                            <div class="project-title">Cilia Cluster Analysis</div>
-                        </div>
-                        <div class="project-role">Systematic Characterization</div>
-                        <p class="project-details">
-                            Modular analytical pipeline evaluating cluster composition using evolutionary annotations and enrichment scores.
-                        </p>
-                        <ul class="feature-list">
-                            <li>Automated GO-term enrichment.</li>
-                            <li>Internal-distance metrics.</li>
-                            <li>Detection of functional submodules.</li>
-                        </ul>
-                        <!-- Link updated to absolute GitHub Repository URL -->
-                        <a href="https://github.com/shalev-compbio/Shalev-Evolutionary-Genomics-Portfolio/tree/main/projects/cilia_clusters" target="_blank" class="btn-project">View Analysis <i class="fas fa-arrow-right"></i></a>
-                    </div>
-
-                    <!-- Project 2 -->
-                    <div class="project-card">
-                        <div class="project-header">
-                            <div class="project-icon"><i class="fas fa-eye"></i></div>
-                            <div class="project-title">IRD Phenotype Integration</div>
-                        </div>
-                        <div class="project-role">Phenotype-Driven Modules</div>
-                        <p class="project-details">
-                            Semantic similarity-based clustering using Human Phenotype Ontology (HPO) annotations.
-                        </p>
-                        <ul class="feature-list">
-                            <li>Silhouette validation & stability check.</li>
-                            <li>Phenotype similarity matrices.</li>
-                            <li>Prioritization of IRD candidates.</li>
-                        </ul>
-                         <!-- Link updated to absolute GitHub Repository URL -->
-                        <a href="https://github.com/shalev-compbio/Shalev-Evolutionary-Genomics-Portfolio/tree/main/projects/IRD_Phenotype_Clustering" target="_blank" class="btn-project">View Workflow <i class="fas fa-arrow-right"></i></a>
-                    </div>
-
-                    <!-- Project 3 -->
-                    <div class="project-card">
-                        <div class="project-header">
-                            <div class="project-icon"><i class="fas fa-chart-line"></i></div>
-                            <div class="project-title">High-Dimensional Viz</div>
-                        </div>
-                        <div class="project-role">Exploratory Tools</div>
-                        <p class="project-details">
-                            Publication-ready heatmaps and custom scripts for species-aligned matrices and annotation layers.
-                        </p>
-                        <ul class="feature-list">
-                            <li>Python & R custom plotting.</li>
-                            <li>Clustered heatmaps & comparison plots.</li>
-                            <li>Multi-omics visual layering.</li>
-                        </ul>
-                         <!-- Link updated to absolute GitHub Repository URL -->
-                        <a href="https://github.com/shalev-compbio/Shalev-Evolutionary-Genomics-Portfolio/tree/main/projects/heatmap_visualization" target="_blank" class="btn-project">See Scripts <i class="fas fa-code"></i></a>
-                    </div>
-
-                    <!-- Project 4 -->
-                    <div class="project-card">
-                        <div class="project-header">
-                            <div class="project-icon"><i class="fas fa-barcode"></i></div>
-                            <div class="project-title">Genomic Segmentation</div>
-                        </div>
-                        <div class="project-role">LBS-Inspired Profiling</div>
-                        <p class="project-details">
-                            Demonstration of Local Barcode Segmentation using synthetic NPP matrices to filter noise.
-                        </p>
-                        <ul class="feature-list">
-                            <li>Segmentation & consensus workflows.</li>
-                            <li>Signal vs. Noise validation.</li>
-                            <li>Benchmarking experiments.</li>
-                        </ul>
-                         <!-- Link updated to absolute GitHub Repository URL -->
-                        <a href="https://github.com/shalev-compbio/Shalev-Evolutionary-Genomics-Portfolio/tree/main/projects/ird_lbs_barcode_segments" target="_blank" class="btn-project">Explore Demo <i class="fas fa-flask"></i></a>
-                    </div>
-
-                </div>
-            </main>
         </div>
-
-        <footer>
-            <div>This repository evolves alongside my thesis research and will continue to expand with new analyses.</div>
-            <div class="footer-links">
-                <!-- Links updated to point to the actual profile/repo -->
-                <a href="https://github.com/shalev-compbio" target="_blank" title="GitHub"><i class="fab fa-github"></i></a>
-                <a href="https://linkedin.com/in/shalev-yaacov" target="_blank" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
-                <!-- Updated with a likely correct HUJI mail format -->
-                <a href="mailto:shalev.yaacov@mail.huji.ac.il" title="Email"><i class="fas fa-envelope"></i></a>
+        <!-- Mobile Menu -->
+        <div class="hidden md:hidden glass-panel" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#home" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Home</a>
+                <a href="#about" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">About</a>
+                <a href="#projects" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Projects</a>
             </div>
-        </footer>
-    </div>
+        </div>
+    </nav>
 
-    <!-- Script for Network Background Animation -->
+    <!-- Hero Section -->
+    <section id="home" class="min-h-screen flex items-center justify-center pt-16">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center gap-12">
+            
+            <!-- Text Content -->
+            <div class="flex-1 text-center md:text-left z-10">
+                <div class="inline-block px-3 py-1 mb-4 text-xs font-mono font-semibold tracking-wider text-accent-teal uppercase bg-teal-900/30 rounded-full border border-teal-700/50">
+                    M.Sc. Researcher @ HUJI (Tabach Lab)
+                </div>
+                <h1 class="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
+                    Shalev Yaacov
+                </h1>
+                <h2 class="text-xl md:text-2xl text-gray-400 mb-6 font-light h-8">
+                    I explore <span id="typing-text" class="text-accent-teal font-mono font-medium typing-cursor"></span>
+                </h2>
+                <p class="text-gray-400 text-lg mb-8 max-w-2xl leading-relaxed">
+                    Specializing in <strong>Evolutionary Genomics</strong> and <strong>Multi-Omics Integration</strong>. 
+                    Developing computational frameworks to decode missing heritability in Retinal Diseases (IRD) and Ciliopathies using Normalized Phylogenetic Profiling (NPP).
+                </p>
+                
+                <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                    <a href="#projects" class="px-8 py-3 bg-accent-teal text-bio-dark font-bold rounded-lg hover:bg-white transition-all shadow-[0_0_20px_rgba(45,212,191,0.3)]">
+                        View Research
+                    </a>
+                    <a href="https://github.com/shalev-compbio" target="_blank" class="px-8 py-3 border border-gray-600 hover:border-white text-white font-medium rounded-lg transition-all flex items-center justify-center gap-2">
+                        <i class="fab fa-github"></i> GitHub
+                    </a>
+                </div>
+            </div>
+
+            <!-- Hero Visual/Icon -->
+            <div class="flex-1 flex justify-center z-10 opacity-90">
+                <div class="relative w-72 h-72 md:w-96 md:h-96 bg-gradient-to-tr from-cyan-500/20 to-purple-500/20 rounded-full blur-3xl absolute"></div>
+                <!-- Abstract DNA/Network Icon -->
+                <i class="fas fa-dna text-9xl text-gray-700/50 relative z-10 animate-pulse"></i>
+            </div>
+        </div>
+    </section>
+
+    <!-- About & Methodology Section -->
+    <section id="about" class="py-20 relative">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Research Focus</h2>
+                <div class="h-1 w-20 bg-accent-teal mx-auto rounded"></div>
+                <p class="mt-4 text-gray-400 max-w-2xl mx-auto">
+                    Leveraging evolutionary signals across ~2,000 eukaryotic genomes to predict gene function and disease associations.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Card 1 -->
+                <div class="glass-panel p-8 rounded-xl hover:-translate-y-2 transition-transform duration-300">
+                    <div class="w-12 h-12 bg-blue-900/50 rounded-lg flex items-center justify-center mb-6 text-blue-400">
+                        <i class="fas fa-project-diagram text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Phylogenetic Profiling</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                         utilizing Normalized Phylogenetic Profiling (NPP) to cluster genes that co-evolved, indicating functional relationships and participation in shared biological pathways.
+                    </p>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="glass-panel p-8 rounded-xl hover:-translate-y-2 transition-transform duration-300">
+                    <div class="w-12 h-12 bg-purple-900/50 rounded-lg flex items-center justify-center mb-6 text-purple-400">
+                        <i class="fas fa-layer-group text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Multi-Omics Integration</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Bridging the gap between genotype and phenotype by integrating evolutionary data with Transcriptomics, Proteomics, and Phenomics (HPO) datasets.
+                    </p>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="glass-panel p-8 rounded-xl hover:-translate-y-2 transition-transform duration-300">
+                    <div class="w-12 h-12 bg-teal-900/50 rounded-lg flex items-center justify-center mb-6 text-accent-teal">
+                        <i class="fas fa-eye text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Target Diseases</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Specifically focused on uncovering novel candidates for Inherited Retinal Diseases (IRD) and Ciliopathies, addressing the "missing heritability" challenge.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="py-20 bg-black/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-end mb-12">
+                <div>
+                    <h2 class="text-3xl md:text-4xl font-bold text-white">Selected Projects</h2>
+                    <p class="text-gray-400 mt-2">Computational pipelines and biological discoveries</p>
+                </div>
+                <a href="https://github.com/shalev-compbio" target="_blank" class="hidden md:flex text-accent-teal hover:text-white items-center gap-2 text-sm font-mono transition-colors">
+                    View Full Portfolio <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                
+                <!-- Project 1: Cilia -->
+                <div class="glass-panel rounded-xl overflow-hidden group hover:border-accent-teal/50 transition-colors">
+                    <div class="p-8">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex gap-2">
+                                <span class="px-2 py-1 bg-blue-900/30 text-blue-300 text-xs font-mono rounded border border-blue-800">R</span>
+                                <span class="px-2 py-1 bg-yellow-900/30 text-yellow-300 text-xs font-mono rounded border border-yellow-800">Enrichment Analysis</span>
+                            </div>
+                            <i class="fas fa-bacterium text-gray-500 group-hover:text-accent-teal transition-colors text-2xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-2 group-hover:text-accent-teal transition-colors">Cilia Cluster Analysis</h3>
+                        <p class="text-gray-400 mb-6 text-sm">
+                            A systematic characterization pipeline evaluating cluster composition using evolutionary annotations. Features automated GO-term enrichment and detection of functional submodules within cilia-related genes.
+                        </p>
+                        <a href="https://github.com/shalev-compbio/Shalev-Evolutionary-Genomics-Portfolio/tree/main/projects/cilia_clusters" target="_blank" class="inline-flex items-center text-sm font-bold text-white hover:text-accent-teal transition-colors">
+                            View Analysis <i class="fas fa-external-link-alt ml-2 text-xs"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Project 2: IRD Phenotypes -->
+                <div class="glass-panel rounded-xl overflow-hidden group hover:border-accent-teal/50 transition-colors">
+                    <div class="p-8">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex gap-2">
+                                <span class="px-2 py-1 bg-green-900/30 text-green-300 text-xs font-mono rounded border border-green-800">Python</span>
+                                <span class="px-2 py-1 bg-purple-900/30 text-purple-300 text-xs font-mono rounded border border-purple-800">Ontology (HPO)</span>
+                            </div>
+                            <i class="fas fa-dna text-gray-500 group-hover:text-accent-teal transition-colors text-2xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-2 group-hover:text-accent-teal transition-colors">IRD Phenotype Integration</h3>
+                        <p class="text-gray-400 mb-6 text-sm">
+                            Semantic similarity-based clustering using Human Phenotype Ontology (HPO) to prioritize IRD candidates. Includes Silhouette validation and phenotype similarity matrices.
+                        </p>
+                        <a href="https://github.com/shalev-compbio/Shalev-Evolutionary-Genomics-Portfolio/tree/main/projects/IRD_Phenotype_Clustering" target="_blank" class="inline-flex items-center text-sm font-bold text-white hover:text-accent-teal transition-colors">
+                            View Code <i class="fas fa-external-link-alt ml-2 text-xs"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Project 3: Visualization -->
+                <div class="glass-panel rounded-xl overflow-hidden group hover:border-accent-teal/50 transition-colors">
+                    <div class="p-8">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex gap-2">
+                                <span class="px-2 py-1 bg-blue-900/30 text-blue-300 text-xs font-mono rounded border border-blue-800">R (ComplexHeatmap)</span>
+                                <span class="px-2 py-1 bg-pink-900/30 text-pink-300 text-xs font-mono rounded border border-pink-800">Data Viz</span>
+                            </div>
+                            <i class="fas fa-chart-area text-gray-500 group-hover:text-accent-teal transition-colors text-2xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-2 group-hover:text-accent-teal transition-colors">High-Dimensional Visualization</h3>
+                        <p class="text-gray-400 mb-6 text-sm">
+                            Creation of publication-ready heatmaps and custom scripts for species-aligned matrices. Solves the challenge of visualizing thousands of species against hundreds of genes.
+                        </p>
+                        <a href="https://github.com/shalev-compbio/Shalev-Evolutionary-Genomics-Portfolio/tree/main/projects/heatmap_visualization" target="_blank" class="inline-flex items-center text-sm font-bold text-white hover:text-accent-teal transition-colors">
+                            See Scripts <i class="fas fa-external-link-alt ml-2 text-xs"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Project 4: LBS Segmentation -->
+                <div class="glass-panel rounded-xl overflow-hidden group hover:border-accent-teal/50 transition-colors">
+                    <div class="p-8">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex gap-2">
+                                <span class="px-2 py-1 bg-green-900/30 text-green-300 text-xs font-mono rounded border border-green-800">Python</span>
+                                <span class="px-2 py-1 bg-indigo-900/30 text-indigo-300 text-xs font-mono rounded border border-indigo-800">Algorithms</span>
+                            </div>
+                            <i class="fas fa-barcode text-gray-500 group-hover:text-accent-teal transition-colors text-2xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-2 group-hover:text-accent-teal transition-colors">Genomic Segmentation (LBS)</h3>
+                        <p class="text-gray-400 mb-6 text-sm">
+                            Implementation of Local Barcode Segmentation on synthetic NPP matrices to filter noise and detect evolutionary signals in disjoint genomic regions.
+                        </p>
+                        <a href="https://github.com/shalev-compbio/Shalev-Evolutionary-Genomics-Portfolio/tree/main/projects/ird_lbs_barcode_segments" target="_blank" class="inline-flex items-center text-sm font-bold text-white hover:text-accent-teal transition-colors">
+                            Explore Demo <i class="fas fa-external-link-alt ml-2 text-xs"></i>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="py-20">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl font-bold text-white mb-12">Technical Toolkit</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
+                <!-- Languages -->
+                <div class="glass-panel p-6 rounded-lg">
+                    <h3 class="text-accent-teal font-mono font-bold mb-4 uppercase tracking-widest text-sm border-b border-gray-700 pb-2">Languages & Core</h3>
+                    <ul class="space-y-3 text-gray-300">
+                        <li class="flex justify-between">
+                            <span>Python (Pandas, Scikit-learn, SciPy)</span>
+                            <span class="text-accent-teal"><i class="fas fa-check"></i></span>
+                        </li>
+                        <li class="flex justify-between">
+                            <span>R (Tidyverse, Bioconductor)</span>
+                            <span class="text-accent-teal"><i class="fas fa-check"></i></span>
+                        </li>
+                        <li class="flex justify-between">
+                            <span>Bash / Shell Scripting</span>
+                            <span class="text-accent-teal"><i class="fas fa-check"></i></span>
+                        </li>
+                        <li class="flex justify-between">
+                            <span>SQL</span>
+                            <span class="text-gray-600"><i class="fas fa-circle text-xs"></i></span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Methods -->
+                <div class="glass-panel p-6 rounded-lg">
+                    <h3 class="text-accent-purple font-mono font-bold mb-4 uppercase tracking-widest text-sm border-b border-gray-700 pb-2">Bioinformatics & Biology</h3>
+                    <ul class="space-y-3 text-gray-300">
+                        <li class="flex justify-between">
+                            <span>Phylogenetic Profiling (NPP)</span>
+                            <span class="text-accent-purple"><i class="fas fa-star"></i></span>
+                        </li>
+                        <li class="flex justify-between">
+                            <span>Sequence Alignment (BLAST, Muscle)</span>
+                            <span class="text-accent-purple"><i class="fas fa-check"></i></span>
+                        </li>
+                        <li class="flex justify-between">
+                            <span>Gene Enrichment (GO, KEGG)</span>
+                            <span class="text-accent-purple"><i class="fas fa-check"></i></span>
+                        </li>
+                        <li class="flex justify-between">
+                            <span>Protein Expression (E. coli, Plant)</span>
+                            <span class="text-gray-600"><i class="fas fa-history text-xs"></i></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="bg-black/40 border-t border-gray-800 pt-12 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-2xl font-bold text-white mb-6">Let's Connect</h2>
+            <p class="text-gray-400 mb-8 max-w-xl mx-auto">
+                Always open to discussing evolutionary genomics, new collaborations, or technical challenges in bioinformatics.
+            </p>
+            
+            <div class="flex justify-center gap-8 mb-12">
+                <a href="mailto:shalev.yaacov@mail.huji.ac.il" class="flex flex-col items-center group">
+                    <div class="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 group-hover:bg-accent-teal group-hover:text-bio-dark transition-all">
+                        <i class="fas fa-envelope text-xl"></i>
+                    </div>
+                    <span class="mt-2 text-sm text-gray-500 group-hover:text-white">Email</span>
+                </a>
+                <a href="https://linkedin.com/in/shalev-yaacov" target="_blank" class="flex flex-col items-center group">
+                    <div class="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 group-hover:bg-[#0077b5] group-hover:text-white transition-all">
+                        <i class="fab fa-linkedin-in text-xl"></i>
+                    </div>
+                    <span class="mt-2 text-sm text-gray-500 group-hover:text-white">LinkedIn</span>
+                </a>
+                <a href="https://github.com/shalev-compbio" target="_blank" class="flex flex-col items-center group">
+                    <div class="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 group-hover:bg-white group-hover:text-black transition-all">
+                        <i class="fab fa-github text-xl"></i>
+                    </div>
+                    <span class="mt-2 text-sm text-gray-500 group-hover:text-white">GitHub</span>
+                </a>
+            </div>
+
+            <div class="text-gray-600 text-sm border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p>&copy; 2025 Shalev Yaacov. All rights reserved.</p>
+                <p class="mt-2 md:mt-0">Built with <i class="fas fa-heart text-red-900"></i> & Code in Jerusalem.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
     <script>
+        /**
+         * NETWORK ANIMATION CANVAS
+         * Creates a dynamic background with connecting nodes (eukaryotic species metaphor)
+         */
         const canvas = document.getElementById('networkCanvas');
         const ctx = canvas.getContext('2d');
         let width, height;
         let particles = [];
 
-        // Configuration
-        const particleCount = 60; // Not too crowded
-        const connectionDistance = 150;
-        const speed = 0.3;
+        // Configuration for the network
+        const config = {
+            particleCount: 70, // Number of nodes
+            connectionDistance: 140, // Max distance to draw line
+            speed: 0.25, // Movement speed
+            color: '45, 212, 191' // Teal color in RGB
+        };
 
         function resize() {
             width = canvas.width = window.innerWidth;
@@ -568,8 +439,8 @@
             constructor() {
                 this.x = Math.random() * width;
                 this.y = Math.random() * height;
-                this.vx = (Math.random() - 0.5) * speed;
-                this.vy = (Math.random() - 0.5) * speed;
+                this.vx = (Math.random() - 0.5) * config.speed;
+                this.vy = (Math.random() - 0.5) * config.speed;
                 this.size = Math.random() * 2 + 1;
             }
 
@@ -577,6 +448,7 @@
                 this.x += this.vx;
                 this.y += this.vy;
 
+                // Bounce off edges
                 if (this.x < 0 || this.x > width) this.vx *= -1;
                 if (this.y < 0 || this.y > height) this.vy *= -1;
             }
@@ -584,19 +456,21 @@
             draw() {
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = 'rgba(128, 222, 234, 0.4)'; // Teal color from theme
+                ctx.fillStyle = `rgba(${config.color}, 0.5)`;
                 ctx.fill();
             }
         }
 
-        function init() {
+        function initParticles() {
             particles = [];
-            for (let i = 0; i < particleCount; i++) {
+            // Adjust particle count based on screen size
+            const count = window.innerWidth < 768 ? 40 : config.particleCount;
+            for (let i = 0; i < count; i++) {
                 particles.push(new Particle());
             }
         }
 
-        function animate() {
+        function animateParticles() {
             ctx.clearRect(0, 0, width, height);
             
             for (let i = 0; i < particles.length; i++) {
@@ -609,9 +483,10 @@
                     const dy = particles[i].y - particles[j].y;
                     const distance = Math.sqrt(dx * dx + dy * dy);
 
-                    if (distance < connectionDistance) {
+                    if (distance < config.connectionDistance) {
                         ctx.beginPath();
-                        ctx.strokeStyle = `rgba(128, 222, 234, ${0.15 * (1 - distance / connectionDistance)})`;
+                        const opacity = 1 - (distance / config.connectionDistance);
+                        ctx.strokeStyle = `rgba(${config.color}, ${opacity * 0.2})`;
                         ctx.lineWidth = 1;
                         ctx.moveTo(particles[i].x, particles[i].y);
                         ctx.lineTo(particles[j].x, particles[j].y);
@@ -619,17 +494,78 @@
                     }
                 }
             }
-            requestAnimationFrame(animate);
+            requestAnimationFrame(animateParticles);
         }
 
+        // Initialize Canvas
         window.addEventListener('resize', () => {
             resize();
-            init();
+            initParticles();
+        });
+        resize();
+        initParticles();
+        animateParticles();
+
+        /**
+         * TYPING EFFECT
+         * Cycles through research keywords in the hero section
+         */
+        const textElement = document.getElementById('typing-text');
+        const phrases = [
+            "Evolutionary Signals.",
+            "Gene Co-evolution.",
+            "IRD Genetics.",
+            "Cilia Biology.",
+            "Big Data Genomics."
+        ];
+        let phraseIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        let typeSpeed = 100;
+
+        function type() {
+            const currentPhrase = phrases[phraseIndex];
+            
+            if (isDeleting) {
+                textElement.textContent = currentPhrase.substring(0, charIndex - 1);
+                charIndex--;
+                typeSpeed = 50; // Faster deleting
+            } else {
+                textElement.textContent = currentPhrase.substring(0, charIndex + 1);
+                charIndex++;
+                typeSpeed = 100; // Normal typing
+            }
+
+            if (!isDeleting && charIndex === currentPhrase.length) {
+                isDeleting = true;
+                typeSpeed = 2000; // Pause at end of phrase
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                phraseIndex = (phraseIndex + 1) % phrases.length;
+                typeSpeed = 500; // Pause before new phrase
+            }
+
+            setTimeout(type, typeSpeed);
+        }
+
+        // Start typing effect on load
+        document.addEventListener('DOMContentLoaded', type);
+
+        /**
+         * NAVBAR SCROLL EFFECT
+         * Adds background opacity when scrolling down
+         */
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                nav.classList.add('shadow-lg');
+                nav.style.background = 'rgba(15, 23, 42, 0.95)';
+            } else {
+                nav.classList.remove('shadow-lg');
+                nav.style.background = 'rgba(15, 23, 42, 0.6)';
+            }
         });
 
-        resize();
-        init();
-        animate();
     </script>
 </body>
 </html>
