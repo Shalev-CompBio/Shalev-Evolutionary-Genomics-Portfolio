@@ -23,13 +23,14 @@
             theme: {
                 extend: {
                     colors: {
-                        'bio-dark': '#0f172a', /* Slate 900 */
-                        'bio-card': '#1e293b', /* Slate 800 */
-                        'accent-teal': '#2dd4bf', /* Teal 400 */
-                        'accent-purple': '#a78bfa', /* Violet 400 */
-                        'gene-on': '#2dd4bf',
-                        'gene-hot': '#f43f5e', /* Rose 500 - For Heatmap */
-                        'gene-off': '#334155',
+                        'bio-dark': '#050505', /* Almost Pure Black */
+                        'bio-card': '#121212', 
+                        /* The 4 Nucleotide Colors (Neon Versions) */
+                        'dna-a': '#4ade80', /* Green (Adenine) */
+                        'dna-t': '#f43f5e', /* Red/Rose (Thymine) - ALSO THE HOTSPOT COLOR */
+                        'dna-c': '#38bdf8', /* Blue (Cytosine) */
+                        'dna-g': '#facc15', /* Yellow (Guanine) */
+                        'accent-teal': '#2dd4bf', 
                     },
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
@@ -39,7 +40,9 @@
                         'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                         'float': 'float 6s ease-in-out infinite',
                         'spin-slow': 'spin 20s linear infinite',
-                        'komodo-run': 'komodoRun 30s linear infinite', // Slow run animation
+                        'komodo-run': 'komodoRun 45s linear infinite', /* Kept the Komodo! */
+                        'blob': 'blob 7s infinite',
+                        'card-flip': 'cardFlip 0.6s ease-out forwards',
                     },
                     keyframes: {
                         float: {
@@ -51,6 +54,16 @@
                             '10%': { opacity: '0.4' },
                             '90%': { opacity: '0.4' },
                             '100%': { transform: 'translateX(100vw)', opacity: '0' }
+                        },
+                        blob: {
+                            "0%": { transform: "translate(0px, 0px) scale(1)" },
+                            "33%": { transform: "translate(30px, -50px) scale(1.1)" },
+                            "66%": { transform: "translate(-20px, 20px) scale(0.9)" },
+                            "100%": { transform: "translate(0px, 0px) scale(1)" }
+                        },
+                        cardFlip: {
+                            "0%": { transform: "rotateY(90deg)", opacity: "0" },
+                            "100%": { transform: "rotateY(0deg)", opacity: "1" }
                         }
                     }
                 }
@@ -60,12 +73,40 @@
 
     <style>
         body {
-            background-color: #0f172a;
+            background-color: #050505;
             color: #e2e8f0;
             overflow-x: hidden;
         }
 
-        /* Animated Background Canvas */
+        /* 1. Chaotic Background Blobs */
+        .bg-blob {
+            position: absolute;
+            filter: blur(80px);
+            opacity: 0.4;
+            z-index: -2;
+            animation: blob 10s infinite alternate;
+        }
+
+        /* 2. Scanning Line Effect */
+        .scanner-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #f43f5e, transparent);
+            box-shadow: 0 0 15px #f43f5e;
+            animation: scan 3s ease-in-out infinite;
+            z-index: 20; /* Above the cells */
+            pointer-events: none;
+        }
+        @keyframes scan {
+            0% { top: 0%; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+
         #networkCanvas {
             position: fixed;
             top: 0;
@@ -76,73 +117,61 @@
             opacity: 0.3;
         }
 
-        /* Glassmorphism Utilities */
+        /* Glassmorphism Refined */
         .glass-panel {
-            background: rgba(30, 41, 59, 0.7);
+            background: rgba(18, 18, 18, 0.6);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
         }
         
         .glass-nav {
-            background: rgba(15, 23, 42, 0.85);
+            background: rgba(5, 5, 5, 0.85);
             backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        /* Typing cursor */
         .typing-cursor::after {
-            content: '|';
+            content: '█';
             animation: blink 1s step-end infinite;
-            color: #2dd4bf; 
+            color: #f43f5e; /* Red cursor */
             margin-left: 4px;
         }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
         /* NPP Matrix Styles */
-        .npp-cell {
-            transition: all 0.3s ease;
-        }
-        .npp-row:hover .npp-cell {
-            transform: scale(1.1);
-            filter: brightness(1.2);
-        }
-        .npp-row:hover .npp-label {
-            color: #2dd4bf;
-        }
+        .npp-cell { transition: all 0.2s ease; }
+        .npp-row:hover .npp-cell { transform: scale(1.15); z-index: 15; position: relative; }
 
-        /* DNA Divider */
+        /* The Chromatic DNA Divider */
         .dna-divider {
-            height: 60px;
-            background-image: url("data:image/svg+xml,%3Csvg width='100' height='60' viewBox='0 0 100 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 30 Q 25 60 50 30 T 100 30' fill='none' stroke='%232dd4bf' stroke-opacity='0.2' stroke-width='2'/%3E%3Cpath d='M0 30 Q 25 0 50 30 T 100 30' fill='none' stroke='%23a78bfa' stroke-opacity='0.2' stroke-width='2'/%3E%3C/svg%3E");
-            background-repeat: repeat-x;
-            opacity: 0.5;
+            height: 4px;
+            background: linear-gradient(90deg, #4ade80, #f43f5e, #38bdf8, #facc15, #4ade80);
+            background-size: 200% 100%;
+            animation: gradientMove 5s linear infinite;
+            opacity: 0.8;
             margin: 2rem 0;
+            box-shadow: 0 0 15px rgba(255,255,255,0.2);
         }
+        @keyframes gradientMove { 0% { background-position: 100% 0; } 100% { background-position: 0 0; } }
 
-        /* Modal Transitions */
+        /* Modal & UI */
         .modal {
             transition: opacity 0.3s ease, visibility 0.3s ease;
             opacity: 0;
             visibility: hidden;
             z-index: 100;
         }
-        .modal.active {
-            opacity: 1;
-            visibility: visible;
-        }
+        .modal.active { opacity: 1; visibility: visible; }
         
-        /* Interactive Name Effect */
-        .name-hover-effect {
-            background: linear-gradient(90deg, #ffffff, #2dd4bf, #ffffff);
-            background-size: 200%;
+        .name-gradient {
+            background: linear-gradient(to right, #ffffff 20%, #2dd4bf 50%, #38bdf8 80%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            transition: background-position 0.5s;
+            background-size: 200% auto;
+            animation: shine 5s linear infinite;
         }
-        .name-hover-effect:hover {
-            background-position: 100%;
-            cursor: default;
-        }
+        @keyframes shine { to { background-position: 200% center; } }
 
         /* Komodo Animation */
         .komodo-container {
@@ -152,10 +181,9 @@
             width: 100px;
             pointer-events: none;
             z-index: 5;
-            animation: komodoRun 45s linear infinite; /* Runs every 45s */
+            animation: komodoRun 45s linear infinite;
         }
         
-        /* Leg animation simulation */
         .komodo-leg {
             transform-origin: center top;
             animation: legWiggle 0.5s ease-in-out infinite alternate;
@@ -166,9 +194,36 @@
             from { transform: rotate(-15deg); }
             to { transform: rotate(15deg); }
         }
+
+        /* 3. Rotating Modal Animation */
+        .modal-flip-content {
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+        .modal-flip-anim {
+            animation: card-flip 0.6s ease-out forwards;
+        }
+        
+        /* Interactive Hover for Method Section */
+        .method-hover-trigger {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .method-hover-trigger:hover {
+            transform: scale(1.02);
+            text-shadow: 0 0 15px rgba(45, 212, 191, 0.5);
+        }
+        .method-hover-trigger:hover h2 {
+            color: #2dd4bf;
+        }
     </style>
 </head>
-<body class="antialiased selection:bg-accent-teal selection:text-bio-dark">
+<body class="antialiased selection:bg-dna-t selection:text-white">
+
+    <!-- Animated "Blobs" for color splashes -->
+    <div class="bg-blob w-96 h-96 bg-accent-teal rounded-full top-0 left-[-100px] mix-blend-screen"></div>
+    <div class="bg-blob w-96 h-96 bg-dna-t rounded-full bottom-0 right-[-100px] mix-blend-screen animation-delay-2000"></div>
+    <div class="bg-blob w-80 h-80 bg-dna-g rounded-full top-[40%] left-[20%] mix-blend-overlay opacity-20 animation-delay-4000"></div>
 
     <!-- Canvas Background -->
     <canvas id="networkCanvas"></canvas>
@@ -177,35 +232,97 @@
     <nav class="fixed w-full z-50 glass-nav transition-all duration-300" id="navbar">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
-                <div class="flex-shrink-0 font-bold text-xl tracking-tight text-white flex items-center gap-2">
-                    <i class="fas fa-dna text-accent-teal"></i>
-                    <span>SHALEV<span class="text-accent-teal">.GENOMICS</span></span>
-                </div>
-                <div class="hidden md:block">
-                    <div class="ml-10 flex items-baseline space-x-8">
-                        <a href="#home" class="hover:text-accent-teal px-3 py-2 rounded-md text-sm font-medium transition-colors">Home</a>
-                        <a href="#methodology" class="hover:text-accent-teal px-3 py-2 rounded-md text-sm font-medium transition-colors">Methodology</a>
-                        <a href="#projects" class="hover:text-accent-teal px-3 py-2 rounded-md text-sm font-medium transition-colors">Projects</a>
-                        <a href="#skills" class="hover:text-accent-teal px-3 py-2 rounded-md text-sm font-medium transition-colors">Skills</a>
+                
+                <!-- BRAND / LOGO -->
+                <div class="flex-shrink-0 flex items-center gap-3">
+                    <!-- DNA Icon Badge -->
+                    <div class="w-11 h-11 rounded-full bg-black/60 border border-white/10 flex items-center justify-center shadow-[0_0_18px_rgba(15,23,42,0.9)]">
+                        <svg viewBox="0 0 80 80" class="w-10 h-10" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <!-- גרדיאנט לטבעת החיצונית -->
+                                <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%"   stop-color="#facc15"/>
+                                    <stop offset="40%"  stop-color="#22c55e"/>
+                                    <stop offset="70%"  stop-color="#38bdf8"/>
+                                    <stop offset="100%" stop-color="#f43f5e"/>
+                                </linearGradient>
+                            </defs>
+
+                            <!-- טבעת חיצונית עם קווים צבעוניים -->
+                            <circle cx="40" cy="40" r="34"
+                                    fill="none"
+                                    stroke="url(#ringGrad)"
+                                    stroke-width="1.4"
+                                    stroke-dasharray="6 6"
+                                    stroke-linecap="round"
+                                    opacity="0.9" />
+
+                            <!-- גדיל ה-DNA -->
+                            <g transform="translate(26,10)">
+                                <!-- שני הגדילים (כהים) -->
+                                <path d="M8 4 C22 14 8 24 22 34 C8 44 22 54 8 64"
+                                    fill="none" stroke="#1f2933" stroke-width="3" stroke-linecap="round"/>
+                                <path d="M22 4 C8 14 22 24 8 34 C22 44 8 54 22 64"
+                                    fill="none" stroke="#1f2933" stroke-width="3" stroke-linecap="round"/>
+
+                                <!-- מדרגות צבעוניות (בסיסים) -->
+                                <!-- עליונה -->
+                                <line x1="9" y1="10" x2="16" y2="10" stroke="#22c55e" stroke-width="3" stroke-linecap="round"/>
+                                <line x1="16" y1="10" x2="23" y2="10" stroke="#f43f5e" stroke-width="3" stroke-linecap="round"/>
+
+                                <!-- שנייה -->
+                                <line x1="10" y1="20" x2="16" y2="20" stroke="#facc15" stroke-width="3" stroke-linecap="round"/>
+                                <line x1="16" y1="20" x2="22" y2="20" stroke="#38bdf8" stroke-width="3" stroke-linecap="round"/>
+
+                                <!-- שלישית -->
+                                <line x1="8" y1="32" x2="16" y2="32" stroke="#f43f5e" stroke-width="3" stroke-linecap="round"/>
+                                <line x1="16" y1="32" x2="24" y2="32" stroke="#22c55e" stroke-width="3" stroke-linecap="round"/>
+
+                                <!-- רביעית -->
+                                <line x1="10" y1="44" x2="16" y2="44" stroke="#38bdf8" stroke-width="3" stroke-linecap="round"/>
+                                <line x1="16" y1="44" x2="22" y2="44" stroke="#facc15" stroke-width="3" stroke-linecap="round"/>
+
+                                <!-- תחתונה -->
+                                <line x1="9" y1="56" x2="16" y2="56" stroke="#22c55e" stroke-width="3" stroke-linecap="round"/>
+                                <line x1="16" y1="56" x2="23" y2="56" stroke="#f43f5e" stroke-width="3" stroke-linecap="round"/>
+                            </g>
+                        </svg>
+                    </div>
+
+
+                    <!-- Text Brand -->
+                    <div class="flex flex-col leading-tight">
+                        <span class="text-[0.65rem] font-mono tracking-[0.25em] text-gray-400 uppercase">
+                            Shalev Yaacov
+                        </span>
+                        <span class="text-lg font-bold tracking-tight">
+                            <span class="text-white">SHALEV</span><span class="text-dna-c">.GENOMICS</span>
+                        </span>
                     </div>
                 </div>
-                 <!-- Mobile menu button -->
-                 <div class="-mr-2 flex md:hidden">
-                    <button type="button" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none">
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-8 text-sm">
+                        <a href="#home" class="text-gray-300 hover:text-dna-c px-3 py-2 rounded-md font-medium transition-colors">Home</a>
+                        <a href="#methodology" class="text-gray-300 hover:text-dna-c px-3 py-2 rounded-md font-medium transition-colors">Methodology</a>
+                        <a href="#projects" class="text-gray-300 hover:text-dna-c px-3 py-2 rounded-md font-medium transition-colors">Projects</a>
+                        <a href="#skills" class="text-gray-300 hover:text-dna-c px-3 py-2 rounded-md font-medium transition-colors">Skills</a>
+                    </div>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="-mr-2 flex md:hidden">
+                    <button type="button"
+                            onclick="document.getElementById('mobile-menu').classList.toggle('hidden')"
+                            class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none">
                         <i class="fas fa-bars"></i>
                     </button>
                 </div>
             </div>
         </div>
-        <!-- Mobile Menu -->
-        <div class="hidden md:hidden glass-panel" id="mobile-menu">
-            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                <a href="#home" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Home</a>
-                <a href="#methodology" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Methodology</a>
-                <a href="#projects" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Projects</a>
-            </div>
-        </div>
     </nav>
+
 
     <!-- Hero Section -->
     <section id="home" class="min-h-screen flex items-center justify-center pt-16 relative overflow-hidden">
@@ -213,13 +330,9 @@
         <!-- KOMODO DRAGON EASTER EGG -->
         <div class="komodo-container">
             <svg viewBox="0 0 100 40" class="w-24 h-auto opacity-40 fill-accent-teal" style="filter: drop-shadow(0 0 2px rgba(45,212,191,0.5));">
-                <!-- Body -->
                 <path d="M15,20 Q30,10 50,20 Q70,30 85,20 L95,25 L85,28 Q70,35 50,28 Q30,25 15,28 Z" />
-                <!-- Head -->
                 <ellipse cx="90" cy="22" rx="8" ry="5" />
-                <!-- Tail -->
                 <path d="M15,24 Q5,25 0,20 L2,26 Z" />
-                <!-- Legs (Animated via CSS) -->
                 <rect x="30" y="25" width="4" height="8" rx="2" class="komodo-leg" />
                 <rect x="70" y="25" width="4" height="8" rx="2" class="komodo-leg back" />
                 <rect x="35" y="15" width="4" height="6" rx="2" class="komodo-leg back" style="opacity:0.7" />
@@ -227,58 +340,54 @@
             </svg>
         </div>
 
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center gap-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center gap-12">
             
             <!-- Text Content -->
             <div class="flex-1 text-center md:text-left z-10 animate-fade-in-up">
-                <div class="inline-flex items-center gap-2 px-3 py-1 mb-6 text-xs font-mono font-semibold tracking-wider text-accent-teal uppercase bg-teal-900/20 rounded-full border border-teal-700/30">
-                    <span class="w-2 h-2 rounded-full bg-accent-teal animate-pulse"></span>
+                <div class="inline-flex items-center gap-2 px-3 py-1 mb-6 text-xs font-mono font-semibold tracking-wider text-white uppercase bg-dna-c/25 rounded-full border border-dna-c/70 shadow-[0_0_12px_rgba(56,189,248,0.45)]">
+                    <span class="w-2 h-2 rounded-full bg-dna-c animate-pulse"></span>
                     M.Sc. Candidate @ HUJI (Tabach Lab)
                 </div>
-                
-                <h1 class="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight tracking-tight name-hover-effect">
+               
+                <h1 class="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight tracking-tight name-gradient pb-2">
                     Shalev Yaacov
                 </h1>
                 
                 <!-- Typing Effect Header -->
                 <h2 class="text-xl md:text-2xl text-gray-400 mb-6 font-light font-mono h-8 flex justify-center md:justify-start items-center">
-                    <span class="text-accent-purple mr-2">></span>
+                    <span class="text-dna-t mr-2">></span>
                     <span id="typing-text" class="text-white typing-cursor"></span>
                 </h2>
                 
                 <p class="text-gray-400 text-lg mb-8 max-w-2xl leading-relaxed">
-                    I am a computational biologist working at the intersection of evolution, data science, and human disease.<br>
-                    I focus on uncovering genetic patterns that traditional approaches often miss, especially in Inherited Retinal Diseases (IRDs) and ciliopathies.<br>
-                    By combining evolutionary signals with multi-omics data - from gene expression to phenotypes - I identify groups of genes that work together and highlight new candidates that may contribute to disease.<br>
-                    My goal is to turn complex genomic data into clear biological insights that help explain why certain diseases remain unsolved.
+                    Decoding the <span class="text-white font-medium">"missing heritability"</span> in Inherited Retinal Diseases (IRDs).
+                    I develop computational frameworks integrating
+                    <span class="px-1.5 py-0.5 rounded bg-dna-c/15 text-dna-c font-semibold">
+                        Normalized Phylogenetic Profiling (NPP)
+                    </span>
+                    with multi-omics data to uncover novel disease-causing genes across ~2,000 eukaryotic species.
                 </p>
                
                 <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-                    <a href="#projects" class="px-8 py-3 bg-accent-teal text-bio-dark font-bold rounded-lg hover:bg-white transition-all shadow-[0_0_25px_rgba(45,212,191,0.2)] hover:shadow-[0_0_35px_rgba(45,212,191,0.4)]">
+                    <a href="#projects" class="px-8 py-3 bg-white text-black font-bold rounded-lg hover:bg-dna-c hover:text-white transition-all shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:shadow-[0_0_30px_rgba(56,189,248,0.6)]">
                         Explore Research
                     </a>
-                    <a href="https://github.com/shalev-compbio" target="_blank" class="px-8 py-3 glass-panel text-white font-medium rounded-lg hover:bg-white/10 transition-all flex items-center justify-center gap-2">
+                    <a href="https://github.com/shalev-compbio/Shalev-Evolutionary-Genomics-Portfolio" target="_blank" class="px-8 py-3 glass-panel text-white font-medium rounded-lg hover:border-dna-t hover:text-dna-t transition-all flex items-center justify-center gap-2">
                         <i class="fab fa-github"></i> GitHub
                     </a>
                 </div>
             </div>
 
-            <!-- Hero Visual: Organic Biological DNA Helix -->
-            <div class="flex-1 flex justify-center z-10 opacity-80 md:opacity-100">
-                <div class="relative w-80 h-80 md:w-[500px] md:h-[500px]">
-                    <!-- Background Glow -->
-                    <div class="absolute inset-0 bg-gradient-to-tr from-accent-teal/10 to-accent-purple/10 rounded-full blur-[100px] animate-pulse-slow"></div>
-                    
-                    <!-- Biological SVG -->
+            <!-- Hero Visual: FULL COLOR DNA (Sanger Style) -->
+            <div class="flex-1 flex justify-center z-10 relative">
+                <!-- Multi-color Glow -->
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-gradient-radial from-blue-900/20 to-transparent blur-3xl"></div>
+                
+                <div class="relative w-80 h-80 md:w-[550px] md:h-[550px]">
                     <svg viewBox="0 0 400 400" class="w-full h-full animate-float">
                         <defs>
-                            <linearGradient id="dna-grad" x1="0%" y1="0%" x2="0%" y2="100%">
-                                <stop offset="0%" style="stop-color:#2dd4bf;stop-opacity:1" />
-                                <stop offset="50%" style="stop-color:#a78bfa;stop-opacity:1" />
-                                <stop offset="100%" style="stop-color:#2dd4bf;stop-opacity:1" />
-                            </linearGradient>
-                            <filter id="glow-dna">
-                                <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                            <filter id="glow-neon" x="-50%" y="-50%" width="200%" height="200%">
+                                <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
                                 <feMerge>
                                     <feMergeNode in="coloredBlur"/>
                                     <feMergeNode in="SourceGraphic"/>
@@ -286,50 +395,46 @@
                             </filter>
                         </defs>
 
-                        <!-- Layer 1: Eukaryotic Species Ring (Rotating) -->
-                        <g class="animate-spin-slow origin-center opacity-20">
-                            <circle cx="200" cy="200" r="180" stroke="#fff" stroke-width="1" stroke-dasharray="2 10" fill="none" />
-                            <circle cx="200" cy="200" r="160" stroke="#2dd4bf" stroke-width="0.5" stroke-dasharray="10 10" fill="none" />
-                            <!-- Small particles on ring -->
-                            <circle cx="200" cy="20" r="2" fill="#fff" />
-                            <circle cx="200" cy="380" r="2" fill="#fff" />
-                            <circle cx="20" cy="200" r="2" fill="#fff" />
-                            <circle cx="380" cy="200" r="2" fill="#fff" />
+                        <!-- Outer Ring (Broken/Data) -->
+                        <g class="animate-spin-slow origin-center opacity-30">
+                            <path d="M 200,20 A 180,180 0 0 1 380,200" stroke="#4ade80" stroke-width="1" fill="none" stroke-dasharray="10 20" />
+                            <path d="M 380,200 A 180,180 0 0 1 200,380" stroke="#f43f5e" stroke-width="1" fill="none" stroke-dasharray="5 15" />
+                            <path d="M 200,380 A 180,180 0 0 1 20,200" stroke="#38bdf8" stroke-width="1" fill="none" stroke-dasharray="2 30" />
+                            <path d="M 20,200 A 180,180 0 0 1 200,20" stroke="#facc15" stroke-width="1" fill="none" stroke-dasharray="50 10" />
                         </g>
 
-                        <!-- Layer 2: The Double Helix (Stylized) -->
-                        <g transform="translate(150, 50) scale(1.0)">
-                            <!-- Strand 1 -->
-                            <path d="M50,0 Q100,50 50,100 T50,200 T50,300" 
-                                  fill="none" stroke="url(#dna-grad)" stroke-width="6" stroke-linecap="round" 
-                                  filter="url(#glow-dna)" opacity="0.8" />
-                            
-                            <!-- Strand 2 -->
-                            <path d="M50,0 Q0,50 50,100 T50,200 T50,300" 
-                                  fill="none" stroke="url(#dna-grad)" stroke-width="6" stroke-linecap="round" 
-                                  filter="url(#glow-dna)" opacity="0.8" transform="translate(0, 15)" />
+                        <!-- The DNA Double Helix (Visualizing Bases) -->
+                        <g transform="translate(140, 40) scale(1.2)">
+                            <!-- Back Bone (Darker) -->
+                            <path d="M60,0 Q120,60 60,120 T60,240 T60,360" fill="none" stroke="#1e293b" stroke-width="10" stroke-linecap="round" />
+                            <path d="M60,0 Q0,60 60,120 T60,240 T60,360" fill="none" stroke="#1e293b" stroke-width="10" stroke-linecap="round" transform="translate(0, 15)" />
 
-                            <!-- Base Pairs (Horizontal Rungs) -->
-                            <g stroke="rgba(255,255,255,0.3)" stroke-width="2">
-                                <line x1="20" y1="35" x2="80" y2="35" />
-                                <line x1="30" y1="75" x2="70" y2="75" />
-                                <line x1="20" y1="135" x2="80" y2="135" />
-                                <line x1="30" y1="175" x2="70" y2="175" />
-                                <line x1="20" y1="235" x2="80" y2="235" />
-                                <line x1="30" y1="275" x2="70" y2="275" />
+                            <!-- Base Pairs (A-T, C-G) - THE COLORFUL PART -->
+                            <g stroke-width="4" stroke-linecap="round" filter="url(#glow-neon)">
+                                <!-- Pair 1: A (Green) - T (Red) -->
+                                <line x1="25" y1="45" x2="60" y2="45" stroke="#4ade80" />
+                                <line x1="60" y1="45" x2="95" y2="45" stroke="#f43f5e" />
+                                
+                                <!-- Pair 2: G (Yellow) - C (Blue) -->
+                                <line x1="35" y1="90" x2="60" y2="90" stroke="#facc15" />
+                                <line x1="60" y1="90" x2="85" y2="90" stroke="#38bdf8" />
+
+                                <!-- Pair 3: T (Red) - A (Green) -->
+                                <line x1="20" y1="155" x2="60" y2="155" stroke="#f43f5e" />
+                                <line x1="60" y1="155" x2="100" y2="155" stroke="#4ade80" />
+
+                                <!-- Pair 4: C (Blue) - G (Yellow) -->
+                                <line x1="40" y1="215" x2="60" y2="215" stroke="#38bdf8" />
+                                <line x1="60" y1="215" x2="80" y2="215" stroke="#facc15" />
+                                
+                                <!-- Pair 5: A (Green) - T (Red) -->
+                                <line x1="30" y1="275" x2="60" y2="275" stroke="#4ade80" />
+                                <line x1="60" y1="275" x2="90" y2="275" stroke="#f43f5e" />
                             </g>
 
-                            <!-- Nodes (Genes) -->
-                            <circle cx="50" cy="50" r="5" fill="#fff" class="animate-pulse" />
-                            <circle cx="50" cy="150" r="5" fill="#2dd4bf" />
-                            <circle cx="50" cy="250" r="5" fill="#a78bfa" />
-                        </g>
-
-                        <!-- Layer 3: Floating Functional Modules (Protein/Cluster shapes) -->
-                        <g transform="translate(0, 0)">
-                            <circle cx="100" cy="100" r="15" fill="#2dd4bf" opacity="0.1" class="animate-bounce" style="animation-duration: 4s;" />
-                            <circle cx="300" cy="300" r="20" fill="#a78bfa" opacity="0.1" class="animate-bounce" style="animation-duration: 6s;" />
-                            <circle cx="320" cy="120" r="8" fill="#fff" opacity="0.2" class="animate-pulse" />
+                            <!-- Front Bone (White/Gradient) -->
+                            <path d="M60,0 Q120,60 60,120 T60,240 T60,360" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2" />
+                            <path d="M60,0 Q0,60 60,120 T60,240 T60,360" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2" transform="translate(0, 15)" />
                         </g>
                     </svg>
                 </div>
@@ -342,48 +447,64 @@
     <!-- Methodology Section (Visual Storytelling) -->
     <section id="methodology" class="py-20 relative">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-12">
-                <span class="text-accent-teal font-mono text-sm tracking-widest uppercase">The Core Method</span>
+            
+            <!-- CLICKABLE EXPLANATION AREA -->
+            <div onclick="openModal('modal-npp-explainer')" class="method-hover-trigger text-center mb-12 p-4 rounded-xl hover:bg-white/5 transition-all">
+                <span class="text-dna-c font-mono text-sm tracking-widest uppercase">The Core Method (Click for Info) <i class="fas fa-info-circle ml-2"></i></span>
                 <h2 class="text-3xl md:text-4xl font-bold text-white mt-2 mb-4">Normalized Phylogenetic Profiling (NPP)</h2>
                 <p class="text-gray-400 max-w-2xl mx-auto">
-                    We hypothesize that genes functioning together share evolutionary histories ("Functional interdependence implies co-evolution"). By constructing phylogenetic profiles across ~2,000 eukaryotic species, we identify co-evolving modules to prioritize candidate genes for unsolved IRD cases.
+                    We hypothesize that genes functioning together share evolutionary histories. By constructing phylogenetic profiles across ~2,000 eukaryotic species, we identify co-evolving modules to prioritize candidate genes for unsolved IRD cases.
                 </p>
             </div>
 
             <!-- Interactive Visualization Container -->
-            <div class="glass-panel p-1 rounded-2xl max-w-4xl mx-auto overflow-hidden shadow-2xl">
-                <div class="bg-bio-dark/50 p-6 md:p-8">
+            <div class="glass-panel p-1 rounded-2xl max-w-5xl mx-auto overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)]">
+                <div class="bg-black/80 p-6 md:p-8">
                     <div class="flex flex-col md:flex-row gap-8 items-center">
                         
-                        <!-- Visual: The Matrix -->
-                        <div class="flex-1 w-full">
+                        <!-- Visual: The Matrix with RED Scanner -->
+                        <div class="flex-1 w-full relative overflow-hidden rounded-lg border border-gray-800">
+                            <!-- RED SCANNER -->
+                            <div class="scanner-line"></div> 
+                            
                             <div class="mb-2 flex justify-between text-xs text-gray-500 font-mono uppercase">
-                                <span>Genes (Human)</span>
-                                <span>Species (Eukaryotes)</span>
+                                <span>Human Genes</span>
+                                <span>Phylogenetic Signature</span>
                             </div>
                             <!-- Matrix Grid -->
-                            <div class="grid gap-1 p-2 bg-black/20 rounded border border-gray-700" id="npp-matrix">
+                            <div class="grid gap-px p-2 bg-black h-32" id="npp-matrix" style="grid-template-rows: repeat(6, 1fr);">
                                 <!-- Generated by JS below -->
                             </div>
-                            <div class="mt-3 flex items-center justify-center gap-4 text-xs text-gray-400">
-                                <div class="flex items-center gap-2"><div class="w-3 h-3 bg-gene-on rounded-sm"></div> Preserved</div>
-                                <div class="flex items-center gap-2"><div class="w-3 h-3 bg-gene-hot rounded-sm"></div> Co-Lost / Hot</div>
-                                <div class="flex items-center gap-2"><div class="w-3 h-3 bg-gene-off rounded-sm"></div> Absent</div>
+                            <div class="mt-3 flex items-center justify-center gap-6 text-xs font-mono font-bold">
+                                <div class="flex items-center gap-2 text-dna-a"><div class="w-3 h-3 bg-dna-a rounded-sm shadow-[0_0_5px_#4ade80]"></div> Preserved</div>
+                                <div class="flex items-center gap-2 text-dna-t"><div class="w-3 h-3 bg-dna-t rounded-sm shadow-[0_0_8px_#f43f5e]"></div> HOTSPOT / LOST</div>
+                                <div class="flex items-center gap-2 text-gray-500"><div class="w-3 h-3 bg-gray-800 rounded-sm"></div> Absent</div>
                             </div>
                         </div>
 
                         <!-- Explanation -->
-                        <div class="flex-1 space-y-4">
-                            <div class="bg-accent-teal/10 border border-accent-teal/20 p-4 rounded-lg">
-                                <h4 class="text-accent-teal font-bold mb-2"><i class="fas fa-lightbulb mr-2"></i>Guilt by Association</h4>
-                                <p class="text-sm text-gray-300">
-                                    Notice how <span class="text-white font-bold">Gene A</span> and <span class="text-white font-bold">Gene B</span> have identical presence/absence patterns across species? This suggests they are functionally linked and part of the same biological pathway.
-                                </p>
-                            </div>
-                            <div class="space-y-2 text-sm text-gray-400">
-                                <p><i class="fas fa-check text-green-500 mr-2"></i> Input: 2,000+ Eukaryotic Genomes</p>
-                                <p><i class="fas fa-check text-green-500 mr-2"></i> Process: BLASTp + Normalization</p>
-                                <p><i class="fas fa-check text-green-500 mr-2"></i> Output: Novel IRD Candidates</p>
+                        <div class="flex-1 space-y-6">
+                        <div class="bg-gradient-to-r from-dna-c/10 to-transparent border-l-4 border-dna-c p-4 rounded-r-lg">
+                            <h4 class="text-dna-c font-bold mb-1 text-lg">Discovery Mode</h4>
+                            <p class="text-sm text-gray-300">
+                                The algorithm detects <span class="text-dna-t font-bold">"Hotspots"</span> (Red) where genes are lost or gained together. These anomalies often point to specific disease mechanisms in IRD.
+                            </p>
+                        </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="p-4 bg-gray-900 rounded border border-gray-800 hover:border-dna-c transition-colors group">
+                                    <i class="fas fa-database text-dna-c text-2xl mb-2 group-hover:scale-110 transition-transform block"></i>
+                                    <span class="text-gray-400 text-xs uppercase tracking-wide">Input</span>
+                                    <div class="text-white font-semibold text-sm leading-snug">
+                                        Phylogenetic profiles of 20,000 genes across 1,905 eukaryotic species
+                                    </div>
+                                </div>
+                                <div class="p-4 bg-gray-900 rounded border border-gray-800 hover:border-dna-g transition-colors group">
+                                    <i class="fas fa-microchip text-dna-g text-2xl mb-2 group-hover:scale-110 transition-transform block"></i>
+                                    <span class="text-gray-400 text-xs uppercase tracking-wide">Compute</span>
+                                    <div class="text-white font-semibold text-sm leading-snug">
+                                        Machine-learning models detect co-evolving gene modules
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -395,113 +516,75 @@
     <div class="dna-divider"></div>
 
     <!-- Projects Section -->
-    <section id="projects" class="py-20 bg-black/20">
+    <section id="projects" class="py-20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
-                <div>
-                    <h2 class="text-3xl md:text-4xl font-bold text-white">Research Projects</h2>
-                    <p class="text-gray-400 mt-2">Integrating Genomics, Phenomics, and Data Science</p>
-                </div>
-                
-                <!-- Filters -->
-                <div class="flex flex-wrap gap-2" id="project-filters">
-                    <button class="filter-btn active px-4 py-1.5 rounded-full text-sm font-medium border border-gray-600 bg-white text-bio-dark transition-all hover:bg-white" data-filter="all">All</button>
-                    <button class="filter-btn px-4 py-1.5 rounded-full text-sm font-medium border border-gray-600 text-gray-300 hover:border-accent-teal hover:text-accent-teal transition-all" data-filter="python">Python</button>
-                    <button class="filter-btn px-4 py-1.5 rounded-full text-sm font-medium border border-gray-600 text-gray-300 hover:border-blue-400 hover:text-blue-400 transition-all" data-filter="r">R Stats</button>
-                    <button class="filter-btn px-4 py-1.5 rounded-full text-sm font-medium border border-gray-600 text-gray-300 hover:border-accent-purple hover:text-accent-purple transition-all" data-filter="algo">Algorithms</button>
-                </div>
-            </div>
-
-            <!-- Project Grid -->
+            <h2 class="text-3xl md:text-4xl font-bold text-white mb-10"><span class="text-dna-a">///</span> Selected Projects</h2>
+            
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8" id="projects-grid">
                 
-                <!-- Project 1: Cilia -->
-                <div class="project-card glass-panel rounded-xl overflow-hidden group hover:border-accent-teal/50 transition-all duration-300 hover:-translate-y-1" data-category="r algo">
+                <!-- Project 1: Cilia (Green Theme) -->
+                <div class="project-card glass-panel rounded-xl overflow-hidden group hover:border-dna-a/50 transition-all duration-300 relative">
+                    <div class="absolute top-0 right-0 w-20 h-20 bg-dna-a/20 blur-2xl rounded-full -mr-10 -mt-10 transition-all group-hover:bg-dna-a/40"></div>
                     <div class="p-8 h-full flex flex-col">
                         <div class="flex justify-between items-start mb-4">
-                            <div class="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400">
-                                <i class="fas fa-bacterium text-xl"></i>
-                            </div>
-                            <span class="text-xs font-mono text-gray-500 border border-gray-700 px-2 py-1 rounded">R / Phylogenetics</span>
+                            <i class="fas fa-bacterium text-3xl text-dna-a"></i>
+                            <span class="text-xs font-mono text-dna-a border border-dna-a/30 px-2 py-1 rounded">R / Phylogenetics</span>
                         </div>
-                        <h3 class="text-xl font-bold text-white mb-2 group-hover:text-accent-teal transition-colors">Cilia Cluster Analysis</h3>
+                        <h3 class="text-xl font-bold text-white mb-2">Cilia Cluster Analysis</h3>
                         <p class="text-gray-400 text-sm mb-6 flex-grow">
                             Identification of 61 co-evolutionary modules enriched with IRD genes. Integrating transcriptomic data to filter for retinal expression. Flagged 5 novel candidates (e.g., COQ4, IFT52) validated in clinical families.
                         </p>
-                        <div class="flex gap-4 mt-auto">
-                            <button onclick="openModal('modal-cilia')" class="text-sm font-bold text-white hover:text-accent-teal transition-colors">
-                                View Details <i class="fas fa-plus ml-1 text-xs"></i>
-                            </button>
-                            <a href="https://github.com/shalev-compbio/Shalev-Evolutionary-Genomics-Portfolio/tree/main/projects/cilia_clusters" target="_blank" class="text-sm text-gray-500 hover:text-white transition-colors">Code <i class="fas fa-external-link-alt ml-1"></i></a>
-                        </div>
+                        <button onclick="openModal('modal-cilia')" class="text-sm font-bold text-dna-a hover:text-white transition-colors text-left">View Data -></button>
                     </div>
                 </div>
 
-                <!-- Project 2: IRD Phenotypes -->
-                <div class="project-card glass-panel rounded-xl overflow-hidden group hover:border-accent-teal/50 transition-all duration-300 hover:-translate-y-1" data-category="python algo">
+                <!-- Project 2: IRD Phenotypes (Red Theme) -->
+                <div class="project-card glass-panel rounded-xl overflow-hidden group hover:border-dna-t/50 transition-all duration-300 relative">
+                     <div class="absolute top-0 right-0 w-20 h-20 bg-dna-t/20 blur-2xl rounded-full -mr-10 -mt-10 transition-all group-hover:bg-dna-t/40"></div>
                     <div class="p-8 h-full flex flex-col">
                         <div class="flex justify-between items-start mb-4">
-                            <div class="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center text-green-400">
-                                <i class="fas fa-eye text-xl"></i>
-                            </div>
-                            <span class="text-xs font-mono text-gray-500 border border-gray-700 px-2 py-1 rounded">Python / Machine Learning</span>
+                            <i class="fas fa-eye text-3xl text-dna-t"></i>
+                            <span class="text-xs font-mono text-dna-t border border-dna-t/30 px-2 py-1 rounded">Python / Machine Learning</span>
                         </div>
-                        <h3 class="text-xl font-bold text-white mb-2 group-hover:text-accent-teal transition-colors">IRD Phenotype Integration</h3>
+                        <h3 class="text-xl font-bold text-white mb-2">IRD Phenotype Integration</h3>
                         <p class="text-gray-400 text-sm mb-6 flex-grow">
                             Bridging the genotype-phenotype gap using Human Phenotype Ontology (HPO) and Machine Learning (Naïve Bayes/Random Forest) to prioritize candidates within evolutionary clusters.
                         </p>
-                        <div class="flex gap-4 mt-auto">
-                            <button onclick="openModal('modal-ird')" class="text-sm font-bold text-white hover:text-accent-teal transition-colors">
-                                View Details <i class="fas fa-plus ml-1 text-xs"></i>
-                            </button>
-                            <a href="https://github.com/shalev-compbio/Shalev-Evolutionary-Genomics-Portfolio/tree/main/projects/IRD_Phenotype_Clustering" target="_blank" class="text-sm text-gray-500 hover:text-white transition-colors">Code <i class="fas fa-external-link-alt ml-1"></i></a>
-                        </div>
+                        <button onclick="openModal('modal-ird')" class="text-sm font-bold text-dna-t hover:text-white transition-colors text-left">View Data -></button>
                     </div>
                 </div>
 
-                <!-- Project 3: Visualization -->
-                <div class="project-card glass-panel rounded-xl overflow-hidden group hover:border-accent-teal/50 transition-all duration-300 hover:-translate-y-1" data-category="r">
+                <!-- Project 3: Visualization (Blue Theme) -->
+                <div class="project-card glass-panel rounded-xl overflow-hidden group hover:border-dna-c/50 transition-all duration-300 relative">
+                     <div class="absolute top-0 right-0 w-20 h-20 bg-dna-c/20 blur-2xl rounded-full -mr-10 -mt-10 transition-all group-hover:bg-dna-c/40"></div>
                     <div class="p-8 h-full flex flex-col">
                         <div class="flex justify-between items-start mb-4">
-                            <div class="w-10 h-10 rounded-lg bg-pink-500/10 flex items-center justify-center text-pink-400">
-                                <i class="fas fa-chart-area text-xl"></i>
-                            </div>
-                            <span class="text-xs font-mono text-gray-500 border border-gray-700 px-2 py-1 rounded">R / Data Viz</span>
+                            <i class="fas fa-chart-area text-3xl text-dna-c"></i>
+                            <span class="text-xs font-mono text-dna-c border border-dna-c/30 px-2 py-1 rounded">R / Data Viz</span>
                         </div>
-                        <h3 class="text-xl font-bold text-white mb-2 group-hover:text-accent-teal transition-colors">High-Dimensional Viz</h3>
+                        <h3 class="text-xl font-bold text-white mb-2">High-Dimensional Viz</h3>
                         <p class="text-gray-400 text-sm mb-6 flex-grow">
                             Custom visualization pipelines for large-scale phylogenetic matrices (20,000 genes x 2,000 species). Solving "big data" graphical challenges for publication-quality figures using ComplexHeatmap.
                         </p>
-                        <div class="flex gap-4 mt-auto">
-                            <button onclick="openModal('modal-viz')" class="text-sm font-bold text-white hover:text-accent-teal transition-colors">
-                                View Details <i class="fas fa-plus ml-1 text-xs"></i>
-                            </button>
-                            <a href="https://github.com/shalev-compbio/Shalev-Evolutionary-Genomics-Portfolio/tree/main/projects/heatmap_visualization" target="_blank" class="text-sm text-gray-500 hover:text-white transition-colors">Code <i class="fas fa-external-link-alt ml-1"></i></a>
-                        </div>
+                         <button onclick="openModal('modal-viz')" class="text-sm font-bold text-dna-c hover:text-white transition-colors text-left">View Data -></button>
                     </div>
                 </div>
 
-                <!-- Project 4: LBS Segmentation -->
-                <div class="project-card glass-panel rounded-xl overflow-hidden group hover:border-accent-teal/50 transition-all duration-300 hover:-translate-y-1" data-category="python algo">
-                    <div class="p-8 h-full flex flex-col">
-                        <div class="flex justify-between items-start mb-4">
-                            <div class="w-10 h-10 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400">
-                                <i class="fas fa-barcode text-xl"></i>
-                            </div>
-                            <span class="text-xs font-mono text-gray-500 border border-gray-700 px-2 py-1 rounded">Python / Algorithms</span>
-                        </div>
-                        <h3 class="text-xl font-bold text-white mb-2 group-hover:text-accent-teal transition-colors">Genomic Segmentation (LBS)</h3>
-                        <p class="text-gray-400 text-sm mb-6 flex-grow">
-                            Implementation of Local Barcode Segmentation (LBS) to filter noise in phylogenetic profiles and detect robust evolutionary signals in disjoint genomic regions.
-                        </p>
-                        <div class="flex gap-4 mt-auto">
-                            <button onclick="openModal('modal-lbs')" class="text-sm font-bold text-white hover:text-accent-teal transition-colors">
-                                View Details <i class="fas fa-plus ml-1 text-xs"></i>
-                            </button>
-                            <a href="https://github.com/shalev-compbio/Shalev-Evolutionary-Genomics-Portfolio/tree/main/projects/ird_lbs_barcode_segments" target="_blank" class="text-sm text-gray-500 hover:text-white transition-colors">Code <i class="fas fa-external-link-alt ml-1"></i></a>
-                        </div>
-                    </div>
-                </div>
+                 <!-- Project 4: LBS (Yellow Theme) -->
+                 <div class="project-card glass-panel rounded-xl overflow-hidden group hover:border-dna-g/50 transition-all duration-300 relative">
+                    <div class="absolute top-0 right-0 w-20 h-20 bg-dna-g/20 blur-2xl rounded-full -mr-10 -mt-10 transition-all group-hover:bg-dna-g/40"></div>
+                   <div class="p-8 h-full flex flex-col">
+                       <div class="flex justify-between items-start mb-4">
+                           <i class="fas fa-barcode text-3xl text-dna-g"></i>
+                           <span class="text-xs font-mono text-dna-g border border-dna-g/30 px-2 py-1 rounded">Python / Algorithms</span>
+                       </div>
+                       <h3 class="text-xl font-bold text-white mb-2">Genomic Segmentation (LBS)</h3>
+                       <p class="text-gray-400 text-sm mb-6 flex-grow">
+                           Implementation of Local Barcode Segmentation (LBS) to filter noise in phylogenetic profiles and detect robust evolutionary signals in disjoint genomic regions.
+                       </p>
+                        <button onclick="openModal('modal-lbs')" class="text-sm font-bold text-dna-g hover:text-white transition-colors text-left">View Data -></button>
+                   </div>
+               </div>
 
             </div>
         </div>
@@ -510,26 +593,26 @@
     <!-- Skills Section -->
     <section id="skills" class="py-20 relative">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 class="text-3xl font-bold text-white mb-12 text-center">Technical & Wet Lab Toolkit</h2>
+            <h2 class="text-3xl font-bold text-white mb-12 text-center"><span class="text-dna-c">///</span> Technical & Wet Lab Toolkit</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 
                 <!-- Card 1: Development & Scripting -->
-                <div class="glass-panel p-6 rounded-xl border-l-4 border-accent-teal">
+                <div class="glass-panel p-6 rounded-xl border-l-4 border-dna-a">
                     <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                        <i class="fas fa-terminal text-accent-teal"></i> Development & Scripting
+                        <i class="fas fa-terminal text-dna-a"></i> Development & Scripting
                     </h3>
                     <div class="space-y-4">
                         <div class="flex items-center justify-between text-sm text-gray-400">
                              <div class="flex items-center gap-2">
                                 <i class="fab fa-python text-lg text-white"></i> <span>Python (Pandas, Scikit-learn)</span>
                              </div>
-                             <span class="text-accent-teal">Proficient</span>
+                             <span class="text-dna-a">Proficient</span>
                         </div>
                          <div class="flex items-center justify-between text-sm text-gray-400">
                              <div class="flex items-center gap-2">
                                 <i class="fab fa-r-project text-lg text-white"></i> <span>R (Tidyverse, Bioconductor)</span>
                              </div>
-                             <span class="text-accent-teal">Proficient</span>
+                             <span class="text-dna-a">Proficient</span>
                         </div>
                         <div class="flex items-center justify-between text-sm text-gray-400">
                              <div class="flex items-center gap-2">
@@ -546,10 +629,10 @@
                     </div>
                 </div>
 
-                <!-- Card 2: Data Science & Analytics (Replaces the duplicate Wet Lab) -->
-                <div class="glass-panel p-6 rounded-xl border-l-4 border-blue-500">
+                <!-- Card 2: Data Science & Analytics -->
+                <div class="glass-panel p-6 rounded-xl border-l-4 border-dna-c">
                     <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                        <i class="fas fa-brain text-blue-500"></i> Data Science & Analytics
+                        <i class="fas fa-brain text-dna-c"></i> Data Science & Analytics
                     </h3>
                     <div class="space-y-4">
                          <div class="flex flex-col gap-1">
@@ -571,15 +654,15 @@
 
             <!-- MAIN WET LAB EXPERTISE BLOCK -->
             <div class="glass-panel p-1 rounded-2xl max-w-4xl mx-auto overflow-hidden shadow-2xl mt-12">
-                <div class="bg-bio-dark/50 p-6 md:p-8">
+                <div class="bg-black/50 p-6 md:p-8">
                     <div class="flex flex-col md:flex-row-reverse gap-8 items-center">
                         
                         <!-- Visual -->
                         <div class="flex-1 flex justify-center">
-                             <div class="relative w-40 h-40 flex items-center justify-center bg-accent-purple/5 rounded-full border border-accent-purple/20">
-                                <i class="fas fa-flask text-5xl text-accent-purple/80"></i>
+                             <div class="relative w-40 h-40 flex items-center justify-center bg-dna-g/10 rounded-full border border-dna-g/30">
+                                <i class="fas fa-flask text-5xl text-dna-g/80"></i>
                                 <div class="absolute -bottom-2 -right-2 bg-bio-card p-2 rounded-full border border-gray-700">
-                                    <i class="fas fa-leaf text-2xl text-green-400"></i>
+                                    <i class="fas fa-leaf text-2xl text-dna-a"></i>
                                 </div>
                              </div>
                         </div>
@@ -587,23 +670,23 @@
                         <!-- Content -->
                         <div class="flex-1 space-y-4">
                             <h3 class="text-2xl font-bold text-white flex items-center gap-2">
-                                <i class="fas fa-vial text-accent-purple"></i> Wet Lab Expertise
+                                <i class="fas fa-vial text-dna-g"></i> Wet Lab Expertise
                             </h3>
                             <p class="text-gray-400 leading-relaxed">
                                 My computational insights are grounded in hands-on biological research. I have extensive experience in <strong>Protein Engineering</strong>, including the expression and purification of recombinant proteins (e.g., Lactoferrin, Keratin) in both bacterial (E. coli) and plant (Arabidopsis) systems.
                             </p>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-gray-300">
                                 <div class="flex items-center gap-2">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-accent-purple"></span> Molecular Cloning
+                                    <span class="w-1.5 h-1.5 rounded-full bg-dna-g"></span> Molecular Cloning
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-accent-purple"></span> FPLC Purification
+                                    <span class="w-1.5 h-1.5 rounded-full bg-dna-g"></span> FPLC Purification
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-accent-purple"></span> qPCR & ELISA
+                                    <span class="w-1.5 h-1.5 rounded-full bg-dna-g"></span> qPCR & ELISA
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-accent-purple"></span> Plant Transformation
+                                    <span class="w-1.5 h-1.5 rounded-full bg-dna-g"></span> Plant Transformation
                                 </div>
                             </div>
                         </div>
@@ -615,291 +698,341 @@
     </section>
 
     <!-- Footer -->
-    <footer id="contact" class="bg-black/40 border-t border-gray-800 pt-12 pb-8">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 class="text-2xl font-bold text-white mb-6">Let's Connect</h2>
-            <div class="flex justify-center gap-8 mb-12">
-                <a href="mailto:shalev.yaacov@mail.huji.ac.il" class="flex flex-col items-center group">
-                    <div class="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 group-hover:bg-accent-teal group-hover:text-bio-dark transition-all">
-                        <i class="fas fa-envelope text-xl"></i>
+    <footer id="contact" class="bg-black border-t border-gray-800 pt-14 pb-10 relative overflow-hidden">
+        <!-- subtle gradient glow -->
+        <div class="pointer-events-none absolute inset-x-0 -top-24 h-40 bg-gradient-to-b from-dna-c/15 via-transparent to-transparent blur-3xl opacity-80"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <h2 class="text-2xl font-bold text-white mb-2">Let's Connect</h2>
+            <p class="text-sm text-gray-400 mb-8">
+                Always happy to talk about genomics, evolution and data-driven biology.
+            </p>
+
+            <!-- contact chips -->
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-6 mb-10">
+                <a href="mailto:shalev.yaacov@mail.huji.ac.il" class="group">
+                    <div class="px-4 py-2 rounded-full bg-gray-900/80 border border-gray-700/80 flex items-center gap-3 shadow-[0_0_18px_rgba(15,23,42,0.8)] group-hover:border-dna-t group-hover:shadow-[0_0_24px_rgba(244,63,94,0.6)] transition-all">
+                        <div class="w-9 h-9 rounded-full bg-black flex items-center justify-center">
+                            <i class="fas fa-envelope text-lg text-gray-300 group-hover:text-dna-t transition-colors"></i>
+                        </div>
+                        <div class="text-left">
+                            <div class="text-xs uppercase tracking-wide text-gray-400 font-mono">Email</div>
+                            <div class="text-sm text-white">shalev.yaacov@mail.huji.ac.il</div>
+                        </div>
                     </div>
-                    <span class="mt-2 text-sm text-gray-500 group-hover:text-white">Email</span>
                 </a>
-                <a href="https://linkedin.com/in/shalev-yaacov" target="_blank" class="flex flex-col items-center group">
-                    <div class="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 group-hover:bg-[#0077b5] group-hover:text-white transition-all">
-                        <i class="fab fa-linkedin-in text-xl"></i>
+
+                <a href="https://www.linkedin.com/in/shalev-yaacov-bio-tech/" target="_blank" class="group">
+                    <div class="px-4 py-2 rounded-full bg-gray-900/80 border border-gray-700/80 flex items-center gap-3 shadow-[0_0_18px_rgba(15,23,42,0.8)] group-hover:border-dna-c group-hover:shadow-[0_0_24px_rgba(56,189,248,0.6)] transition-all">
+                        <div class="w-9 h-9 rounded-full bg-black flex items-center justify-center">
+                            <i class="fab fa-linkedin-in text-lg text-gray-300 group-hover:text-dna-c transition-colors"></i>
+                        </div>
+                        <div class="text-left">
+                            <div class="text-xs uppercase tracking-wide text-gray-400 font-mono">LinkedIn</div>
+                            <div class="text-sm text-white">Shalev Yaacov</div>
+                        </div>
                     </div>
-                    <span class="mt-2 text-sm text-gray-500 group-hover:text-white">LinkedIn</span>
                 </a>
+
             </div>
-            <div class="text-gray-600 text-sm border-t border-gray-800 pt-8">
-                <p>&copy; 2025 Shalev Yaacov. Built with <i class="fas fa-heart text-red-900"></i> & Code.</p>
+
+            <!-- evolving note + copyright -->
+            <div class="text-gray-500 text-xs sm:text-sm space-y-1">
+                <p>Continuously evolving.</p>
+                <p>&copy; 2025 Shalev Yaacov. Evolution is messy, code shouldn't be.</p>
             </div>
         </div>
     </footer>
 
-    <!-- MODALS (Hidden by default) -->
+    <!-- MODALS -->
     
+    <!-- Modal: NPP Explainer (UPDATED) -->
+    <div id="modal-npp-explainer" class="modal fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 z-[100]">
+        <div class="relative w-full max-w-3xl rounded-2xl bg-gradient-to-br from-gray-900 via-black to-gray-900 border border-dna-c/60 shadow-[0_0_40px_rgba(56,189,248,0.35)] p-[1px]">
+            <!-- Inner glass panel -->
+            <div class="bg-black/80 rounded-2xl p-7 md:p-8">
+                
+                <!-- Floating icon badge -->
+                <div class="absolute -top-6 left-8">
+                    <div class="w-12 h-12 rounded-full bg-dna-c/20 border border-dna-c/60 flex items-center justify-center shadow-[0_0_20px_rgba(56,189,248,0.6)]">
+                        <i class="fas fa-network-wired text-dna-c text-xl"></i>
+                    </div>
+                </div>
+
+                <!-- Header -->
+                <div class="flex justify-between items-start mb-6 border-b border-gray-800 pb-4">
+                    <div>
+                        <span class="text-xs font-mono tracking-[0.2em] text-dna-c uppercase">Explainer</span>
+                        <h3 class="text-2xl font-bold text-white mt-1">What is Normalized Phylogenetic Profiling (NPP)?</h3>
+                    </div>
+                    <button onclick="closeModal('modal-npp-explainer')" class="text-gray-500 hover:text-white ml-4">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6 text-gray-300 leading-relaxed">
+                    
+                    <!-- Text side -->
+                    <div class="space-y-4">
+                        <p>
+                            NPP is an evolutionary analysis method that looks across thousands of species to identify genes that 
+                            <strong class="text-white">“travel together”</strong> through evolution.
+                        </p>
+                        <p>
+                            Instead of using simple presence-or-absence, NPP measures how strongly each gene is conserved in every organism and 
+                            normalizes these patterns across the tree of life.
+                        </p>
+                        <div class="p-4 bg-black/60 rounded-lg border border-gray-800 border-l-4 border-l-dna-c">
+                            <p class="mb-2"><strong class="text-white">Genes with similar evolutionary signatures often work in the same pathway.</strong></p>
+                            <p>By capturing these hidden patterns, NPP helps reveal functional gene modules and highlight new candidates for diseases such as IRDs and ciliopathies.</p>
+                        </div>
+                    </div>
+
+                    <!-- Visual steps side -->
+                    <div class="space-y-4">
+                        <h4 class="text-sm font-mono tracking-[0.18em] text-gray-400 uppercase">How NPP works</h4>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex items-start gap-3">
+                                <div class="mt-1 w-2 h-2 rounded-full bg-dna-c shadow-[0_0_10px_rgba(56,189,248,0.8)]"></div>
+                                <p><span class="text-white font-semibold">1. Evolutionary profiles</span><br>Each human gene is mapped to its orthologs across ~2,000 species.</p>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <div class="mt-1 w-2 h-2 rounded-full bg-dna-g shadow-[0_0_10px_rgba(250,204,21,0.8)]"></div>
+                                <p><span class="text-white font-semibold">2. Normalization</span><br>Conservation scores are normalized to remove biases and expose true evolutionary signatures.</p>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <div class="mt-1 w-2 h-2 rounded-full bg-dna-t shadow-[0_0_10px_rgba(244,63,94,0.8)]"></div>
+                                <p><span class="text-white font-semibold">3. Co-evolving modules</span><br>Genes with similar profiles cluster into modules that often point to shared function or disease mechanisms.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="pt-5 flex justify-end">
+                    <button onclick="closeModal('modal-npp-explainer')" class="px-6 py-2 bg-dna-c text-black font-bold rounded-lg hover:bg-white transition-colors">
+                        Got it
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <!-- Modal: Cilia -->
-    <div id="modal-cilia" class="modal fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-bio-card w-full max-w-2xl rounded-2xl border border-gray-700 shadow-2xl overflow-hidden transform scale-100 transition-transform">
-            <div class="p-6 border-b border-gray-700 flex justify-between items-center bg-gray-900/50">
-                <h3 class="text-xl font-bold text-white"><i class="fas fa-bacterium text-blue-400 mr-2"></i>Cilia Cluster Analysis</h3>
+    <div id="modal-cilia" class="modal fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 z-[100]">
+        <div class="bg-gray-900 border border-dna-a w-full max-w-2xl rounded-xl p-8 shadow-[0_0_50px_rgba(74,222,128,0.2)] transform scale-100 transition-transform">
+            <div class="flex justify-between items-center mb-6 border-b border-gray-800 pb-4">
+                <h3 class="text-2xl font-bold text-dna-a"><i class="fas fa-bacterium mr-2"></i>Cilia Cluster Analysis</h3>
                 <button onclick="closeModal('modal-cilia')" class="text-gray-400 hover:text-white"><i class="fas fa-times text-xl"></i></button>
             </div>
-            <div class="p-6 max-h-[70vh] overflow-y-auto">
-                <p class="text-gray-300 mb-4 leading-relaxed">
-                    This project identifies novel ciliary genes by analyzing evolutionary clusters enriched for known cilia markers. Using a custom R pipeline, we integrated NPP data with GO-term enrichment.
-                </p>
-                 <p class="text-gray-300 mb-4 leading-relaxed">
-                   <strong>Key Finding:</strong> 5 novel candidates (including COQ4, IFT52) were flagged and later validated in clinical families, demonstrating the power of evolutionary inference.
-                </p>
-                <div class="grid grid-cols-2 gap-4 mb-4">
-                    <div class="bg-black/30 p-3 rounded">
-                        <span class="block text-xs text-gray-500 uppercase">Tools</span>
-                        <span class="text-white">R, clusterProfiler</span>
-                    </div>
-                    <div class="bg-black/30 p-3 rounded">
-                        <span class="block text-xs text-gray-500 uppercase">Outcome</span>
-                        <span class="text-white">5 Novel Candidates</span>
-                    </div>
+            <div class="space-y-4 text-gray-300">
+                <p>This project identifies novel ciliary genes by analyzing evolutionary clusters enriched for known cilia markers. Using a custom R pipeline, we integrated NPP data with GO-term enrichment.</p>
+                <div class="p-4 bg-black/50 rounded border border-gray-800">
+                    <strong class="text-white block mb-2">Key Finding:</strong>
+                    5 novel candidates (including COQ4, IFT52) were flagged and later validated in clinical families, demonstrating the power of evolutionary inference.
                 </div>
-                <!-- Mock Visualization for Modal -->
-                <div class="h-32 bg-gray-800 rounded flex items-end justify-around p-2 mb-4 gap-1">
-                    <div class="w-full bg-blue-500/30 h-[40%] rounded-t hover:bg-blue-500/60 transition-all relative group"><span class="absolute bottom-full left-1/2 -translate-x-1/2 text-xs bg-black p-1 hidden group-hover:block">Cluster A</span></div>
-                    <div class="w-full bg-blue-500/30 h-[80%] rounded-t hover:bg-blue-500/60 transition-all relative group"><span class="absolute bottom-full left-1/2 -translate-x-1/2 text-xs bg-black p-1 hidden group-hover:block">Cluster B (Cilia)</span></div>
-                    <div class="w-full bg-blue-500/30 h-[30%] rounded-t hover:bg-blue-500/60 transition-all relative group"><span class="absolute bottom-full left-1/2 -translate-x-1/2 text-xs bg-black p-1 hidden group-hover:block">Cluster C</span></div>
-                </div>
-                <div class="text-right">
-                     <a href="https://github.com/shalev-compbio/Shalev-Evolutionary-Genomics-Portfolio/tree/main/projects/cilia_clusters" target="_blank" class="inline-block bg-accent-teal text-bio-dark px-6 py-2 rounded-lg font-bold hover:bg-white transition-colors">Go to Repository</a>
+                <div class="flex gap-4 pt-4">
+                    <a href="https://github.com/shalev-compbio/Shalev-Evolutionary-Genomics-Portfolio/tree/main/projects/cilia_clusters" target="_blank" class="px-6 py-2 bg-dna-a text-black font-bold rounded hover:bg-white transition-colors">View Code</a>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Modal: IRD -->
-    <div id="modal-ird" class="modal fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-bio-card w-full max-w-2xl rounded-2xl border border-gray-700 shadow-2xl">
-            <div class="p-6 border-b border-gray-700 flex justify-between items-center bg-gray-900/50">
-                <h3 class="text-xl font-bold text-white"><i class="fas fa-eye text-green-400 mr-2"></i>IRD Phenotype Integration</h3>
+    <div id="modal-ird" class="modal fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 z-[100]">
+        <div class="bg-gray-900 border border-dna-t w-full max-w-2xl rounded-xl p-8 shadow-[0_0_50px_rgba(244,63,94,0.2)] transform scale-100 transition-transform">
+            <div class="flex justify-between items-center mb-6 border-b border-gray-800 pb-4">
+                <h3 class="text-2xl font-bold text-dna-t"><i class="fas fa-eye mr-2"></i>IRD Phenotype Integration</h3>
                 <button onclick="closeModal('modal-ird')" class="text-gray-400 hover:text-white"><i class="fas fa-times text-xl"></i></button>
             </div>
-            <div class="p-6">
-                <p class="text-gray-300 mb-4">
-                    Leveraging Human Phenotype Ontology (HPO) to compute semantic similarity between patients and evolutionary clusters. This module uses Machine Learning (Naïve Bayes) to prioritize candidates that share both evolutionary history and phenotypic signatures with known disease genes.
-                </p>
-                <div class="grid grid-cols-2 gap-4 mb-4">
-                    <div class="bg-black/30 p-3 rounded">
-                        <span class="block text-xs text-gray-500 uppercase">Algorithm</span>
-                        <span class="text-white">Naïve Bayes / Random Forest</span>
-                    </div>
-                    <div class="bg-black/30 p-3 rounded">
-                        <span class="block text-xs text-gray-500 uppercase">Data Source</span>
-                        <span class="text-white">HPO & Multi-Omics</span>
-                    </div>
-                </div>
-                <div class="text-right">
-                     <a href="https://github.com/shalev-compbio/Shalev-Evolutionary-Genomics-Portfolio/tree/main/projects/IRD_Phenotype_Clustering" class="inline-block bg-accent-teal text-bio-dark px-6 py-2 rounded-lg font-bold hover:bg-white transition-colors">Go to Repository</a>
+            <div class="space-y-4 text-gray-300">
+                <p>Leveraging Human Phenotype Ontology (HPO) to compute semantic similarity between patients and evolutionary clusters. This module uses Machine Learning (Naïve Bayes) to prioritize candidates that share both evolutionary history and phenotypic signatures with known disease genes.</p>
+                <div class="flex gap-4 pt-4">
+                    <a href="https://github.com/shalev-compbio/Shalev-Evolutionary-Genomics-Portfolio/tree/main/projects/IRD_Phenotype_Clustering" target="_blank" class="px-6 py-2 bg-dna-t text-white font-bold rounded hover:bg-white hover:text-black transition-colors">View Code</a>
                 </div>
             </div>
         </div>
     </div>
-    
-    <!-- Placeholder modals for others -->
-    <div id="modal-viz" class="modal fixed inset-0 bg-black/80 hidden flex items-center justify-center"><div class="bg-bio-card p-8 rounded text-white border border-gray-700 shadow-2xl">
-        <h3 class="text-xl font-bold text-white mb-4">High-Dimensional Visualization</h3>
-        <p class="text-gray-300 mb-4">Custom scripts for handling 20,000 x 2,000 matrices. Essential for inspecting phylogenetic profiles without noise.</p>
-        <button onclick="closeModal('modal-viz')" class="block mt-4 text-accent-teal hover:text-white">Close</button>
-    </div></div>
 
-    <div id="modal-lbs" class="modal fixed inset-0 bg-black/80 hidden flex items-center justify-center"><div class="bg-bio-card p-8 rounded text-white border border-gray-700 shadow-2xl">
-        <h3 class="text-xl font-bold text-white mb-4">Local Barcode Segmentation</h3>
-        <p class="text-gray-300 mb-4">An algorithmic approach to clean phylogenetic data by identifying and segmenting local evolutionary signals (barcodes) within noisy profiles.</p>
-        <button onclick="closeModal('modal-lbs')" class="block mt-4 text-accent-teal hover:text-white">Close</button>
-    </div></div>
+    <!-- Modal: Viz -->
+    <div id="modal-viz" class="modal fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 z-[100]">
+        <div class="bg-gray-900 border border-dna-c w-full max-w-2xl rounded-xl p-8 shadow-[0_0_50px_rgba(56,189,248,0.2)] transform scale-100 transition-transform">
+            <div class="flex justify-between items-center mb-6 border-b border-gray-800 pb-4">
+                <h3 class="text-2xl font-bold text-dna-c"><i class="fas fa-chart-area mr-2"></i>High-Dimensional Viz</h3>
+                <button onclick="closeModal('modal-viz')" class="text-gray-400 hover:text-white"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            <div class="space-y-4 text-gray-300">
+                <p>Custom scripts for handling 20,000 x 2,000 matrices. Essential for inspecting phylogenetic profiles without noise.</p>
+                <div class="flex gap-4 pt-4">
+                    <a href="https://github.com/shalev-compbio/Shalev-Evolutionary-Genomics-Portfolio/tree/main/projects/heatmap_visualization" target="_blank" class="px-6 py-2 bg-dna-c text-black font-bold rounded hover:bg-white transition-colors">View Code</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: LBS -->
+    <div id="modal-lbs" class="modal fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 z-[100]">
+        <div class="bg-gray-900 border border-dna-g w-full max-w-2xl rounded-xl p-8 shadow-[0_0_50px_rgba(250,204,21,0.2)] transform scale-100 transition-transform">
+            <div class="flex justify-between items-center mb-6 border-b border-gray-800 pb-4">
+                <h3 class="text-2xl font-bold text-dna-g"><i class="fas fa-barcode mr-2"></i>Genomic Segmentation</h3>
+                <button onclick="closeModal('modal-lbs')" class="text-gray-400 hover:text-white"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            <div class="space-y-4 text-gray-300">
+                <p>An algorithmic approach to clean phylogenetic data by identifying and segmenting local evolutionary signals (barcodes) within noisy profiles.</p>
+                <div class="flex gap-4 pt-4">
+                    <a href="https://github.com/shalev-compbio/Shalev-Evolutionary-Genomics-Portfolio/tree/main/projects/ird_lbs_barcode_segments" target="_blank" class="px-6 py-2 bg-dna-g text-black font-bold rounded hover:bg-white transition-colors">View Code</a>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
     <!-- Scripts -->
     <script>
         /**
-         * 1. NPP MATRIX VISUALIZATION
-         * Generates a grid of "genes" (rows) vs "species" (cols).
-         * Hovering a row highlights the co-evolutionary pattern.
-         * Now includes "HEATMAP HOT" spots (Red) for visual pop.
+         * 1. NPP MATRIX GENERATION (With Hotspots)
          */
         const matrixContainer = document.getElementById('npp-matrix');
-        const rows = 6; // Genes
-        const cols = 30; // Species
-        
-        // Define patterns (1 = present, 0 = absent, 2 = HOT/Lost in specific clade)
-        // Row 0 and 1 will be "Co-evolving" (similar patterns)
+        // 1=Preserved(Green), 0=Absent, 2=Hotspot(Red)
         const patterns = [
-            [1,1,1,0,0,1,1,1,1,2,2,1,0,0,0,1,1,1,1,1,0,0,1,1,1,0,1,1,1,0], // Gene A
-            [1,1,1,0,0,1,1,1,1,2,2,0,0,0,0,1,1,1,1,0,0,0,1,1,1,0,1,1,1,0], // Gene B (Similar)
-            [0,0,1,1,1,0,0,0,0,1,0,0,1,1,1,0,0,0,0,1,1,1,0,0,0,1,0,0,0,1], // Gene C (Different)
-            [1,0,1,0,1,0,1,0,1,2,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0], // Random + Hot
-            [1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1], // Clade specific
-            [0,1,0,1,1,0,1,0,0,1,1,1,0,0,1,0,1,0,0,1,0,1,0,1,1,0,1,0,0,1]  // Random
+            [1,1,1,0,0,1,1,1,1,2,2,1,0,0,0,1,1,1,1,1,0,0,1,1,1,0,1,1,1,0],
+            [1,1,1,0,0,1,1,1,1,2,2,0,0,0,0,1,1,1,1,0,0,0,1,1,1,0,1,1,1,0],
+            [0,0,1,1,1,0,0,0,0,1,0,0,1,1,1,0,0,0,0,1,1,1,0,0,0,1,0,0,0,1],
+            [1,0,1,0,1,0,1,0,1,2,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0], // High Hotspot Row
+            [1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1], 
+            [0,1,0,1,1,0,1,0,0,1,1,1,0,0,1,0,1,0,0,1,0,1,0,1,1,0,1,0,0,1]
         ];
 
         let matrixHTML = '';
         patterns.forEach((rowPattern, rIndex) => {
-            let rowName = rIndex === 0 ? "Gene A" : rIndex === 1 ? "Gene B" : `Gene ${rIndex+1}`;
-            let rowClass = (rIndex === 0 || rIndex === 1) ? "ring-1 ring-accent-teal/50 z-10" : "";
-            
-            matrixHTML += `<div class="npp-row flex gap-1 items-center h-4 group ${rowClass}" title="${rowName}">`;
-            
-            // Cells
+            matrixHTML += `<div class="npp-row flex gap-px items-center h-full">`;
             rowPattern.forEach(val => {
                 let colorClass;
-                if (val === 1) colorClass = 'bg-gene-on'; // Teal
-                else if (val === 2) colorClass = 'bg-gene-hot'; // Red (New!)
-                else colorClass = 'bg-gene-off opacity-30'; // Dark
-
-                matrixHTML += `<div class="npp-cell w-full h-full rounded-sm ${colorClass}"></div>`;
+                // 1 = Preserved (Green), 2 = Hotspot (Red), 0 = Absent (Dark)
+                if (val === 1) colorClass = 'bg-dna-a/80'; 
+                else if (val === 2) colorClass = 'bg-dna-t shadow-[0_0_5px_#f43f5e] z-10'; // GLOWING HOTSPOT
+                else colorClass = 'bg-gray-800/30'; 
+                matrixHTML += `<div class="npp-cell w-full h-full rounded-[1px] ${colorClass}"></div>`;
             });
-            
             matrixHTML += `</div>`;
         });
         matrixContainer.innerHTML = matrixHTML;
 
+        // Modal Logic
+        function openModal(id) { document.getElementById(id).classList.add('active'); document.body.style.overflow = 'hidden'; }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); document.body.style.overflow = 'auto'; }
+        window.onclick = e => { if(e.target.classList.contains('modal')) closeModal(e.target.id); }
 
         /**
-         * 2. PROJECT FILTERING
-         */
-        const filterBtns = document.querySelectorAll('.filter-btn');
-        const projects = document.querySelectorAll('.project-card');
-
-        filterBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                // Remove active class from all
-                filterBtns.forEach(b => {
-                    b.classList.remove('bg-white', 'text-bio-dark');
-                    b.classList.add('text-gray-300', 'bg-transparent');
-                });
-                // Add active to clicked
-                btn.classList.remove('text-gray-300', 'bg-transparent');
-                btn.classList.add('bg-white', 'text-bio-dark');
-
-                const filter = btn.getAttribute('data-filter');
-
-                projects.forEach(card => {
-                    if (filter === 'all' || card.getAttribute('data-category').includes(filter)) {
-                        card.style.display = 'flex';
-                        setTimeout(() => card.style.opacity = '1', 50);
-                    } else {
-                        card.style.opacity = '0';
-                        setTimeout(() => card.style.display = 'none', 300);
-                    }
-                });
-            });
-        });
-
-        /**
-         * 3. MODAL LOGIC
-         */
-        function openModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if(modal) {
-                modal.classList.remove('hidden');
-                // Small timeout to allow display:block to apply before opacity transition
-                setTimeout(() => modal.classList.add('active'), 10);
-                document.body.style.overflow = 'hidden'; // Prevent background scrolling
-            }
-        }
-
-        function closeModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if(modal) {
-                modal.classList.remove('active');
-                setTimeout(() => modal.classList.add('hidden'), 300);
-                document.body.style.overflow = 'auto';
-            }
-        }
-
-        // Close modal on click outside
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                closeModal(event.target.id);
-            }
-        }
-
-
-        /**
-         * 4. BACKGROUND ANIMATION (Slightly slower/organic)
+         * 2. CHAOTIC PARTICLE SYSTEM (Red & Blue Mutations)
          */
         const canvas = document.getElementById('networkCanvas');
         const ctx = canvas.getContext('2d');
-        let width, height;
-        let particles = [];
-        const config = { particleCount: 60, connectionDistance: 160, speed: 0.15, color: '45, 212, 191' }; // Slower speed
+        let width, height, particles = [];
 
         function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; }
+        
         class Particle {
             constructor() {
-                this.x = Math.random() * width; this.y = Math.random() * height;
-                this.vx = (Math.random() - 0.5) * config.speed; this.vy = (Math.random() - 0.5) * config.speed;
-                this.size = Math.random() * 2 + 1;
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                // 10% chance to be a "Mutation" (Red/Fast), 90% normal (Blue/Slow)
+                this.isMutation = Math.random() > 0.9;
+                
+                if (this.isMutation) {
+                    this.color = '244, 63, 94'; // Red
+                    this.size = Math.random() * 3 + 2;
+                    this.vx = (Math.random() - 0.5) * 1.5; // Fast
+                    this.vy = (Math.random() - 0.5) * 1.5;
+                } else {
+                    this.color = '56, 189, 248'; // Blue
+                    this.size = Math.random() * 2;
+                    this.vx = (Math.random() - 0.5) * 0.2; // Slow
+                    this.vy = (Math.random() - 0.5) * 0.2;
+                }
             }
             update() {
                 this.x += this.vx; this.y += this.vy;
-                if (this.x < 0 || this.x > width) this.vx *= -1;
-                if (this.y < 0 || this.y > height) this.vy *= -1;
+                if (this.x < 0 || this.x > width || this.y < 0 || this.y > height) this.reset();
             }
             draw() {
-                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(${config.color}, 0.5)`; ctx.fill();
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(${this.color}, ${this.isMutation ? 0.8 : 0.3})`;
+                
+                // Mutations get a glow
+                if(this.isMutation) {
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = `rgb(${this.color})`;
+                } else {
+                    ctx.shadowBlur = 0;
+                }
+                
+                ctx.fill();
             }
         }
-        function initParticles() {
+
+        function init() {
             particles = [];
-            const count = window.innerWidth < 768 ? 30 : config.particleCount;
-            for (let i = 0; i < count; i++) particles.push(new Particle());
+            for(let i=0; i<50; i++) particles.push(new Particle());
         }
-        function animateParticles() {
-            ctx.clearRect(0, 0, width, height);
+        function animate() {
+            ctx.clearRect(0,0,width,height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            
+            // Draw connections only for normal particles
+            ctx.shadowBlur = 0;
             for (let i = 0; i < particles.length; i++) {
-                particles[i].update(); particles[i].draw();
+                if(particles[i].isMutation) continue; // Mutations are chaotic/unconnected
+                
                 for (let j = i; j < particles.length; j++) {
+                    if(particles[j].isMutation) continue;
+                    
                     const dx = particles[i].x - particles[j].x;
                     const dy = particles[i].y - particles[j].y;
-                    const distance = Math.sqrt(dx*dx + dy*dy);
-                    if (distance < config.connectionDistance) {
+                    const d = Math.sqrt(dx*dx + dy*dy);
+                    if (d < 100) {
                         ctx.beginPath();
-                        const opacity = 1 - (distance / config.connectionDistance);
-                        ctx.strokeStyle = `rgba(${config.color}, ${opacity * 0.15})`;
-                        ctx.lineWidth = 1;
+                        ctx.strokeStyle = `rgba(56, 189, 248, ${0.1 * (1 - d/100)})`;
                         ctx.moveTo(particles[i].x, particles[i].y);
                         ctx.lineTo(particles[j].x, particles[j].y);
                         ctx.stroke();
                     }
                 }
             }
-            requestAnimationFrame(animateParticles);
+            requestAnimationFrame(animate);
         }
-        window.addEventListener('resize', () => { resize(); initParticles(); });
-        resize(); initParticles(); animateParticles();
 
-        // Typing Effect (Same as before)
+        window.addEventListener('resize', () => { resize(); init(); });
+        resize(); init(); animate();
+
+        // Typing
         const textElement = document.getElementById('typing-text');
-        const phrases = ["Genomics & Bioinformatics Researcher", "Decoding Missing Heritability", "Multi-Omics Data Integration", "Evolutionary Signal Detection"];
-        let phraseIndex = 0, charIndex = 0, isDeleting = false, typeSpeed = 100;
+        const phrases = ["Decoding Missing Heritability...", "Detecting Evolutionary Signals...", "Integrating Multi-Omics...", "Open to New Opportunities..."];
+        let phraseIndex = 0, charIndex = 0, isDeleting = false;
         function type() {
-            const currentPhrase = phrases[phraseIndex];
-            if (isDeleting) { textElement.textContent = currentPhrase.substring(0, charIndex - 1); charIndex--; typeSpeed = 50; }
-            else { textElement.textContent = currentPhrase.substring(0, charIndex + 1); charIndex++; typeSpeed = 100; }
-            if (!isDeleting && charIndex === currentPhrase.length) { isDeleting = true; typeSpeed = 2000; }
-            else if (isDeleting && charIndex === 0) { isDeleting = false; phraseIndex = (phraseIndex + 1) % phrases.length; typeSpeed = 500; }
-            setTimeout(type, typeSpeed);
+            const current = phrases[phraseIndex];
+            if (isDeleting) { textElement.textContent = current.substring(0, charIndex - 1); charIndex--; } 
+            else { textElement.textContent = current.substring(0, charIndex + 1); charIndex++; }
+            
+            let speed = isDeleting ? 30 : 50;
+            if (!isDeleting && charIndex === current.length) { isDeleting = true; speed = 2000; }
+            else if (isDeleting && charIndex === 0) { isDeleting = false; phraseIndex = (phraseIndex + 1) % phrases.length; speed = 500; }
+            
+            setTimeout(type, speed);
         }
-        document.addEventListener('DOMContentLoaded', type);
-        
-        // Navbar scroll
+        type();
+
+        // Navbar bg
         window.addEventListener('scroll', () => {
             const nav = document.getElementById('navbar');
-            if (window.scrollY > 50) { nav.classList.add('shadow-lg'); nav.style.background = 'rgba(15, 23, 42, 0.95)'; }
-            else { nav.classList.remove('shadow-lg'); nav.style.background = 'rgba(15, 23, 42, 0.85)'; }
+            nav.style.background = window.scrollY > 50 ? 'rgba(5,5,5,0.95)' : 'rgba(5,5,5,0.85)';
         });
+
     </script>
 </body>
 </html>
