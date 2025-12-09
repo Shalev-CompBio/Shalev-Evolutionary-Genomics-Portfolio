@@ -89,4 +89,4 @@ To quickly explore my work visually, check out the interactive portfolio:
 * **Location:** Jerusalem, Israel.
 
 ---
-*This repository evolves alongside my thesis research and will continue to expand with new analyses, tools, and polished workflows.*
+***This repository evolves alongside my thesis research and will continue to expand with new analyses, tools, and polished workflows.***
