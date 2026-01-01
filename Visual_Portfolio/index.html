@@ -30,6 +30,7 @@
                         'dna-t': '#f43f5e', /* Red/Rose (Thymine) - ALSO THE HOTSPOT COLOR */
                         'dna-c': '#38bdf8', /* Blue (Cytosine) */
                         'dna-g': '#facc15', /* Yellow (Guanine) */
+                        'dna-p': '#a78bfa', /* Purple (For Wet Lab) - New Subtle Purple */
                         'accent-teal': '#2dd4bf', 
                     },
                     fontFamily: {
@@ -216,6 +217,20 @@
         .method-hover-trigger:hover h2 {
             color: #2dd4bf;
         }
+        
+        /* Project Card List Styles */
+        .project-list li {
+            position: relative;
+            padding-left: 1.2em;
+            margin-bottom: 0.5em;
+        }
+        .project-list li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: currentColor; /* Inherits text color */
+            font-weight: bold;
+        }
     </style>
 </head>
 <body class="antialiased selection:bg-dna-t selection:text-white">
@@ -361,10 +376,11 @@
                 
                 <p class="text-gray-400 text-lg mb-8 max-w-2xl leading-relaxed">
                     Decoding the <span class="text-white font-medium">"missing heritability"</span> in Inherited Retinal Diseases (IRDs).
-                    I develop computational frameworks integrating
+                    I design and develop computational frameworks integrating
                     <span class="px-1.5 py-0.5 rounded bg-dna-c/15 text-dna-c font-semibold">
                         Normalized Phylogenetic Profiling (NPP)
                     </span>
+                    <span class="text-gray-400 text-base">(evolutionary co-signal across ~2,000 species)</span>
                     with multi-omics data to uncover novel disease-causing genes across ~2,000 eukaryotic species.
                 </p>
                
@@ -453,7 +469,7 @@
                 <span class="text-dna-c font-mono text-sm tracking-widest uppercase">The Core Method (Click for Info) <i class="fas fa-info-circle ml-2"></i></span>
                 <h2 class="text-3xl md:text-4xl font-bold text-white mt-2 mb-4">Normalized Phylogenetic Profiling (NPP)</h2>
                 <p class="text-gray-400 max-w-2xl mx-auto">
-                    We hypothesize that genes functioning together share evolutionary histories. By constructing phylogenetic profiles across ~2,000 eukaryotic species, we identify co-evolving modules to prioritize candidate genes for unsolved IRD cases.
+                    I turn the hypothesis that genes functioning together share evolutionary histories into a predictive model. I construct phylogenetic profiles across ~2,000 eukaryotic species to identify co-evolving modules and prioritize candidate genes for unsolved IRD cases.
                 </p>
             </div>
 
@@ -502,7 +518,7 @@
                                     <i class="fas fa-microchip text-dna-g text-2xl mb-2 group-hover:scale-110 transition-transform block"></i>
                                     <span class="text-gray-400 text-xs uppercase tracking-wide">Compute</span>
                                     <div class="text-white font-semibold text-sm leading-snug">
-                                        Machine-learning models detect co-evolving gene modules
+                                        Machine-learning models <span class="text-gray-400 text-xs font-normal">(automated pattern recognition)</span> detect co-evolving gene modules
                                     </div>
                                 </div>
                             </div>
@@ -518,7 +534,12 @@
     <!-- Projects Section -->
     <section id="projects" class="py-20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 class="text-3xl md:text-4xl font-bold text-white mb-10"><span class="text-dna-a">///</span> Selected Projects</h2>
+            <h2 class="text-3xl md:text-4xl font-bold text-white mb-2"><span class="text-dna-a">///</span> Selected Projects</h2>
+            
+            <!-- Project Framework Introduction Line -->
+            <p class="text-gray-400 text-lg mb-10 max-w-3xl">
+                Below are selected projects where I designed and built computational pipelines and visual tools for exploratory genomic analysis.
+            </p>
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8" id="projects-grid">
                 
@@ -530,10 +551,12 @@
                             <i class="fas fa-bacterium text-3xl text-dna-a"></i>
                             <span class="text-xs font-mono text-dna-a border border-dna-a/30 px-2 py-1 rounded">R / Phylogenetics</span>
                         </div>
-                        <h3 class="text-xl font-bold text-white mb-2">Cilia Cluster Analysis</h3>
-                        <p class="text-gray-400 text-sm mb-6 flex-grow">
-                            Identification of 61 co-evolutionary modules enriched with IRD genes. Integrating transcriptomic data to filter for retinal expression. Flagged 5 novel candidates (e.g., COQ4, IFT52) validated in clinical families.
-                        </p>
+                        <h3 class="text-xl font-bold text-white mb-4">Cilia Cluster Analysis</h3>
+                        <ul class="text-gray-400 text-sm mb-6 flex-grow space-y-2 project-list">
+                            <li><strong class="text-white">Built:</strong> Computational framework for identifying co-evolutionary modules.</li>
+                            <li><strong class="text-white">Purpose:</strong> Integrate evolutionary profiles <span class="text-gray-500 text-xs">(NPP data)</span> with functional annotations to detect cilia-related signals.</li>
+                            <li><strong class="text-white">Output:</strong> Prioritized list of putative ciliary candidates from large genomic clusters.</li>
+                        </ul>
                         <button onclick="openModal('modal-cilia')" class="text-sm font-bold text-dna-a hover:text-white transition-colors text-left">View Data -></button>
                     </div>
                 </div>
@@ -546,10 +569,12 @@
                             <i class="fas fa-eye text-3xl text-dna-t"></i>
                             <span class="text-xs font-mono text-dna-t border border-dna-t/30 px-2 py-1 rounded">Python / Machine Learning</span>
                         </div>
-                        <h3 class="text-xl font-bold text-white mb-2">IRD Phenotype Integration</h3>
-                        <p class="text-gray-400 text-sm mb-6 flex-grow">
-                            Bridging the genotype-phenotype gap using Human Phenotype Ontology (HPO) and Machine Learning (Naïve Bayes/Random Forest) to prioritize candidates within evolutionary clusters.
-                        </p>
+                        <h3 class="text-xl font-bold text-white mb-4">IRD Phenotype Integration</h3>
+                        <ul class="text-gray-400 text-sm mb-6 flex-grow space-y-2 project-list">
+                            <li><strong class="text-white">Designed:</strong> Machine-learning integrator bridging genotype and phenotype.</li>
+                            <li><strong class="text-white">Purpose:</strong> Use HPO <span class="text-gray-500 text-xs">(phenotype grouping)</span> and ML <span class="text-gray-500 text-xs">(predictive modeling)</span> to match candidates to disease profiles.</li>
+                            <li><strong class="text-white">Output:</strong> Ranked candidates prioritized by evolutionary and phenotypic similarity.</li>
+                        </ul>
                         <button onclick="openModal('modal-ird')" class="text-sm font-bold text-dna-t hover:text-white transition-colors text-left">View Data -></button>
                     </div>
                 </div>
@@ -562,10 +587,12 @@
                             <i class="fas fa-chart-area text-3xl text-dna-c"></i>
                             <span class="text-xs font-mono text-dna-c border border-dna-c/30 px-2 py-1 rounded">R / Data Viz</span>
                         </div>
-                        <h3 class="text-xl font-bold text-white mb-2">High-Dimensional Viz</h3>
-                        <p class="text-gray-400 text-sm mb-6 flex-grow">
-                            Custom visualization pipelines for large-scale phylogenetic matrices (20,000 genes x 2,000 species). Solving "big data" graphical challenges for publication-quality figures using ComplexHeatmap.
-                        </p>
+                        <h3 class="text-xl font-bold text-white mb-4">High-Dimensional Viz</h3>
+                        <ul class="text-gray-400 text-sm mb-6 flex-grow space-y-2 project-list">
+                            <li><strong class="text-white">Developed:</strong> Custom pipelines for large-scale phylogenetic matrices.</li>
+                            <li><strong class="text-white">Purpose:</strong> Solve "big data" visual challenges using ComplexHeatmap <span class="text-gray-500 text-xs">(advanced R viz)</span>.</li>
+                            <li><strong class="text-white">Output:</strong> Publication-quality figures for inspecting 20,000 x 2,000 datasets without noise.</li>
+                        </ul>
                          <button onclick="openModal('modal-viz')" class="text-sm font-bold text-dna-c hover:text-white transition-colors text-left">View Data -></button>
                     </div>
                 </div>
@@ -578,10 +605,12 @@
                            <i class="fas fa-barcode text-3xl text-dna-g"></i>
                            <span class="text-xs font-mono text-dna-g border border-dna-g/30 px-2 py-1 rounded">Python / Algorithms</span>
                        </div>
-                       <h3 class="text-xl font-bold text-white mb-2">Genomic Segmentation (LBS)</h3>
-                       <p class="text-gray-400 text-sm mb-6 flex-grow">
-                           Implementation of Local Barcode Segmentation (LBS) to filter noise in phylogenetic profiles and detect robust evolutionary signals in disjoint genomic regions.
-                       </p>
+                       <h3 class="text-xl font-bold text-white mb-4">Genomic Segmentation (LBS)</h3>
+                       <ul class="text-gray-400 text-sm mb-6 flex-grow space-y-2 project-list">
+                           <li><strong class="text-white">Implemented:</strong> Local Barcode Segmentation (LBS) algorithm.</li>
+                           <li><strong class="text-white">Purpose:</strong> Filter phylogenetic noise and detect robust evolutionary signals <span class="text-gray-500 text-xs">(barcodes)</span>.</li>
+                           <li><strong class="text-white">Output:</strong> Cleaned phylogenetic profiles highlighting disjoint genomic regions.</li>
+                       </ul>
                         <button onclick="openModal('modal-lbs')" class="text-sm font-bold text-dna-g hover:text-white transition-colors text-left">View Data -></button>
                    </div>
                </div>
@@ -636,62 +665,109 @@
                     </h3>
                     <div class="space-y-4">
                          <div class="flex flex-col gap-1">
-                             <span class="text-sm text-white font-medium">Machine Learning Models</span>
+                             <span class="text-sm text-white font-medium">Machine Learning (ML) <span class="text-gray-400 text-xs font-normal">(predictive modeling)</span></span>
                              <span class="text-xs text-gray-400">Naïve Bayes, Random Forest, Supervised/Unsupervised Learning</span>
                         </div>
                         <div class="flex flex-col gap-1">
-                             <span class="text-sm text-white font-medium">Omics Integration</span>
-                             <span class="text-xs text-gray-400">Transcriptomics, PPI Networks, Phenomics (HPO)</span>
+                             <span class="text-sm text-white font-medium">Multi-Omics Integration</span>
+                             <span class="text-xs text-gray-400">Transcriptomics, PPI Networks, Phenomics (HPO), NPP <span class="text-gray-400 text-xs font-normal">(phenotype analysis)</span></span>
                         </div>
                         <div class="flex flex-col gap-1">
                              <span class="text-sm text-white font-medium">Phylogenetic Algorithms</span>
-                             <span class="text-xs text-gray-400">Normalized Phylogenetic Profiling (NPP), Co-evolution Clustering</span>
+                             <span class="text-xs text-gray-400">Normalized Phylogenetic Profiling (NPP) <span class="text-gray-400 text-xs font-normal">(co-evolution clustering)</span></span>
                         </div>
                     </div>
                 </div>
 
             </div>
 
-            <!-- MAIN WET LAB EXPERTISE BLOCK -->
-            <div class="glass-panel p-1 rounded-2xl max-w-4xl mx-auto overflow-hidden shadow-2xl mt-12">
-                <div class="bg-black/50 p-6 md:p-8">
-                    <div class="flex flex-col md:flex-row-reverse gap-8 items-center">
-                        
-                        <!-- Visual -->
-                        <div class="flex-1 flex justify-center">
-                             <div class="relative w-40 h-40 flex items-center justify-center bg-dna-g/10 rounded-full border border-dna-g/30">
-                                <i class="fas fa-flask text-5xl text-dna-g/80"></i>
-                                <div class="absolute -bottom-2 -right-2 bg-bio-card p-2 rounded-full border border-gray-700">
-                                    <i class="fas fa-leaf text-2xl text-dna-a"></i>
-                                </div>
-                             </div>
-                        </div>
+            <!-- SECOND ROW: WET LAB & B.Sc. PROJECT -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
+                
+                <!-- Wet Lab Expertise (Larger, 2/3 width) - UPDATED TO PURPLE THEME -->
+                <div class="glass-panel p-1 rounded-2xl lg:col-span-2 overflow-hidden shadow-xl border-l-4 border-dna-p">
+                    <div class="bg-black/50 p-6 h-full flex flex-col justify-center">
+                        <div class="flex flex-col sm:flex-row-reverse gap-6 items-center">
+                            
+                            <!-- Visual -->
+                            <div class="flex-shrink-0 flex justify-center">
+                                 <div class="relative w-24 h-24 flex items-center justify-center bg-dna-p/10 rounded-full border border-dna-p/30">
+                                    <i class="fas fa-flask text-3xl text-dna-p/80"></i>
+                                    <div class="absolute -bottom-1 -right-1 bg-bio-card p-1.5 rounded-full border border-gray-700">
+                                        <i class="fas fa-leaf text-lg text-dna-a"></i>
+                                    </div>
+                                 </div>
+                            </div>
 
-                        <!-- Content -->
-                        <div class="flex-1 space-y-4">
-                            <h3 class="text-2xl font-bold text-white flex items-center gap-2">
-                                <i class="fas fa-vial text-dna-g"></i> Wet Lab Expertise
-                            </h3>
-                            <p class="text-gray-400 leading-relaxed">
-                                My computational insights are grounded in hands-on biological research. I have extensive experience in <strong>Protein Engineering</strong>, including the expression and purification of recombinant proteins (e.g., Lactoferrin, Keratin) in both bacterial (E. coli) and plant (Arabidopsis) systems.
-                            </p>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-gray-300">
-                                <div class="flex items-center gap-2">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-dna-g"></span> Molecular Cloning
+                            <!-- Content -->
+                            <div class="flex-1 space-y-3">
+                                <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                                    <i class="fas fa-vial text-dna-p"></i> Wet Lab Expertise
+                                </h3>
+                                
+                                <div class="text-gray-400 text-sm leading-relaxed space-y-2">
+                                    <p>
+                                        My computational work is grounded in hands-on wet-lab experience in molecular biology and protein engineering.
+                                        I’ve worked on recombinant expression of bovine lactoferrin and human keratin using both E. coli and Arabidopsis systems, with practical experience in cloning, transgenic plant transformation and selection, FPLC purification, qPCR, and ELISA.
+                                    </p>
+                                    <p>
+                                        This work was carried out in collaboration with <strong class="text-white">Miruku</strong> in Prof. Oded Shoseyov’s lab, and included co-authoring a book chapter on molecular farming in <em class="text-gray-300">"Alternative Dairy Products and Technologies"</em>.
+                                    </p>
                                 </div>
-                                <div class="flex items-center gap-2">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-dna-g"></span> FPLC Purification
+                                
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-gray-300 pt-1">
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-dna-p"></span> Molecular Cloning
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-dna-p"></span> FPLC Purification
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-dna-p"></span> qPCR & ELISA
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-dna-p"></span> Plant Transformation
+                                    </div>
                                 </div>
-                                <div class="flex items-center gap-2">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-dna-g"></span> qPCR & ELISA
+
+                                <!-- Recommendation Letter Button (REC 2) -->
+                                <div class="pt-2">
+                                    <!-- Changed from button to direct PDF link -->
+                                    <a href="https://github.com/shalev-compbio/Visual_Portfolio/blob/main/rec_2.pdf" target="_blank" class="inline-flex items-center gap-2 px-3 py-1 rounded border border-dna-p/30 hover:bg-dna-p/10 hover:border-dna-p/50 transition-all text-xs font-medium text-dna-p hover:text-white group w-max">
+                                        <i class="fas fa-file-pdf group-hover:scale-110 transition-transform"></i>
+                                        View Recommendation Letter
+                                    </a>
                                 </div>
-                                <div class="flex items-center gap-2">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-dna-g"></span> Plant Transformation
-                                </div>
+
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <!-- B.Sc. Project (Smaller, 1/3 width) -->
+                <div class="glass-panel p-1 rounded-2xl lg:col-span-1 overflow-hidden shadow-xl border-l-4 border-accent-teal">
+                    <div class="bg-black/50 p-6 h-full flex flex-col">
+                        <h3 class="text-lg font-bold text-white flex items-center gap-2 mb-3">
+                            <i class="fas fa-brain text-accent-teal"></i> B.Sc. Research Project
+                        </h3>
+                        <div class="mb-3 text-xs font-mono text-accent-teal tracking-wider uppercase">
+                            Octopus Motor Learning
+                        </div>
+                        <p class="text-gray-400 text-sm leading-relaxed flex-grow">
+                            A behavioral research project on octopus motor learning, where I designed and analyzed experiments to study adaptive learning strategies — an early foundation for my interest in data-driven analysis of complex biological systems.
+                        </p>
+                        
+                        <!-- Recommendation Letter Button (REC 1) -->
+                        <div class="pt-4 mt-auto">
+                             <!-- Changed from button to direct PDF link -->
+                             <a href="https://github.com/shalev-compbio/Visual_Portfolio/blob/main/rec_1.pdf" target="_blank" class="inline-flex items-center gap-2 px-3 py-1 rounded border border-accent-teal/30 hover:bg-accent-teal/10 hover:border-accent-teal/50 transition-all text-xs font-medium text-accent-teal hover:text-white group w-max">
+                                <i class="fas fa-file-pdf group-hover:scale-110 transition-transform"></i>
+                                View Recommendation Letter
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
             </div>
             
         </div>
@@ -710,13 +786,14 @@
 
             <!-- contact chips -->
             <div class="flex flex-col sm:flex-row items-center justify-center gap-6 mb-10">
-                <a href="mailto:shalev.yaacov@mail.huji.ac.il" class="group">
+                <!-- Modified Email Button -->
+                <a href="mailto:shalev.yaacov@mail.huji.ac.il" class="group" onclick="copyEmail(event)">
                     <div class="px-4 py-2 rounded-full bg-gray-900/80 border border-gray-700/80 flex items-center gap-3 shadow-[0_0_18px_rgba(15,23,42,0.8)] group-hover:border-dna-t group-hover:shadow-[0_0_24px_rgba(244,63,94,0.6)] transition-all">
                         <div class="w-9 h-9 rounded-full bg-black flex items-center justify-center">
-                            <i class="fas fa-envelope text-lg text-gray-300 group-hover:text-dna-t transition-colors"></i>
+                            <i class="fas fa-envelope text-lg text-gray-300 group-hover:text-dna-t transition-colors" id="email-icon"></i>
                         </div>
                         <div class="text-left">
-                            <div class="text-xs uppercase tracking-wide text-gray-400 font-mono">Email</div>
+                            <div class="text-xs uppercase tracking-wide text-gray-400 font-mono" id="email-label">Email</div>
                             <div class="text-sm text-white">shalev.yaacov@mail.huji.ac.il</div>
                         </div>
                     </div>
@@ -734,11 +811,25 @@
                     </div>
                 </a>
 
+                <!-- Resume Download Button (Fixed Design) -->
+                <a href="Shalev_Yaacov_CV.pdf" download="Shalev_Yaacov_CV.pdf" class="group">
+                    <div class="px-4 py-2 rounded-full bg-gray-900/80 border border-gray-700/80 flex items-center gap-3 shadow-[0_0_18px_rgba(15,23,42,0.8)] group-hover:border-dna-a group-hover:shadow-[0_0_24px_rgba(74,222,128,0.6)] transition-all">
+                        <div class="w-9 h-9 rounded-full bg-black flex items-center justify-center">
+                            <i class="fas fa-file-pdf text-lg text-gray-300 group-hover:text-dna-a transition-colors"></i>
+                        </div>
+                        <div class="text-left">
+                            <div class="text-xs uppercase tracking-wide text-gray-400 font-mono">Resume</div>
+                            <div class="text-sm text-white">Download PDF</div>
+                        </div>
+                    </div>
+                </a>
+
             </div>
 
             <!-- evolving note + copyright -->
             <div class="text-gray-500 text-xs sm:text-sm space-y-1">
                 <p>Continuously evolving.</p>
+                <p class="text-gray-600 italic">All results shown are synthetic/demonstrative and do not represent validated biological findings.</p>
                 <p>&copy; 2025 Shalev Yaacov. Evolution is messy, code shouldn't be.</p>
             </div>
         </div>
@@ -827,10 +918,14 @@
                 <button onclick="closeModal('modal-cilia')" class="text-gray-400 hover:text-white"><i class="fas fa-times text-xl"></i></button>
             </div>
             <div class="space-y-4 text-gray-300">
-                <p>This project identifies novel ciliary genes by analyzing evolutionary clusters enriched for known cilia markers. Using a custom R pipeline, we integrated NPP data with GO-term enrichment.</p>
-                <div class="p-4 bg-black/50 rounded border border-gray-800">
-                    <strong class="text-white block mb-2">Key Finding:</strong>
-                    5 novel candidates (including COQ4, IFT52) were flagged and later validated in clinical families, demonstrating the power of evolutionary inference.
+                <ul class="text-gray-400 text-sm space-y-4 project-list">
+                    <li><strong class="text-white">What I Built:</strong> A computational framework for identifying co-evolutionary modules.</li>
+                    <li><strong class="text-white">Why:</strong> To detect novel ciliary genes by integrating evolutionary profiles <span class="text-gray-500 text-xs">(NPP data)</span> with functional annotations.</li>
+                    <li><strong class="text-white">Output:</strong> A prioritized list of putative ciliary candidates distilled from large genomic clusters.</li>
+                </ul>
+                <div class="p-4 bg-black/50 rounded border border-gray-800 mt-4">
+                    <strong class="text-white block mb-2">Methodological Focus:</strong>
+                    This project demonstrates how evolutionary clustering can be used as a first-pass prioritization strategy for putative ciliary genes. All results shown are based on synthetic or exploratory analyses and are intended to illustrate the computational logic rather than validated biological findings.
                 </div>
                 <div class="flex gap-4 pt-4">
                     <a href="https://github.com/shalev-compbio/Shalev-Evolutionary-Genomics-Portfolio/tree/main/projects/cilia_clusters" target="_blank" class="px-6 py-2 bg-dna-a text-black font-bold rounded hover:bg-white transition-colors">View Code</a>
@@ -847,7 +942,11 @@
                 <button onclick="closeModal('modal-ird')" class="text-gray-400 hover:text-white"><i class="fas fa-times text-xl"></i></button>
             </div>
             <div class="space-y-4 text-gray-300">
-                <p>Leveraging Human Phenotype Ontology (HPO) to compute semantic similarity between patients and evolutionary clusters. This module uses Machine Learning (Naïve Bayes) to prioritize candidates that share both evolutionary history and phenotypic signatures with known disease genes.</p>
+                <ul class="text-gray-400 text-sm space-y-4 project-list">
+                    <li><strong class="text-white">What I Designed:</strong> A machine-learning integrator for bridging genotype and phenotype.</li>
+                    <li><strong class="text-white">Why:</strong> To prioritize candidates by matching them to disease profiles using HPO <span class="text-gray-500 text-xs">(phenotype grouping)</span> and ML <span class="text-gray-500 text-xs">(predictive modeling)</span>.</li>
+                    <li><strong class="text-white">Output:</strong> Ranked candidates prioritized by their combined evolutionary and phenotypic similarity to known disease genes.</li>
+                </ul>
                 <div class="flex gap-4 pt-4">
                     <a href="https://github.com/shalev-compbio/Shalev-Evolutionary-Genomics-Portfolio/tree/main/projects/IRD_Phenotype_Clustering" target="_blank" class="px-6 py-2 bg-dna-t text-white font-bold rounded hover:bg-white hover:text-black transition-colors">View Code</a>
                 </div>
@@ -863,7 +962,11 @@
                 <button onclick="closeModal('modal-viz')" class="text-gray-400 hover:text-white"><i class="fas fa-times text-xl"></i></button>
             </div>
             <div class="space-y-4 text-gray-300">
-                <p>Custom scripts for handling 20,000 x 2,000 matrices. Essential for inspecting phylogenetic profiles without noise.</p>
+                <ul class="text-gray-400 text-sm space-y-4 project-list">
+                    <li><strong class="text-white">What I Engineered:</strong> Custom pipelines for visualizing large-scale phylogenetic matrices.</li>
+                    <li><strong class="text-white">Why:</strong> To solve "big data" visual challenges and inspect phylogenetic profiles without noise using ComplexHeatmap <span class="text-gray-500 text-xs">(advanced R viz)</span>.</li>
+                    <li><strong class="text-white">Output:</strong> Publication-quality figures capable of displaying 20,000 genes x 2,000 species clearly.</li>
+                </ul>
                 <div class="flex gap-4 pt-4">
                     <a href="https://github.com/shalev-compbio/Shalev-Evolutionary-Genomics-Portfolio/tree/main/projects/heatmap_visualization" target="_blank" class="px-6 py-2 bg-dna-c text-black font-bold rounded hover:bg-white transition-colors">View Code</a>
                 </div>
@@ -879,14 +982,17 @@
                 <button onclick="closeModal('modal-lbs')" class="text-gray-400 hover:text-white"><i class="fas fa-times text-xl"></i></button>
             </div>
             <div class="space-y-4 text-gray-300">
-                <p>An algorithmic approach to clean phylogenetic data by identifying and segmenting local evolutionary signals (barcodes) within noisy profiles.</p>
+                <ul class="text-gray-400 text-sm space-y-4 project-list">
+                    <li><strong class="text-white">What I Implemented:</strong> The Local Barcode Segmentation (LBS) algorithm.</li>
+                    <li><strong class="text-white">Why:</strong> To filter phylogenetic noise and detect robust evolutionary signals <span class="text-gray-500 text-xs">(barcodes)</span> in disjoint genomic regions.</li>
+                    <li><strong class="text-white">Output:</strong> Cleaned phylogenetic profiles that highlight true evolutionary events over background noise.</li>
+                </ul>
                 <div class="flex gap-4 pt-4">
                     <a href="https://github.com/shalev-compbio/Shalev-Evolutionary-Genomics-Portfolio/tree/main/projects/ird_lbs_barcode_segments" target="_blank" class="px-6 py-2 bg-dna-g text-black font-bold rounded hover:bg-white transition-colors">View Code</a>
                 </div>
             </div>
         </div>
     </div>
-
 
     <!-- Scripts -->
     <script>
@@ -923,6 +1029,13 @@
         function openModal(id) { document.getElementById(id).classList.add('active'); document.body.style.overflow = 'hidden'; }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); document.body.style.overflow = 'auto'; }
         window.onclick = e => { if(e.target.classList.contains('modal')) closeModal(e.target.id); }
+        // Close on ESC key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === "Escape") {
+                const activeModals = document.querySelectorAll('.modal.active');
+                activeModals.forEach(modal => closeModal(modal.id));
+            }
+        });
 
         /**
          * 2. CHAOTIC PARTICLE SYSTEM (Red & Blue Mutations)
@@ -1012,7 +1125,7 @@
 
         // Typing
         const textElement = document.getElementById('typing-text');
-        const phrases = ["Decoding Missing Heritability...", "Detecting Evolutionary Signals...", "Integrating Multi-Omics...", "Open to New Opportunities..."];
+        const phrases = ["Decoding Missing Heritability...", "Detecting Evolutionary Signals...", "Integrating Multi-Omics...", "Open to New Opportunities...", "Continuously evolving..."];
         let phraseIndex = 0, charIndex = 0, isDeleting = false;
         function type() {
             const current = phrases[phraseIndex];
@@ -1032,6 +1145,51 @@
             const nav = document.getElementById('navbar');
             nav.style.background = window.scrollY > 50 ? 'rgba(5,5,5,0.95)' : 'rgba(5,5,5,0.85)';
         });
+
+        // Email Copy Functionality
+        function copyEmail(e) {
+            e.preventDefault(); // Prevent default mailto behavior for smoother interaction
+            const email = "shalev.yaacov@mail.huji.ac.il";
+            
+            // Create temporary element to copy text
+            const textArea = document.createElement("textarea");
+            textArea.value = email;
+            document.body.appendChild(textArea);
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
+                showCopyFeedback();
+            } catch (err) {
+                console.error('Fallback: Oops, unable to copy', err);
+            }
+            
+            document.body.removeChild(textArea);
+        }
+
+        function showCopyFeedback() {
+            const label = document.getElementById('email-label');
+            const icon = document.getElementById('email-icon');
+            const originalText = "Email"; // Keeping original text hardcoded or saved
+            
+            // Change to feedback state
+            label.innerText = "Copied!";
+            label.classList.remove('text-gray-400');
+            label.classList.add('text-dna-t'); // Use the red/rose theme color
+            
+            icon.classList.remove('fa-envelope');
+            icon.classList.add('fa-check');
+            
+            // Revert after 2 seconds
+            setTimeout(() => {
+                label.innerText = originalText;
+                label.classList.add('text-gray-400');
+                label.classList.remove('text-dna-t');
+                
+                icon.classList.add('fa-envelope');
+                icon.classList.remove('fa-check');
+            }, 2000);
+        }
 
     </script>
 </body>
