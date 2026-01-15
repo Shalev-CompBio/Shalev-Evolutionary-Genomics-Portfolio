@@ -1,8 +1,10 @@
-# Ignore Python cache and temporary files
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
-*.ipynb_checkpoints
+.ipynb_checkpoints
 .env
+*.env
+.venv/
+venv/
 .DS_Store
