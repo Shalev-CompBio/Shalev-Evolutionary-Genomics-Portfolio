@@ -70,6 +70,17 @@ To quickly explore my work visually, check out the interactive portfolio:
 
 ---
 
+### 5. 🫁 [IRD HPO Anatomogram](./projects/IRD_HPO_Anatomogram)
+* **Goal:** Translate gene-cluster phenotype data into anatomical body maps — making computational results interpretable for clinical collaborators.
+* **Approach:** Maps HPO phenotype terms to organ systems and renders a color-coded human anatomogram showing which organs each gene cluster is most associated with.
+* **Includes:**
+    * HPO ontology parsing and organ-mapping pipeline (Python).
+    * Per-cluster organ percentage computation.
+    * gganatogram-based anatomical visualization (R).
+    * Designed as a communication layer for presenting multi-omics IRD findings to non-computational audiences.
+
+---
+
 ## 🛠️ Tech Stack & Methodology
 
 * **Languages:** Python (Pandas, Scikit-learn, SciPy), R (ggplot2, pheatmap, ComplexHeatmap).
