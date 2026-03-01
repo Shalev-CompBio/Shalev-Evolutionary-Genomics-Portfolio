@@ -1,0 +1,20 @@
+organ_key,organ_label
+brain,Central nervous system
+nerve,Peripheral nervous system
+skeletal_muscle,Skeletal muscle
+smooth_muscle,Visceral/autonomic muscle
+bone,Skeletal system
+bone_marrow,Hematopoietic system
+kidney,Kidney
+renal_cortex,Renal cortex
+liver,Liver
+heart,Heart
+left_ventricle,Left ventricle
+skin,Skin
+eye,Eye
+retina,Retina
+cerebral_cortex,Cerebral cortex
+spinal_cord,Spinal cord
+pancreas,Pancreas
+urinary_bladder,Urinary bladder
+small_intestine,Small intestine

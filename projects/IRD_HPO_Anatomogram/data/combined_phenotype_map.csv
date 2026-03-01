@@ -1,0 +1,358 @@
+hpo_id,hpo_name,depth,organ,match_type,system,keyword_matched,source
+HP:0000769,Abnormality of the breast,2,breast,contains,,,organ_only
+HP:0000119,Abnormality of the genitourinary system,2,urinary_bladder,contains,,,organ_only
+HP:0033127,Abnormality of the musculoskeletal system,2,skeletal_muscle,contains,,,organ_only
+HP:0005561,Abnormal bone marrow cell morphology,3,bone,contains,,,organ_only
+HP:0005561,Abnormal bone marrow cell morphology,3,bone_marrow,contains,,,organ_only
+HP:0031093,Abnormal breast morphology,3,breast,contains,,,organ_only
+HP:0031094,Abnormal breast physiology,3,breast,contains,,,organ_only
+HP:0001881,Abnormal leukocyte morphology,3,leukocyte,contains,,,organ_only
+HP:0033796,Abnormal leukocyte physiology,3,leukocyte,contains,,,organ_only
+HP:0011843,Abnormal musculoskeletal physiology,3,skeletal_muscle,contains,,,organ_only
+HP:3000013,Abnormal platysma muscle morphology,3,skeletal_muscle,contains,,,organ_only
+HP:3000013,Abnormal platysma muscle morphology,3,smooth_muscle,contains,,,organ_only
+HP:0011138,Abnormal skin adnexa morphology,3,skin,contains,,,organ_only
+HP:0003549,Abnormality of connective tissue,3,adipose_tissue,contains,,,organ_only
+HP:0040068,Abnormality of limb bone,3,bone,contains,,,organ_only
+HP:0040068,Abnormality of limb bone,3,bone_marrow,contains,,,organ_only
+HP:0025276,Abnormality of skin adnexa physiology,3,skin,contains,,,organ_only
+HP:0000834,Abnormality of the adrenal glands,3,adrenal_gland,contains,,,organ_only
+HP:0000834,Abnormality of the adrenal glands,3,parotid_gland,contains,,,organ_only
+HP:0000834,Abnormality of the adrenal glands,3,pituitary_gland,contains,,,organ_only
+HP:0000834,Abnormality of the adrenal glands,3,renal_cortex,contains,,,organ_only
+HP:0000834,Abnormality of the adrenal glands,3,salivary_gland,contains,,,organ_only
+HP:0000834,Abnormality of the adrenal glands,3,submandibular_gland,contains,,,organ_only
+HP:0000834,Abnormality of the adrenal glands,3,thyroid_gland,contains,,,organ_only
+HP:0000864,Abnormality of the hypothalamus-pituitary axis,3,pituitary_gland,contains,,,organ_only
+HP:0100763,Abnormality of the lymphatic system,3,lymph_node,contains,,,organ_only
+HP:0000828,Abnormality of the parathyroid gland,3,adrenal_gland,contains,,,organ_only
+HP:0000828,Abnormality of the parathyroid gland,3,parotid_gland,contains,,,organ_only
+HP:0000828,Abnormality of the parathyroid gland,3,pituitary_gland,contains,,,organ_only
+HP:0000828,Abnormality of the parathyroid gland,3,salivary_gland,contains,,,organ_only
+HP:0000828,Abnormality of the parathyroid gland,3,submandibular_gland,contains,,,organ_only
+HP:0000828,Abnormality of the parathyroid gland,3,thyroid_gland,contains,,,organ_only
+HP:0012680,Abnormality of the pineal gland,3,adrenal_gland,contains,,,organ_only
+HP:0012680,Abnormality of the pineal gland,3,parotid_gland,contains,,,organ_only
+HP:0012680,Abnormality of the pineal gland,3,pituitary_gland,contains,,,organ_only
+HP:0012680,Abnormality of the pineal gland,3,salivary_gland,contains,,,organ_only
+HP:0012680,Abnormality of the pineal gland,3,submandibular_gland,contains,,,organ_only
+HP:0012680,Abnormality of the pineal gland,3,thyroid_gland,contains,,,organ_only
+HP:0000924,Abnormality of the skeletal system,3,skeletal_muscle,contains,,,organ_only
+HP:0000951,Abnormality of the skin,3,skin,contains,,,organ_only
+HP:0000820,Abnormality of the thyroid gland,3,adrenal_gland,contains,,,organ_only
+HP:0000820,Abnormality of the thyroid gland,3,parotid_gland,contains,,,organ_only
+HP:0000820,Abnormality of the thyroid gland,3,pituitary_gland,contains,,,organ_only
+HP:0000820,Abnormality of the thyroid gland,3,salivary_gland,contains,,,organ_only
+HP:0000820,Abnormality of the thyroid gland,3,submandibular_gland,contains,,,organ_only
+HP:0000820,Abnormality of the thyroid gland,3,thyroid_gland,contains,,,organ_only
+HP:0000079,Abnormality of the urinary system,3,urinary_bladder,contains,,,organ_only
+HP:0009124,Abnormal adipose tissue morphology,4,adipose_tissue,contains,,,organ_only
+HP:0011732,Abnormal adrenal morphology,4,adrenal_gland,contains,,,organ_only
+HP:0011732,Abnormal adrenal morphology,4,renal_cortex,contains,,,organ_only
+HP:0025590,Abnormal extraocular muscle physiology,4,skeletal_muscle,contains,,,organ_only
+HP:0025590,Abnormal extraocular muscle physiology,4,smooth_muscle,contains,,,organ_only
+HP:0001627,Abnormal heart morphology,4,heart,contains,,,organ_only
+HP:0031653,Abnormal heart valve physiology,4,heart,contains,,,organ_only
+HP:0031653,Abnormal heart valve physiology,4,mitral_valve,contains,,,organ_only
+HP:0031653,Abnormal heart valve physiology,4,pulmonary_valve,contains,,,organ_only
+HP:0031653,Abnormal heart valve physiology,4,tricuspid_valve,contains,,,organ_only
+HP:0002813,Abnormal limb bone morphology,4,bone,contains,,,organ_only
+HP:0002813,Abnormal limb bone morphology,4,bone_marrow,contains,,,organ_only
+HP:0040069,Abnormal lower limb bone morphology,4,bone,contains,,,organ_only
+HP:0040069,Abnormal lower limb bone morphology,4,bone_marrow,contains,,,organ_only
+HP:0002733,Abnormal lymph node morphology,4,lymph_node,contains,,,organ_only
+HP:0020278,Abnormal lymph-node lymphoctye nuclear morphology,4,lymph_node,contains,,,organ_only
+HP:0020284,Abnormal lymph-node lymphocyte cytoplasm morphology,4,lymph_node,contains,,,organ_only
+HP:0100766,Abnormal lymphatic vessel morphology,4,lymph_node,contains,,,organ_only
+HP:0004332,Abnormal lymphocyte morphology,4,lymph_node,contains,,,organ_only
+HP:0031409,Abnormal lymphocyte physiology,4,lymph_node,contains,,,organ_only
+HP:0011804,Abnormal muscle physiology,4,skeletal_muscle,contains,,,organ_only
+HP:0011804,Abnormal muscle physiology,4,smooth_muscle,contains,,,organ_only
+HP:0010974,Abnormal myeloid leukocyte morphology,4,leukocyte,contains,,,organ_only
+HP:3000050,Abnormal odontoid tissue morphology,4,adipose_tissue,contains,,,organ_only
+HP:0011766,Abnormal parathyroid morphology,4,thyroid_gland,contains,,,organ_only
+HP:0012503,Abnormal pituitary gland morphology,4,adrenal_gland,contains,,,organ_only
+HP:0012503,Abnormal pituitary gland morphology,4,parotid_gland,contains,,,organ_only
+HP:0012503,Abnormal pituitary gland morphology,4,pituitary_gland,contains,,,organ_only
+HP:0012503,Abnormal pituitary gland morphology,4,salivary_gland,contains,,,organ_only
+HP:0012503,Abnormal pituitary gland morphology,4,submandibular_gland,contains,,,organ_only
+HP:0012503,Abnormal pituitary gland morphology,4,thyroid_gland,contains,,,organ_only
+HP:0034977,Abnormal pituitary stalk morphology,4,pituitary_gland,contains,,,organ_only
+HP:0100767,Abnormal placenta morphology,4,placenta,contains,,,organ_only
+HP:0011409,Abnormal placental membrane morphology,4,placenta,contains,,,organ_only
+HP:0032226,Abnormal sebaceous gland morphology,4,adrenal_gland,contains,,,organ_only
+HP:0032226,Abnormal sebaceous gland morphology,4,parotid_gland,contains,,,organ_only
+HP:0032226,Abnormal sebaceous gland morphology,4,pituitary_gland,contains,,,organ_only
+HP:0032226,Abnormal sebaceous gland morphology,4,salivary_gland,contains,,,organ_only
+HP:0032226,Abnormal sebaceous gland morphology,4,submandibular_gland,contains,,,organ_only
+HP:0032226,Abnormal sebaceous gland morphology,4,thyroid_gland,contains,,,organ_only
+HP:0011842,Abnormal skeletal morphology,4,skeletal_muscle,contains,,,organ_only
+HP:0011805,Abnormal skeletal muscle morphology,4,skeletal_muscle,contains,,,organ_only
+HP:0011805,Abnormal skeletal muscle morphology,4,smooth_muscle,contains,,,organ_only
+HP:0011121,Abnormal skin morphology,4,skin,contains,,,organ_only
+HP:0000971,Abnormal sweat gland morphology,4,adrenal_gland,contains,,,organ_only
+HP:0000971,Abnormal sweat gland morphology,4,parotid_gland,contains,,,organ_only
+HP:0000971,Abnormal sweat gland morphology,4,pituitary_gland,contains,,,organ_only
+HP:0000971,Abnormal sweat gland morphology,4,salivary_gland,contains,,,organ_only
+HP:0000971,Abnormal sweat gland morphology,4,submandibular_gland,contains,,,organ_only
+HP:0000971,Abnormal sweat gland morphology,4,thyroid_gland,contains,,,organ_only
+HP:0011772,Abnormal thyroid morphology,4,thyroid_gland,contains,,,organ_only
+HP:0040070,Abnormal upper limb bone morphology,4,bone,contains,,,organ_only
+HP:0040070,Abnormal upper limb bone morphology,4,bone_marrow,contains,,,organ_only
+HP:0011733,Abnormality of adrenal physiology,4,adrenal_gland,contains,,,organ_only
+HP:0011733,Abnormality of adrenal physiology,4,renal_cortex,contains,,,organ_only
+HP:0012129,Abnormality of bone marrow stromal cells,4,bone,contains,,,organ_only
+HP:0012129,Abnormality of bone marrow stromal cells,4,bone_marrow,contains,,,organ_only
+HP:0100886,Abnormality of globe location,4,temporal_lobe,contains,,,organ_only
+HP:0100887,Abnormality of globe size,4,temporal_lobe,contains,,,organ_only
+HP:0012145,Abnormality of multiple cell lineages in the bone marrow,4,bone,contains,,,organ_only
+HP:0012145,Abnormality of multiple cell lineages in the bone marrow,4,bone_marrow,contains,,,organ_only
+HP:0040172,Abnormality of occipitofrontalis muscle,4,frontal_cortex,contains,,,organ_only
+HP:0040172,Abnormality of occipitofrontalis muscle,4,skeletal_muscle,contains,,,organ_only
+HP:0040172,Abnormality of occipitofrontalis muscle,4,smooth_muscle,contains,,,organ_only
+HP:0000927,Abnormality of skeletal maturation,4,skeletal_muscle,contains,,,organ_only
+HP:0011122,Abnormality of skin physiology,4,skin,contains,,,organ_only
+HP:0010936,Abnormality of the lower urinary tract,4,urinary_bladder,contains,,,organ_only
+HP:0011767,Abnormality of the parathyroid physiology,4,thyroid_gland,contains,,,organ_only
+HP:0001743,Abnormality of the spleen,4,spleen,contains,,,organ_only
+HP:0100765,Abnormality of the tonsils,4,tonsil,contains,,,organ_only
+HP:0010935,Abnormality of the upper urinary tract,4,urinary_bladder,contains,,,organ_only
+HP:0011277,Abnormality of the urinary system physiology,4,urinary_bladder,contains,,,organ_only
+HP:0002926,Abnormality of thyroid physiology,4,thyroid_gland,contains,,,organ_only
+HP:0020274,Lymph-node lymphocyte monocytoid morphology,4,lymph_node,contains,,,organ_only
+HP:0040115,Abnormal Eustachian tube morphology,5,fallopian_tube,contains,,,organ_only
+HP:0031652,Abnormal aortic valve physiology,5,mitral_valve,contains,,,organ_only
+HP:0031652,Abnormal aortic valve physiology,5,pulmonary_valve,contains,,,organ_only
+HP:0031652,Abnormal aortic valve physiology,5,tricuspid_valve,contains,,,organ_only
+HP:0031650,Abnormal atrioventricular valve physiology,5,mitral_valve,contains,,,organ_only
+HP:0031650,Abnormal atrioventricular valve physiology,5,pulmonary_valve,contains,,,organ_only
+HP:0031650,Abnormal atrioventricular valve physiology,5,tricuspid_valve,contains,,,organ_only
+HP:0040286,Abnormal axial muscle morphology,5,skeletal_muscle,contains,,,organ_only
+HP:0040286,Abnormal axial muscle morphology,5,smooth_muscle,contains,,,organ_only
+HP:0002763,Abnormal cartilage morphology,5,cartilage,contains,,,organ_only
+HP:0031538,Abnormal dermoepidermal junction morphology,5,gastroesophageal_junction,contains,,,organ_only
+HP:0034242,Abnormal fetal genitourinary system morphology,5,urinary_bladder,contains,,,organ_only
+HP:0025662,Abnormal fetal skeletal morphology,5,skeletal_muscle,contains,,,organ_only
+HP:0025723,Abnormal fetal skin morphology,5,skin,contains,,,organ_only
+HP:0040072,Abnormal forearm bone morphology,5,bone,contains,,,organ_only
+HP:0040072,Abnormal forearm bone morphology,5,bone_marrow,contains,,,organ_only
+HP:3000004,Abnormal frontalis muscle physiology,5,frontal_cortex,contains,,,organ_only
+HP:3000004,Abnormal frontalis muscle physiology,5,skeletal_muscle,contains,,,organ_only
+HP:3000004,Abnormal frontalis muscle physiology,5,smooth_muscle,contains,,,organ_only
+HP:0001654,Abnormal heart valve morphology,5,heart,contains,,,organ_only
+HP:0001654,Abnormal heart valve morphology,5,mitral_valve,contains,,,organ_only
+HP:0001654,Abnormal heart valve morphology,5,pulmonary_valve,contains,,,organ_only
+HP:0001654,Abnormal heart valve morphology,5,tricuspid_valve,contains,,,organ_only
+HP:3000051,Abnormal hyoglossus muscle morphology,5,skeletal_muscle,contains,,,organ_only
+HP:3000051,Abnormal hyoglossus muscle morphology,5,smooth_muscle,contains,,,organ_only
+HP:3000052,Abnormal hyoid bone morphology,5,bone,contains,,,organ_only
+HP:3000052,Abnormal hyoid bone morphology,5,bone_marrow,contains,,,organ_only
+HP:3000067,Abnormal lateral cricoarytenoid muscle morphology,5,skeletal_muscle,contains,,,organ_only
+HP:3000067,Abnormal lateral cricoarytenoid muscle morphology,5,smooth_muscle,contains,,,organ_only
+HP:0020255,Abnormal lymph-node germinal center morphology,5,lymph_node,contains,,,organ_only
+HP:0430015,Abnormal morphology of musculature of pharynx,5,nasal_pharynx,contains,,,organ_only
+HP:0004303,Abnormal muscle fiber morphology,5,skeletal_muscle,contains,,,organ_only
+HP:0004303,Abnormal muscle fiber morphology,5,smooth_muscle,contains,,,organ_only
+HP:0010937,Abnormal nasal skeleton morphology,5,nasal_pharynx,contains,,,organ_only
+HP:0010937,Abnormal nasal skeleton morphology,5,nasal_septum,contains,,,organ_only
+HP:0031739,Abnormal oblique muscle physiology,5,skeletal_muscle,contains,,,organ_only
+HP:0031739,Abnormal oblique muscle physiology,5,smooth_muscle,contains,,,organ_only
+HP:0000245,Abnormal paranasal sinus morphology,5,nasal_pharynx,contains,,,organ_only
+HP:0000245,Abnormal paranasal sinus morphology,5,nasal_septum,contains,,,organ_only
+HP:0031755,Abnormal rectus muscle physiology,5,skeletal_muscle,contains,,,organ_only
+HP:0031755,Abnormal rectus muscle physiology,5,smooth_muscle,contains,,,organ_only
+HP:0012211,Abnormal renal physiology,5,renal_cortex,contains,,,organ_only
+HP:0025408,Abnormal spleen morphology,5,spleen,contains,,,organ_only
+HP:0025409,Abnormal spleen physiology,5,spleen,contains,,,organ_only
+HP:0009911,Abnormal temporal bone morphology,5,bone,contains,,,organ_only
+HP:0009911,Abnormal temporal bone morphology,5,bone_marrow,contains,,,organ_only
+HP:0009911,Abnormal temporal bone morphology,5,temporal_lobe,contains,,,organ_only
+HP:0000291,Abnormality of facial adipose tissue,5,adipose_tissue,contains,,,organ_only
+HP:0011799,Abnormality of facial soft tissue,5,adipose_tissue,contains,,,organ_only
+HP:3000076,Abnormality of lingual tonsil,5,tonsil,contains,,,organ_only
+HP:0025042,Abnormality of mesenteric lymph nodes,5,lymph_node,contains,,,organ_only
+HP:0030236,Abnormality of muscle size,5,skeletal_muscle,contains,,,organ_only
+HP:0030236,Abnormality of muscle size,5,smooth_muscle,contains,,,organ_only
+HP:0000617,Abnormality of ocular smooth pursuit,5,smooth_muscle,contains,,,organ_only
+HP:0001000,Abnormality of skin pigmentation,5,skin,contains,,,organ_only
+HP:0001001,Abnormality of subcutaneous fat tissue,5,adipose_tissue,contains,,,organ_only
+HP:0011747,Abnormality of the anterior pituitary,5,pituitary_gland,contains,,,organ_only
+HP:0000014,Abnormality of the bladder,5,gall_bladder,contains,,,organ_only
+HP:0000014,Abnormality of the bladder,5,urinary_bladder,contains,,,organ_only
+HP:0000775,Abnormality of the diaphragm,5,diaphragm,contains,,,organ_only
+HP:0008049,Abnormality of the extraocular muscles,5,skeletal_muscle,contains,,,organ_only
+HP:0008049,Abnormality of the extraocular muscles,5,smooth_muscle,contains,,,organ_only
+HP:0000077,Abnormality of the kidney,5,kidney,contains,,,organ_only
+HP:0000366,Abnormality of the nose,5,nose,contains,,,organ_only
+HP:0000600,Abnormality of the pharynx,5,nasal_pharynx,contains,,,organ_only
+HP:0100872,Abnormality of the plantar skin of foot,5,skin,contains,,,organ_only
+HP:0001850,Abnormality of the tarsal bones,5,bone,contains,,,organ_only
+HP:0001850,Abnormality of the tarsal bones,5,bone_marrow,contains,,,organ_only
+HP:0040173,Abnormality of the tongue muscle,5,skeletal_muscle,contains,,,organ_only
+HP:0040173,Abnormality of the tongue muscle,5,smooth_muscle,contains,,,organ_only
+HP:0040173,Abnormality of the tongue muscle,5,tongue,contains,,,organ_only
+HP:0011354,Generalized abnormality of skin,5,skin,contains,,,organ_only
+HP:0011123,Inflammatory abnormality of the skin,5,skin,contains,,,organ_only
+HP:0003800,Muscle abnormality related to mitochondrial dysfunction,5,skeletal_muscle,contains,,,organ_only
+HP:0003800,Muscle abnormality related to mitochondrial dysfunction,5,smooth_muscle,contains,,,organ_only
+HP:0025031,Abnormality of the digestive system,2,,,digestion,digestive,system_only
+HP:0000707,Abnormality of the nervous system,2,,,nervous_system,nervous,system_only
+HP:0002086,Abnormality of the respiratory system,2,,,respiratory,respiratory,system_only
+HP:0020092,Histopathological abnormality,2,,,digestion,gi,system_only
+HP:0025033,Abnormal digestive system morphology,3,,,digestion,digestive,system_only
+HP:0012639,Abnormal nervous system morphology,3,,,nervous_system,nervous,system_only
+HP:0012638,Abnormal nervous system physiology,3,,,nervous_system,nervous,system_only
+HP:0012252,Abnormal respiratory system morphology,3,,,respiratory,respiratory,system_only
+HP:0002795,Abnormal respiratory system physiology,3,,,respiratory,respiratory,system_only
+HP:0025032,Abnormality of digestive system physiology,3,,,digestion,digestive,system_only
+HP:0000847,Abnormality of renin-angiotensin system,3,,,digestion,gi,system_only
+HP:0410008,Abnormality of the peripheral nervous system,3,,,nervous_system,nervous,system_only
+HP:0410014,Abnormal ganglion morphology,4,,,nervous_system,ganglion,system_only
+HP:3000036,Abnormal head blood vessel morphology,4,,,circulation,blood,system_only
+HP:0025155,Abnormal hepatobiliary system physiology,4,,,digestion,biliary,system_only
+HP:0001311,Abnormal nervous system electrophysiology,4,,,nervous_system,nervous,system_only
+HP:0012757,Abnormal neuron morphology,4,,,nervous_system,neuron,system_only
+HP:0000759,Abnormal peripheral nervous system morphology,4,,,nervous_system,nervous,system_only
+HP:0032120,Abnormal peripheral nervous system physiology,4,,,nervous_system,nervous,system_only
+HP:0012253,Abnormal respiratory epithelium morphology,4,,,respiratory,respiratory,system_only
+HP:0012261,Abnormal respiratory motile cilium physiology,4,,,respiratory,respiratory,system_only
+HP:0005607,Abnormal tracheobronchial morphology,4,,,respiratory,bronchial,system_only
+HP:0011028,Abnormality of blood circulation,4,,,circulation,blood,system_only
+HP:0002270,Abnormality of the autonomic nervous system,4,,,nervous_system,nervous,system_only
+HP:0410009,Abnormality of the somatic nervous system,4,,,nervous_system,nervous,system_only
+HP:0002087,Abnormality of the upper respiratory tract,4,,,respiratory,respiratory,system_only
+HP:0010970,Blood group antigen abnormality,4,,,circulation,blood,system_only
+HP:0002011,Morphological central nervous system abnormality,4,,,digestion,gi,system_only
+HP:0002011,Morphological central nervous system abnormality,4,,,nervous_system,nervous,system_only
+HP:0012759,Neurodevelopmental abnormality,4,,,nervous_system,neuro,system_only
+HP:0025323,Abnormal arterial physiology,5,,,circulation,arterial,system_only
+HP:0012331,Abnormal autonomic nervous system morphology,5,,,nervous_system,nervous,system_only
+HP:0012332,Abnormal autonomic nervous system physiology,5,,,nervous_system,nervous,system_only
+HP:0033353,Abnormal blood vessel morphology,5,,,circulation,blood,system_only
+HP:0032973,Abnormal bronchoalveolar lavage fluid morphology,5,,,respiratory,alveolar,system_only
+HP:0025018,Abnormal capillary physiology,5,,,circulation,capillary,system_only
+HP:0410016,Abnormal cranial ganglion morphology,5,,,nervous_system,ganglion,system_only
+HP:0011297,Abnormal digit morphology,5,,,digestion,gi,system_only
+HP:3000043,Abnormal facial vein morphology,5,,,circulation,vein,system_only
+HP:0034206,Abnormal fetal central nervous system morphology,5,,,nervous_system,nervous,system_only
+HP:0002366,Abnormal lower motor neuron morphology,5,,,nervous_system,neuron,system_only
+HP:0002450,Abnormal motor neuron morphology,5,,,nervous_system,neuron,system_only
+HP:3000037,Abnormal neck blood vessel morphology,5,,,circulation,blood,system_only
+HP:0410015,Abnormal peripheral nervous system ganglion morphology,5,,,nervous_system,nervous,system_only
+HP:0031941,Abnormal portal venous system morphology,5,,,circulation,venous,system_only
+HP:0005938,Abnormal respiratory motile cilium morphology,5,,,respiratory,respiratory,system_only
+HP:0011104,Abnormality of blood volume homeostasis,5,,,circulation,blood,system_only
+HP:0030178,Abnormality of central nervous system electrophysiology,5,,,nervous_system,nervous,system_only
+HP:0010947,Abnormality of ductus venosus blood flow,5,,,circulation,blood,system_only
+HP:0002269,Abnormality of neuronal migration,5,,,nervous_system,neuron,system_only
+HP:0030177,Abnormality of peripheral nervous system electrophysiology,5,,,nervous_system,nervous,system_only
+HP:0004297,Abnormality of the biliary system,5,,,digestion,biliary,system_only
+HP:0000315,Abnormality of the orbital region,5,,,digestion,gi,system_only
+HP:0000606,Abnormality of the periorbital region,5,,,digestion,gi,system_only
+HP:0001435,Abnormality of the shoulder girdle musculature,5,,,digestion,gi,system_only
+HP:0030846,Abnormality of venous physiology,5,,,circulation,venous,system_only
+HP:0000849,Adrenocortical abnormality,5,,,nervous_system,cortical,system_only
+HP:0031546,Cardiac conduction abnormality,5,,,circulation,cardiac,system_only
+HP:0001871,Abnormality of blood and blood-forming tissues,2,adipose_tissue,contains,circulation,blood,both
+HP:0001626,Abnormality of the cardiovascular system,2,vas_deferens,contains,circulation,vascular,both
+HP:0030680,Abnormal cardiovascular system morphology,3,vas_deferens,contains,circulation,vascular,both
+HP:0011025,Abnormal cardiovascular system physiology,3,vas_deferens,contains,circulation,vascular,both
+HP:0012093,Abnormality of endocrine pancreas physiology,3,pancreas,contains,digestion,pancreas,both
+HP:0011024,Abnormality of the gastrointestinal tract,3,testis,contains,digestion,gastrointestinal,both
+HP:0002597,Abnormality of the vasculature,3,vas_deferens,contains,circulation,vasculature,both
+HP:0025427,Abnormal bronchus physiology,4,bronchus,contains,respiratory,bronchus,both
+HP:0025443,Abnormal cardiac atrial physiology,4,atrial_appendage,contains,circulation,cardiac,both
+HP:0031910,Abnormal cranial nerve physiology,4,nerve,contains,nervous_system,nerve,both
+HP:0010948,Abnormal fetal cardiovascular morphology,4,vas_deferens,contains,circulation,vascular,both
+HP:0034190,Abnormal fetal cardiovascular physiology,4,vas_deferens,contains,circulation,vascular,both
+HP:0012718,Abnormal gastrointestinal tract morphology,4,testis,contains,digestion,gastrointestinal,both
+HP:0012700,Abnormal large intestine physiology,4,small_intestine,contains,digestion,intestine,both
+HP:0012700,Abnormal large intestine physiology,4,testis,contains,digestion,intestine,both
+HP:0002088,Abnormal lung morphology,4,lung,contains,respiratory,lung,both
+HP:0034482,Abnormal spinal cord physiology,4,spinal_cord,contains,nervous_system,spinal,both
+HP:0025015,Abnormal vascular morphology,4,vas_deferens,contains,circulation,vascular,both
+HP:0030163,Abnormal vascular physiology,4,vas_deferens,contains,circulation,vascular,both
+HP:0030956,Abnormality of cardiovascular system electrophysiology,4,vas_deferens,contains,circulation,vascular,both
+HP:0030875,Abnormality of pulmonary circulation,4,pulmonary_valve,contains,circulation,circulation,both
+HP:0030875,Abnormality of pulmonary circulation,4,pulmonary_valve,contains,respiratory,pulmonary,both
+HP:0006707,Abnormality of the hepatic vasculature,4,vas_deferens,contains,circulation,vasculature,both
+HP:0006707,Abnormality of the hepatic vasculature,4,vas_deferens,contains,digestion,hepatic,both
+HP:0001392,Abnormality of the liver,4,liver,contains,digestion,liver,both
+HP:0001732,Abnormality of the pancreas,4,pancreas,contains,digestion,pancreas,both
+HP:0006476,Abnormality of the pancreatic islet cells,4,pancreas,contains,digestion,pancreatic,both
+HP:0004930,Abnormality of the pulmonary vasculature,4,pulmonary_valve,contains,circulation,vasculature,both
+HP:0004930,Abnormality of the pulmonary vasculature,4,pulmonary_valve,contains,respiratory,pulmonary,both
+HP:0004930,Abnormality of the pulmonary vasculature,4,vas_deferens,contains,circulation,vasculature,both
+HP:0004930,Abnormality of the pulmonary vasculature,4,vas_deferens,contains,respiratory,pulmonary,both
+HP:0010881,Abnormality of the umbilical cord,4,spinal_cord,contains,nervous_system,cord,both
+HP:0008047,Abnormality of the vasculature of the eye,4,vas_deferens,contains,circulation,vasculature,both
+HP:0030878,Abnormality on pulmonary function testing,4,pulmonary_valve,contains,respiratory,pulmonary,both
+HP:0030878,Abnormality on pulmonary function testing,4,testis,contains,respiratory,pulmonary,both
+HP:0410263,Brain imaging abnormality,4,brain,contains,digestion,gi,both
+HP:0410263,Brain imaging abnormality,4,brain,contains,nervous_system,brain,both
+HP:0012719,Functional abnormality of the gastrointestinal tract,4,testis,contains,digestion,gastrointestinal,both
+HP:0011276,Vascular skin abnormality,4,skin,contains,circulation,vascular,both
+HP:0011276,Vascular skin abnormality,4,vas_deferens,contains,circulation,vascular,both
+HP:0012443,Abnormal brain morphology,5,brain,contains,nervous_system,brain,both
+HP:0025426,Abnormal bronchus morphology,5,bronchus,contains,respiratory,bronchus,both
+HP:0032580,Abnormal bulbus cordis morphology,5,spinal_cord,contains,nervous_system,cord,both
+HP:0005120,Abnormal cardiac atrium morphology,5,left_atrium,contains,circulation,cardiac,both
+HP:0001671,Abnormal cardiac septum morphology,5,nasal_septum,contains,circulation,cardiac,both
+HP:0001713,Abnormal cardiac ventricle morphology,5,left_ventricle,contains,circulation,cardiac,both
+HP:0100659,Abnormal cerebral vascular morphology,5,cerebral_cortex,contains,circulation,vascular,both
+HP:0100659,Abnormal cerebral vascular morphology,5,cerebral_cortex,contains,nervous_system,cerebral,both
+HP:0100659,Abnormal cerebral vascular morphology,5,vas_deferens,contains,circulation,vascular,both
+HP:0100659,Abnormal cerebral vascular morphology,5,vas_deferens,contains,nervous_system,cerebral,both
+HP:0002921,Abnormal cerebrospinal fluid morphology,5,spinal_cord,contains,nervous_system,spinal,both
+HP:0001291,Abnormal cranial nerve morphology,5,nerve,contains,nervous_system,nerve,both
+HP:0002031,Abnormal esophagus morphology,5,esophagus,contains,digestion,esophagus,both
+HP:0025270,Abnormal esophagus physiology,5,esophagus,contains,digestion,esophagus,both
+HP:0034207,Abnormal fetal gastrointestinal system morphology,5,testis,contains,digestion,gastrointestinal,both
+HP:0034243,Abnormal fetal pulmonary morphology,5,pulmonary_valve,contains,respiratory,pulmonary,both
+HP:0031911,Abnormal fifth cranial nerve physiology,5,nerve,contains,nervous_system,nerve,both
+HP:0004296,Abnormal gastrointestinal vascular morphology,5,testis,contains,circulation,vascular,both
+HP:0004296,Abnormal gastrointestinal vascular morphology,5,testis,contains,digestion,gastrointestinal,both
+HP:0004296,Abnormal gastrointestinal vascular morphology,5,vas_deferens,contains,circulation,vascular,both
+HP:0004296,Abnormal gastrointestinal vascular morphology,5,vas_deferens,contains,digestion,gastrointestinal,both
+HP:4000147,Abnormal hepatic artery morphology,5,coronary_artery,contains,circulation,artery,both
+HP:4000147,Abnormal hepatic artery morphology,5,coronary_artery,contains,digestion,hepatic,both
+HP:3000054,Abnormal inferior alveolar artery morphology,5,coronary_artery,contains,circulation,artery,both
+HP:3000054,Abnormal inferior alveolar artery morphology,5,coronary_artery,contains,respiratory,alveolar,both
+HP:3000060,Abnormal infraorbital artery morphology,5,coronary_artery,contains,circulation,artery,both
+HP:3000062,Abnormal internal carotid artery morphology,5,coronary_artery,contains,circulation,artery,both
+HP:0002242,Abnormal intestine morphology,5,small_intestine,contains,digestion,intestine,both
+HP:0002242,Abnormal intestine morphology,5,testis,contains,digestion,intestine,both
+HP:3000065,Abnormal lacrimal artery morphology,5,coronary_artery,contains,circulation,artery,both
+HP:3000074,Abnormal lingual artery morphology,5,coronary_artery,contains,circulation,artery,both
+HP:0410042,Abnormal liver morphology,5,liver,contains,digestion,liver,both
+HP:0031865,Abnormal liver physiology,5,liver,contains,digestion,liver,both
+HP:0020249,Abnormal lymph-node marginal or mantle zone morphology,5,lymph_node,contains,digestion,gi,both
+HP:0008054,Abnormal morphology of the conjunctival vasculature,5,vas_deferens,contains,circulation,vasculature,both
+HP:0410043,Abnormal neural tube morphology,5,fallopian_tube,contains,nervous_system,neural tube,both
+HP:0012090,Abnormal pancreas morphology,5,pancreas,contains,digestion,pancreas,both
+HP:0045010,Abnormal peripheral nerve morphology by anatomical site,5,nerve,contains,nervous_system,nerve,both
+HP:0002103,Abnormal pleura morphology,5,pleura,contains,respiratory,pleura,both
+HP:0033137,Abnormal pulmonary alveolar system morphology,5,pulmonary_valve,contains,respiratory,pulmonary,both
+HP:0006530,Abnormal pulmonary interstitial morphology,5,pulmonary_valve,contains,respiratory,pulmonary,both
+HP:0031654,Abnormal pulmonary valve physiology,5,mitral_valve,contains,respiratory,pulmonary,both
+HP:0031654,Abnormal pulmonary valve physiology,5,pulmonary_valve,contains,respiratory,pulmonary,both
+HP:0031654,Abnormal pulmonary valve physiology,5,tricuspid_valve,contains,respiratory,pulmonary,both
+HP:0000630,Abnormal retinal artery morphology,5,coronary_artery,contains,circulation,artery,both
+HP:0008046,Abnormal retinal vascular morphology,5,vas_deferens,contains,circulation,vascular,both
+HP:0002143,Abnormal spinal cord morphology,5,spinal_cord,contains,nervous_system,spinal,both
+HP:0002577,Abnormal stomach morphology,5,stomach,contains,digestion,stomach,both
+HP:0031630,Abnormal subpleural morphology,5,pleura,contains,respiratory,pleura,both
+HP:0002778,Abnormal tracheal morphology,5,trachea,contains,respiratory,trachea,both
+HP:0011403,Abnormal umbilical cord blood vessel morphology,5,spinal_cord,contains,circulation,blood,both
+HP:0011403,Abnormal umbilical cord blood vessel morphology,5,spinal_cord,contains,nervous_system,cord,both
+HP:0012091,Abnormality of pancreas physiology,5,pancreas,contains,digestion,pancreas,both
+HP:0410010,Abnormality of somatic nerve plexus,5,nerve,contains,nervous_system,nerve,both
+HP:0004414,Abnormality of the pulmonary artery,5,coronary_artery,contains,circulation,artery,both
+HP:0004414,Abnormality of the pulmonary artery,5,coronary_artery,contains,respiratory,pulmonary,both
+HP:0004414,Abnormality of the pulmonary artery,5,pulmonary_valve,contains,circulation,artery,both
+HP:0004414,Abnormality of the pulmonary artery,5,pulmonary_valve,contains,respiratory,pulmonary,both
+HP:0011718,Abnormality of the pulmonary veins,5,pulmonary_valve,contains,circulation,vein,both
+HP:0011718,Abnormality of the pulmonary veins,5,pulmonary_valve,contains,respiratory,pulmonary,both
+HP:0410013,Abnormality of the submandibular region,5,submandibular_gland,contains,digestion,gi,both
+HP:0025389,Pulmonary interstitial high-resolution computed tomography abnormality,5,pulmonary_valve,contains,respiratory,pulmonary,both
+HP:0011356,Regional abnormality of skin,5,skin,contains,digestion,gi,both

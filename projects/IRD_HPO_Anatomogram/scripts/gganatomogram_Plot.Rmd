@@ -1,0 +1,346 @@
+---
+title: "HPO Anatomogram Plot"
+author: "Shalev Yaacov"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = TRUE, message = TRUE)
+```
+
+# Overview
+
+This script renders a **gganatogram anatomogram** for a given gene cluster module.
+
+It reads a CSV of organ-level phenotype burden values (`module_id`, `organ`, `value`),
+filters to a selected module, joins onto the full human male anatomy background,
+and visualizes the result as a color-mapped body figure.
+
+Optional organ labels are placed on the top-K organs by phenotype burden using
+centroid coordinates from `gganatogram`.
+
+The figure is exported as PDF, PNG, and TIFF.
+
+## Context
+
+This script is part of a broader IRD multi-omics pipeline. The `value` column
+represents the **percentage of genes in the module** associated with phenotypes
+mapped to each organ via the Human Phenotype Ontology (HPO).
+
+This enables communication of complex gene-phenotype data to clinical audiences
+in a single, interpretable anatomical figure.
+
+## Inputs
+- `INPUT_FILE`: CSV with columns `module_id`, `organ`, `value` (and optional `organ_label`)
+- `MODULE_ID`: integer, the cluster to visualize
+
+## Outputs
+Files written to `../outputs/` with timestamped names:
+- `module_<ID>_<timestamp>.pdf` (vector, for publication)
+- `module_<ID>_<timestamp>.png` (quick preview)
+- `module_<ID>_<timestamp>.tiff` (high-resolution print)
+
+---
+
+# User Configuration
+
+```{r user-config}
+# =============================================================================
+# EDIT THESE PARAMETERS
+# =============================================================================
+
+# Module to plot (single integer, must exist in INPUT_FILE)
+MODULE_ID <- 1
+
+# Input file name (relative to the data/ folder, one level up from scripts/)
+INPUT_FILE <- "gganatogram_organs_input_DEMO.csv"
+
+# Plot title (NULL = auto-generated)
+PLOT_TITLE <- NULL
+
+# Export dimensions
+EXPORT_WIDTH <- 8
+EXPORT_HEIGHT <- 6
+EXPORT_DPI <- 600
+
+# Label settings
+SHOW_LABELS <- TRUE
+LABEL_TOP_K <- 10
+LABEL_SIZE <- 3.2
+LABEL_COLOR <- "#494949"
+LABEL_PRETTIFY <- TRUE
+```
+
+---
+
+# Setup
+
+```{r paths}
+# ---------------------------------------------------------------------------
+# Path setup — works both when Knitting and running chunks interactively
+# ---------------------------------------------------------------------------
+
+# When Knitting, knitr knows the current file path:
+if (!is.null(knitr::current_input())) {
+    script_dir <- dirname(normalizePath(knitr::current_input()))
+} else {
+    # Running interactively in RStudio: set the path to your scripts/ folder
+    # CHANGE THIS if you move the project:
+    script_dir <- dirname(rstudioapi::getActiveDocumentContext()$path)
+}
+
+project_dir <- dirname(script_dir) # one level up from scripts/
+input_dir <- file.path(project_dir, "data")
+output_dir <- file.path(project_dir, "outputs")
+
+if (!dir.exists(output_dir)) dir.create(output_dir, recursive = TRUE)
+
+timestamp <- format(Sys.time(), "%Y%m%d_%H%M")
+
+cat("Project root:", project_dir, "\n")
+cat("Input dir:   ", input_dir, "\n")
+cat("Output dir:  ", output_dir, "\n")
+```
+
+```{r packages}
+# Install gganatogram if needed
+if (!requireNamespace("gganatogram", quietly = TRUE)) {
+    if (!requireNamespace("devtools", quietly = TRUE)) install.packages("devtools")
+    devtools::install_github("jespermaag/gganatogram")
+}
+if (!requireNamespace("ggrepel", quietly = TRUE)) install.packages("ggrepel")
+
+library(gganatogram)
+library(ggrepel)
+library(ggplot2)
+library(dplyr)
+library(readr)
+library(scales)
+```
+
+---
+
+# Load and Validate Data
+
+```{r load-data}
+input_path <- file.path(input_dir, INPUT_FILE)
+data <- read_csv(input_path, show_col_types = FALSE)
+
+# Filter to selected module
+module_data <- data %>%
+    filter(module_id == MODULE_ID) %>%
+    select(any_of(c("organ", "value", "organ_label")))
+
+if (nrow(module_data) == 0) {
+    stop(paste(
+        "No data found for module", MODULE_ID,
+        "- check that MODULE_ID exists in", INPUT_FILE
+    ))
+}
+
+cat("Module", MODULE_ID, ":", nrow(module_data), "organs loaded\n")
+print(module_data)
+```
+
+```{r validate-organs}
+# Validate against gganatogram's known organ list
+valid_organs <- unique(gganatogram::hgMale_key$organ)
+invalid <- setdiff(module_data$organ, valid_organs)
+
+if (length(invalid) > 0) {
+    warning(paste("Removed invalid organs:", paste(invalid, collapse = ", ")))
+    module_data <- module_data %>% filter(organ %in% valid_organs)
+}
+```
+
+---
+
+# Build Plot Data
+
+```{r prepare-plot-data}
+# Join module values onto the FULL anatomy background (all organs)
+# Organs not in the module receive value = 0 (grey)
+plot_df <- hgMale_key %>%
+    distinct(organ) %>%
+    left_join(module_data %>% select(organ, value), by = "organ") %>%
+    mutate(value = ifelse(is.na(value), 0, value))
+
+cat("Total organs in anatomy:", nrow(plot_df), "\n")
+cat("Organs with values > 0:", sum(plot_df$value > 0), "\n")
+```
+
+---
+
+# Create Anatomogram
+
+```{r create-plot, fig.width=8, fig.height=6}
+if (is.null(PLOT_TITLE)) {
+    PLOT_TITLE <- paste0(
+        "Anatomical distribution of phenotype-based\norgan enrichment in gene cluster ", MODULE_ID
+    )
+}
+
+p <- gganatogram(
+    data        = plot_df,
+    organism    = "human",
+    sex         = "male",
+    fill        = "value",
+    outline     = TRUE,
+    fillOutline = "#bdbaba"
+) +
+    theme_void() +
+    coord_fixed() +
+    scale_fill_gradientn(
+        colours = c("grey95", "#ffe600b4", "#FFA500", "#FF4500", "#8B0000"),
+        values = scales::rescale(c(0, 25, 50, 85, 100)),
+        limits = c(0, 100),
+        breaks = c(0, 25, 50, 75, 100),
+        name = "Genes with organ-\nassociated phenotypes (%)",
+        na.value = "grey95",
+        guide = guide_colorbar(
+            barwidth = 1,
+            barheight = 10,
+            title.position = "top",
+            title.hjust = 0.5,
+            frame.colour = "#919191",
+            frame.linewidth = 0.1
+        )
+    ) +
+    theme(
+        legend.position = "right",
+        legend.title = element_text(size = 6, face = "bold", color = "#494949"),
+        legend.text = element_text(size = 5),
+        plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
+        plot.subtitle = element_text(size = 8, hjust = 0.5, color = "#494949"),
+        plot.caption = element_text(size = 6, color = "#494949", hjust = 0, face = "italic"),
+        plot.margin = margin(10, 10, 10, 10),
+        panel.background = element_rect(fill = "white", colour = NA)
+    ) +
+    labs(
+        title    = PLOT_TITLE,
+        subtitle = "Color intensity represents the percentage of genes associated with each organ based on HPO annotations.",
+        caption  = "Figure generated using gganatogram (Maag, 2018).\nColor scale: % of cluster genes (0–100%) with organ-specific HPO phenotypes."
+    )
+
+print(p)
+```
+
+---
+
+# Add Organ Labels
+
+```{r add-labels}
+if (SHOW_LABELS) {
+    anatomy_list <- gganatogram::hgMale_list
+
+    # Extract centroid coordinates for each organ in the module
+    coords_list <- list()
+    for (organ_name in module_data$organ) {
+        if (!organ_name %in% names(anatomy_list)) next
+        organ_data <- anatomy_list[[organ_name]]
+        if (is.data.frame(organ_data) && all(c("x", "y") %in% colnames(organ_data))) {
+            coords_list[[organ_name]] <- data.frame(
+                organ = organ_name,
+                x = organ_data$x,
+                y = organ_data$y
+            )
+        }
+    }
+
+    if (length(coords_list) > 0) {
+        coords_df <- bind_rows(coords_list) %>%
+            filter(!is.na(x), !is.na(y)) %>%
+            mutate(y = -y) # invert Y to match plot orientation
+
+        centroids <- coords_df %>%
+            group_by(organ) %>%
+            summarise(x = mean(x), y = mean(y), .groups = "drop") %>%
+            inner_join(module_data %>% select(organ, value), by = "organ") %>%
+            arrange(desc(value)) %>%
+            slice_head(n = LABEL_TOP_K)
+
+        # Use organ_label column if available for cleaner labels
+        if ("organ_label" %in% colnames(module_data)) {
+            centroids <- centroids %>%
+                left_join(module_data %>% select(organ, organ_label) %>% distinct(), by = "organ") %>%
+                mutate(label = ifelse(
+                    !is.na(organ_label) & organ_label != "",
+                    paste0(organ_label, " (", round(value), "%)"),
+                    paste0(organ, " (", round(value), "%)")
+                ))
+        } else {
+            centroids <- centroids %>%
+                mutate(label = paste0(organ, " (", round(value), "%)"))
+        }
+
+        if (LABEL_PRETTIFY) {
+            centroids <- centroids %>% mutate(label = gsub("_", " ", label))
+        }
+
+        centroids <- centroids %>% filter(!is.na(x), !is.na(y))
+
+        if (nrow(centroids) > 0) {
+            body_center_x <- mean(centroids$x)
+            centroids <- centroids %>%
+                mutate(nudge_x = ifelse(x < body_center_x, -80, 99), nudge_y = 0)
+
+            p <- p + geom_text_repel(
+                data = centroids,
+                aes(x = x, y = y, label = label),
+                nudge_x = centroids$nudge_x,
+                nudge_y = centroids$nudge_y,
+                size = LABEL_SIZE,
+                color = LABEL_COLOR,
+                fontface = "bold",
+                direction = "y",
+                force = 2,
+                force_pull = 0,
+                box.padding = 0.5,
+                point.padding = 0.5,
+                min.segment.length = 0,
+                segment.color = "#7f7f7fc4",
+                segment.size = 0.4,
+                segment.alpha = 0.6,
+                max.overlaps = 20,
+                inherit.aes = FALSE,
+                seed = 42
+            )
+        }
+    }
+}
+
+print(p)
+```
+
+---
+
+# Export
+
+```{r export}
+base_name <- paste0("module_", MODULE_ID, "_", timestamp)
+
+pdf_path <- file.path(output_dir, paste0(base_name, ".pdf"))
+png_path <- file.path(output_dir, paste0(base_name, ".png"))
+tiff_path <- file.path(output_dir, paste0(base_name, ".tiff"))
+
+ggsave(pdf_path, p, width = EXPORT_WIDTH, height = EXPORT_HEIGHT, device = cairo_pdf)
+ggsave(png_path, p, width = EXPORT_WIDTH, height = EXPORT_HEIGHT, dpi = 300, bg = "white")
+ggsave(tiff_path, p,
+    width = EXPORT_WIDTH, height = EXPORT_HEIGHT,
+    dpi = EXPORT_DPI, device = "tiff", compression = "lzw", bg = "white"
+)
+
+cat("Exported:\n")
+cat(" PDF: ", pdf_path, "\n")
+cat(" PNG: ", png_path, "\n")
+cat(" TIFF:", tiff_path, "\n")
+```
+
+---
+
+# Session Info
+
+```{r session-info}
+sessionInfo()
+```

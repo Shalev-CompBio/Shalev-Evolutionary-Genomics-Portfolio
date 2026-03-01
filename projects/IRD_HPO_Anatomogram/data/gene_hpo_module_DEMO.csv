@@ -1,0 +1,31 @@
+gene_symbol,entrez_id,module_id,hpo_id,hpo_name
+GENE_A1,100001,1,HP:0000587,Abnormality of the optic nerve
+GENE_A1,100001,1,HP:0000510,Rod-cone dystrophy
+GENE_A1,100001,1,HP:0001251,Ataxia
+GENE_A2,100002,1,HP:0000505,Visual impairment
+GENE_A2,100002,1,HP:0000510,Rod-cone dystrophy
+GENE_A2,100002,1,HP:0001290,Hypotonia
+GENE_A3,100003,1,HP:0000556,Retinal dystrophy
+GENE_A3,100003,1,HP:0001251,Ataxia
+GENE_A3,100003,1,HP:0000707,Abnormality of the nervous system
+GENE_A4,100004,1,HP:0000510,Rod-cone dystrophy
+GENE_A4,100004,1,HP:0001250,Seizures
+GENE_A5,100005,1,HP:0000587,Abnormality of the optic nerve
+GENE_A5,100005,1,HP:0001290,Hypotonia
+GENE_B1,200001,2,HP:0000077,Abnormality of the kidney
+GENE_B1,200001,2,HP:0001392,Abnormality of the liver
+GENE_B1,200001,2,HP:0001871,Abnormality of blood
+GENE_B2,200002,2,HP:0001626,Abnormality of the cardiovascular system
+GENE_B2,200002,2,HP:0000077,Abnormality of the kidney
+GENE_B2,200002,2,HP:0001392,Abnormality of the liver
+GENE_B3,200003,2,HP:0001743,Abnormality of the spleen
+GENE_B3,200003,2,HP:0001392,Abnormality of the liver
+GENE_B4,200004,2,HP:0000077,Abnormality of the kidney
+GENE_B4,200004,2,HP:0001871,Abnormality of blood
+GENE_C1,300001,3,HP:0001626,Abnormality of the cardiovascular system
+GENE_C1,300001,3,HP:0033127,Abnormality of the musculoskeletal system
+GENE_C1,300001,3,HP:0001290,Hypotonia
+GENE_C2,300002,3,HP:0001627,Abnormal heart morphology
+GENE_C2,300002,3,HP:0033127,Abnormality of the musculoskeletal system
+GENE_C3,300003,3,HP:0001626,Abnormality of the cardiovascular system
+GENE_C3,300003,3,HP:0000707,Abnormality of the nervous system
