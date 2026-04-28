@@ -113,6 +113,12 @@
             border-right: 1px solid var(--rule);
         }
 
+        @media (min-width: 768px) {
+            .md\:rule-r {
+                border-right: 1px solid var(--rule);
+            }
+        }
+
         /* Section divider - subtle accent-tinted hairline + tick */
         .section-divider {
             position: relative;
@@ -293,7 +299,8 @@
         }
 
         .marquee-track {
-            animation: marquee 60s linear infinite;
+            animation: marquee 40s linear infinite;
+            width: max-content;
         }
 
         /* Cursor */
@@ -668,8 +675,8 @@
 
             <!-- bottom marquee -->
             <div class="overflow-hidden rule-t rule-b py-4" style="background: var(--paper-2);">
-                <div class="flex marquee-track whitespace-nowrap font-serif text-[28px] md:text-[36px] tracking-tight">
-                    <span class="px-8 inline-flex items-center gap-8">
+                <div class="flex gap-8 marquee-track whitespace-nowrap font-serif text-[28px] md:text-[36px] tracking-tight">
+                    <span class="inline-flex items-center gap-8 shrink-0">
                         <span style="color:#C97A3D;">Phylogenetic Profiling</span> <span
                             style="color: var(--ink-3);">·</span>
                         <span style="color:#C0563A;">Multi-Omics Integration</span> <span
@@ -681,7 +688,7 @@
                         <span style="color:#4A6E96;">HPO Phenotype Mapping</span> <span
                             style="color: var(--ink-3);">·</span>
                     </span>
-                    <span class="px-8 inline-flex items-center gap-8" aria-hidden="true">
+                    <span class="inline-flex items-center gap-8 shrink-0" aria-hidden="true">
                         <span style="color:#C97A3D;">Phylogenetic Profiling</span> <span
                             style="color: var(--ink-3);">·</span>
                         <span style="color:#C0563A;">Multi-Omics Integration</span> <span
@@ -1058,15 +1065,12 @@
 
                 <div class="col-span-12 lg:col-span-5 lg:col-start-8">
                     <div class="rule-t">
-                        <a href="/cdn-cgi/l/email-protection#582b3039343d2e762139393b372e69183539313476302d323176393b763134"
+                        <a href="mailto:shalev.yaacov1@mail.huji.ac.il"
                             id="email-card" class="block py-6 rule-b group">
                             <div class="flex items-center justify-between">
                                 <div>
                                     <div class="eyebrow mb-2">Email · click to copy</div>
-                                    <div class="font-serif text-2xl tracking-tight" id="email-text"><span
-                                            class="__cf_email__"
-                                            data-cfemail="8cffe4ede0e9faa2f5ededefe3fabdcce1ede5e0a2e4f9e6e5a2edefa2e5e0">[email&#160;protected]</span>
-                                    </div>
+                                    <div class="font-serif text-2xl tracking-tight" id="email-text">shalev.yaacov1@mail.huji.ac.il</div>
                                 </div>
                                 <span class="font-mono text-2xl group-hover:translate-x-1 transition-transform"
                                     style="color: var(--accent);">→</span>
@@ -1176,7 +1180,6 @@
     </div>
 
     <!-- ========== SCRIPTS ========== -->
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
     <script>
         /* ----- TWEAKS DEFAULTS ----- */
         const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
@@ -1249,6 +1252,7 @@
         let tIdx = 0, cIdx = 0, tDel = false;
         const tEl = $('#hero-ticker');
         function typeTick() {
+            if (!tEl) return;
             const cur = tickerLines[tIdx];
             if (!tDel) {
                 tEl.textContent = cur.slice(0, ++cIdx);
@@ -1259,7 +1263,7 @@
             }
             setTimeout(typeTick, tDel ? 18 : 38);
         }
-        typeTick();
+        if (tEl) typeTick();
 
         /* ----- NPP MATRIX ----- */
         /* gene labels + pattern: 1 conserved, 2 hotspot, 0 absent */
