@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IRD Prioritization Engine — Logo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;600;700&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
+
+  <template id="__bundler_thumbnail" data-bg-color="#080d14">
+    <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+      <rect width="400" height="300" fill="#080d14"/>
+      <circle cx="200" cy="130" r="60" fill="none" stroke="#00c8b4" stroke-width="3" opacity="0.9"/>
+      <circle cx="200" cy="130" r="42" fill="none" stroke="#00c8b4" stroke-width="2" opacity="0.6"/>
+      <circle cx="200" cy="130" r="24" fill="none" stroke="#f59e3a" stroke-width="2" opacity="0.8"/>
+      <circle cx="200" cy="130" r="8" fill="#00c8b4"/>
+      <circle cx="200" cy="70" r="5" fill="#00c8b4" opacity="0.7"/>
+      <circle cx="252" cy="100" r="4" fill="#00c8b4" opacity="0.5"/>
+      <circle cx="148" cy="100" r="4" fill="#00c8b4" opacity="0.5"/>
+      <circle cx="258" cy="155" r="5" fill="#f59e3a" opacity="0.7"/>
+      <circle cx="142" cy="155" r="5" fill="#f59e3a" opacity="0.7"/>
+      <line x1="200" y1="130" x2="200" y2="70" stroke="#00c8b4" stroke-width="1" opacity="0.4"/>
+      <line x1="200" y1="130" x2="252" y2="100" stroke="#00c8b4" stroke-width="1" opacity="0.3"/>
+      <line x1="200" y1="130" x2="258" y2="155" stroke="#f59e3a" stroke-width="1" opacity="0.3"/>
+      <text x="200" y="220" fill="#e8f0f8" font-family="sans-serif" font-size="22" font-weight="700" text-anchor="middle" letter-spacing="6">IRD</text>
+      <text x="200" y="240" fill="#00c8b4" font-family="sans-serif" font-size="9" text-anchor="middle" letter-spacing="3">PRIORITIZATION ENGINE</text>
+    </svg>
+  </template>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #080d14;
+      --bg2: #0e1620;
+      --fg: #e8f0f8;
+      --fg-dim: #7a90a8;
+      --teal: #00c8b4;
+      --amber: #f59e3a;
+      --teal-glow: rgba(0,200,180,0.18);
+      --amber-glow: rgba(245,158,58,0.12);
+      --font-display: 'Outfit', sans-serif;
+      --font-mono: 'DM Mono', monospace;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--font-display);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* Subtle background grid */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,200,180,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,200,180,0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+    }
+
+    /* Radial ambient glow */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(0,200,180,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .canvas {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 64px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      color: var(--fg-dim);
+      text-transform: uppercase;
+      margin-bottom: -48px;
+    }
+
+    /* ═══════════════════════════════════════════
+       LOGO MARK
+    ═══════════════════════════════════════════ */
+    .logo-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 28px;
+    }
+
+
+
+    .mark-wrap {
+      position: relative;
+      width: 120px;
+      height: 120px;
+    }
+
+    .mark-svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    /* Ring animations */
+    .ring-outer {
+      animation: rotateSlowCW 28s linear infinite;
+      transform-origin: 60px 60px;
+    }
+    .ring-mid {
+      animation: rotateSlowCCW 18s linear infinite;
+      transform-origin: 60px 60px;
+    }
+    .ring-inner {
+      animation: rotateSlowCW 10s linear infinite;
+      transform-origin: 60px 60px;
+    }
+    .nodes-layer {
+      animation: rotateSlowCCW 22s linear infinite;
+      transform-origin: 60px 60px;
+    }
+
+    @keyframes rotateSlowCW {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+    @keyframes rotateSlowCCW {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(-360deg); }
+    }
+
+    /* Core pulse */
+    .core-pulse {
+      animation: corePulse 3s ease-in-out infinite;
+    }
+    @keyframes corePulse {
+      0%, 100% { r: 6; opacity: 1; }
+      50%       { r: 8; opacity: 0.7; }
+    }
+
+    /* Glow filter bloom */
+    .glow-ring {
+      animation: glowBreath 5s ease-in-out infinite;
+    }
+    @keyframes glowBreath {
+      0%,100% { opacity: 0.18; }
+      50%      { opacity: 0.38; }
+    }
+
+    /* ═══════════════════════════════════════════
+       WORDMARK
+    ═══════════════════════════════════════════ */
+    .wordmark {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .wordmark-title {
+      font-size: 38px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      color: var(--fg);
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    .wordmark-title span.ird {
+      color: var(--fg);
+    }
+
+    .wordmark-sub {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 300;
+      letter-spacing: 0.3em;
+      color: var(--teal);
+      text-transform: uppercase;
+    }
+
+    .wordmark-divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--teal), transparent);
+      opacity: 0.5;
+      margin: 2px 0;
+    }
+
+    /* ═══════════════════════════════════════════
+       VARIANTS ROW
+    ═══════════════════════════════════════════ */
+    .variants-row {
+      display: flex;
+      gap: 40px;
+      align-items: center;
+    }
+
+    .variant-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .variant-tag {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      color: var(--fg-dim);
+      text-transform: uppercase;
+    }
+
+    /* Light variant */
+    .variant-light {
+      background: #f0f4f8;
+      border-radius: 12px;
+      padding: 20px 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .variant-light .wm-title {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      color: #0e1620;
+    }
+    .variant-light .wm-sub {
+      font-family: var(--font-mono);
+      font-size: 7px;
+      letter-spacing: 0.28em;
+      color: #00897e;
+    }
+    .variant-light .wm-div {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #00897e, transparent);
+      opacity: 0.6;
+    }
+
+    /* Compact / icon-only */
+    .variant-icon {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg2);
+      border-radius: 16px;
+      padding: 18px;
+      border: 1px solid rgba(0,200,180,0.12);
+    }
+
+    /* Horizontal variant */
+    .variant-horiz {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: var(--bg2);
+      border-radius: 12px;
+      padding: 16px 24px;
+      border: 1px solid rgba(0,200,180,0.1);
+    }
+    .variant-horiz .wm-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .variant-horiz .wm-title {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      color: var(--fg);
+    }
+    .variant-horiz .wm-sub {
+      font-family: var(--font-mono);
+      font-size: 7px;
+      letter-spacing: 0.25em;
+      color: var(--teal);
+    }
+
+    /* Separator between groups */
+    .sep {
+      width: 1px;
+      height: 80px;
+      background: linear-gradient(180deg, transparent, rgba(0,200,180,0.2), transparent);
+    }
+
+    /* ═══════════════════════════════════════════
+       COLOR SWATCHES
+    ═══════════════════════════════════════════ */
+    .swatches {
+      display: flex;
+      gap: 12px;
+    }
+    .swatch {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .swatch-dot {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+    }
+    .swatch-label {
+      font-family: var(--font-mono);
+      font-size: 8.5px;
+      color: var(--fg-dim);
+      letter-spacing: 0.1em;
+    }
+
+    /* ═══════════════════════════════════════════
+       SVG EXPORT SECTION
+    ═══════════════════════════════════════════ */
+    .export-section {
+      width: 100%;
+      max-width: 860px;
+      border-top: 1px solid rgba(0,200,180,0.12);
+      padding-top: 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .export-title {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      color: var(--fg-dim);
+      text-transform: uppercase;
+    }
+
+    .export-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .export-card {
+      background: var(--bg2);
+      border: 1px solid rgba(0,200,180,0.1);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .export-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(0,200,180,0.08);
+    }
+
+    .export-card-label {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      color: var(--teal);
+      text-transform: uppercase;
+    }
+
+    .copy-btn {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      color: var(--fg-dim);
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 4px;
+      padding: 3px 10px;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s, background 0.2s;
+      text-transform: uppercase;
+    }
+
+    .copy-btn:hover {
+      color: var(--teal);
+      border-color: var(--teal);
+      background: rgba(0,200,180,0.06);
+    }
+
+    .copy-btn.copied {
+      color: var(--teal);
+      border-color: var(--teal);
+    }
+
+    .export-code {
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      line-height: 1.6;
+      color: #6a8fa8;
+      padding: 12px 14px;
+      white-space: pre;
+      overflow-x: auto;
+      max-height: 160px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(0,200,180,0.2) transparent;
+    }
+
+    .export-code .kw  { color: #00c8b4; }
+    .export-code .attr { color: #7ec8e3; }
+    .export-code .val  { color: #f59e3a; }
+    .export-code .tag  { color: #c8a0d4; }
+  </style>
+</head>
+<body>
+
+  <div class="canvas">
+    <span class="section-label">IRD Prioritization Engine · Brand Identity</span>
+
+    <!-- PRIMARY LOGO -->
+    <div class="logo-group" id="primaryLogo">
+      <div class="mark-wrap">
+        <svg class="mark-svg" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <filter id="glow-teal" x="-40%" y="-40%" width="180%" height="180%">
+              <feGaussianBlur stdDeviation="4" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <filter id="glow-amber" x="-40%" y="-40%" width="180%" height="180%">
+              <feGaussianBlur stdDeviation="3" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <filter id="glow-core" x="-100%" y="-100%" width="300%" height="300%">
+              <feGaussianBlur stdDeviation="6" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <radialGradient id="coreGrad" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#00ffd0"/>
+              <stop offset="100%" stop-color="#00c8b4"/>
+            </radialGradient>
+          </defs>
+
+          <!-- Ambient glow bloom -->
+          <circle class="glow-ring" cx="60" cy="60" r="54" fill="none" stroke="#00c8b4" stroke-width="28" filter="url(#glow-teal)" opacity="0.18"/>
+
+          <!-- Outer ring — dashed, slow CW -->
+          <g class="ring-outer">
+            <circle cx="60" cy="60" r="52" fill="none" stroke="#00c8b4" stroke-width="0.8" stroke-opacity="0.35" stroke-dasharray="4 8"/>
+            <!-- Outer tick marks -->
+            <rect x="59.2" y="7" width="1.6" height="5" rx="0.8" fill="#00c8b4" opacity="0.6"/>
+            <rect x="59.2" y="108" width="1.6" height="5" rx="0.8" fill="#00c8b4" opacity="0.6"/>
+            <rect x="7" y="59.2" width="5" height="1.6" rx="0.8" fill="#00c8b4" opacity="0.6"/>
+            <rect x="108" y="59.2" width="5" height="1.6" rx="0.8" fill="#00c8b4" opacity="0.6"/>
+          </g>
+
+          <!-- Mid ring — solid arc, slow CCW -->
+          <g class="ring-mid">
+            <circle cx="60" cy="60" r="38" fill="none" stroke="#00c8b4" stroke-width="1" stroke-opacity="0.5" stroke-dasharray="22 6"/>
+            <!-- Mid accent nodes -->
+            <circle cx="60" cy="22" r="3" fill="#00c8b4" opacity="0.7"/>
+            <circle cx="93.04" cy="41" r="2.5" fill="#00c8b4" opacity="0.5"/>
+            <circle cx="93.04" cy="79" r="2.5" fill="#f59e3a" opacity="0.6"/>
+            <circle cx="60" cy="98" r="3" fill="#f59e3a" opacity="0.7"/>
+            <circle cx="26.96" cy="79" r="2.5" fill="#f59e3a" opacity="0.5"/>
+            <circle cx="26.96" cy="41" r="2.5" fill="#00c8b4" opacity="0.5"/>
+          </g>
+
+          <!-- Inner ring — amber, CW -->
+          <g class="ring-inner">
+            <circle cx="60" cy="60" r="24" fill="none" stroke="#f59e3a" stroke-width="1.2" stroke-opacity="0.6" stroke-dasharray="12 5"/>
+            <!-- Inner accent nodes -->
+            <circle cx="60" cy="36" r="2" fill="#f59e3a" opacity="0.9"/>
+            <circle cx="80.78" cy="72" r="2" fill="#f59e3a" opacity="0.8"/>
+            <circle cx="39.22" cy="72" r="2" fill="#f59e3a" opacity="0.8"/>
+          </g>
+
+          <!-- Network edges (static, subtle) -->
+          <g opacity="0.25">
+            <line x1="60" y1="22" x2="93.04" y2="41" stroke="#00c8b4" stroke-width="0.7"/>
+            <line x1="93.04" y1="79" x2="60" y2="98" stroke="#f59e3a" stroke-width="0.7"/>
+            <line x1="60" y1="98" x2="26.96" y2="79" stroke="#f59e3a" stroke-width="0.7"/>
+            <line x1="26.96" y1="41" x2="60" y2="22" stroke="#00c8b4" stroke-width="0.7"/>
+          </g>
+
+          <!-- Node graph layer — outer satellite nodes -->
+          <g class="nodes-layer" filter="url(#glow-teal)">
+            <!-- Satellite nodes at varying radii -->
+            <circle cx="60" cy="8" r="3.5" fill="#00c8b4" opacity="0.55"/>
+            <circle cx="112" cy="60" r="3" fill="#00c8b4" opacity="0.4"/>
+            <circle cx="8" cy="60" r="3" fill="#00c8b4" opacity="0.4"/>
+            <circle cx="105" cy="22" r="2.5" fill="#f59e3a" opacity="0.45"/>
+            <circle cx="15" cy="98" r="2.5" fill="#f59e3a" opacity="0.4"/>
+            <!-- Edges to these -->
+            <line x1="60" y1="8" x2="93.04" y2="41" stroke="#00c8b4" stroke-width="0.5" opacity="0.3"/>
+            <line x1="112" y1="60" x2="93.04" y2="79" stroke="#00c8b4" stroke-width="0.5" opacity="0.25"/>
+          </g>
+
+          <!-- Core dot -->
+          <circle cx="60" cy="60" r="6" fill="url(#coreGrad)" class="core-pulse" filter="url(#glow-core)"/>
+          <circle cx="60" cy="60" r="2.5" fill="#ffffff" opacity="0.9"/>
+        </svg>
+      </div>
+
+      <!-- Wordmark -->
+      <div class="wordmark" id="wordmarkEl">
+        <div class="wordmark-title"><span class="ird">IRD</span></div>
+        <div class="wordmark-divider"></div>
+        <div class="wordmark-sub">Prioritization Engine</div>
+      </div>
+    </div>
+
+    <!-- VARIANTS -->
+    <div class="variants-row">
+
+      <!-- Horizontal lockup (dark) -->
+      <div class="variant-card">
+        <span class="variant-tag">Horizontal · Dark</span>
+        <div class="variant-horiz">
+          <svg width="36" height="36" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="60" cy="60" r="52" fill="none" stroke="#00c8b4" stroke-width="1.2" stroke-opacity="0.4" stroke-dasharray="4 8"/>
+            <circle cx="60" cy="60" r="38" fill="none" stroke="#00c8b4" stroke-width="1.5" stroke-opacity="0.5" stroke-dasharray="22 6"/>
+            <circle cx="60" cy="60" r="24" fill="none" stroke="#f59e3a" stroke-width="1.8" stroke-opacity="0.65" stroke-dasharray="12 5"/>
+            <circle cx="60" cy="22" r="3.5" fill="#00c8b4"/>
+            <circle cx="93" cy="79" r="3" fill="#f59e3a"/>
+            <circle cx="27" cy="79" r="3" fill="#f59e3a" opacity="0.7"/>
+            <circle cx="60" cy="60" r="6" fill="#00c8b4"/>
+            <circle cx="60" cy="60" r="2.5" fill="#fff" opacity="0.9"/>
+          </svg>
+          <div class="wm-stack">
+            <div class="wm-title">IRD</div>
+            <div class="wm-sub">Prioritization Engine</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sep"></div>
+
+      <!-- Light variant -->
+      <div class="variant-card">
+        <span class="variant-tag">Stacked · Light</span>
+        <div class="variant-light">
+          <svg width="42" height="42" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="60" cy="60" r="52" fill="none" stroke="#009b8c" stroke-width="1.2" stroke-opacity="0.4" stroke-dasharray="4 8"/>
+            <circle cx="60" cy="60" r="38" fill="none" stroke="#009b8c" stroke-width="1.5" stroke-opacity="0.5" stroke-dasharray="22 6"/>
+            <circle cx="60" cy="60" r="24" fill="none" stroke="#d4820a" stroke-width="1.8" stroke-opacity="0.65" stroke-dasharray="12 5"/>
+            <circle cx="60" cy="22" r="3.5" fill="#009b8c"/>
+            <circle cx="93" cy="79" r="3" fill="#d4820a"/>
+            <circle cx="27" cy="79" r="3" fill="#d4820a" opacity="0.7"/>
+            <circle cx="60" cy="60" r="6" fill="#009b8c"/>
+            <circle cx="60" cy="60" r="2.5" fill="#fff" opacity="0.95"/>
+          </svg>
+          <div class="wm-div"></div>
+          <div class="wm-title">IRD</div>
+          <div class="wm-div"></div>
+          <div class="wm-sub">Prioritization Engine</div>
+        </div>
+      </div>
+
+      <div class="sep"></div>
+
+      <!-- Icon-only -->
+      <div class="variant-card">
+        <span class="variant-tag">Icon · Compact</span>
+        <div class="variant-icon">
+          <svg width="56" height="56" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <filter id="glow2" x="-40%" y="-40%" width="180%" height="180%">
+                <feGaussianBlur stdDeviation="3" result="b"/>
+                <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+              <radialGradient id="cg2" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#00ffd0"/>
+                <stop offset="100%" stop-color="#00c8b4"/>
+              </radialGradient>
+            </defs>
+            <circle cx="60" cy="60" r="52" fill="none" stroke="#00c8b4" stroke-width="1" stroke-opacity="0.3" stroke-dasharray="4 8"/>
+            <circle cx="60" cy="60" r="38" fill="none" stroke="#00c8b4" stroke-width="1.4" stroke-opacity="0.55" stroke-dasharray="22 6"/>
+            <circle cx="60" cy="60" r="24" fill="none" stroke="#f59e3a" stroke-width="1.8" stroke-opacity="0.7" stroke-dasharray="12 5"/>
+            <circle cx="60" cy="22" r="3.5" fill="#00c8b4" filter="url(#glow2)"/>
+            <circle cx="93" cy="41" r="3" fill="#00c8b4" opacity="0.7"/>
+            <circle cx="93" cy="79" r="3" fill="#f59e3a" filter="url(#glow2)"/>
+            <circle cx="60" cy="98" r="3.5" fill="#f59e3a"/>
+            <circle cx="27" cy="79" r="3" fill="#f59e3a" opacity="0.7"/>
+            <circle cx="27" cy="41" r="3" fill="#00c8b4" opacity="0.7"/>
+            <line x1="60" y1="22" x2="93" y2="41" stroke="#00c8b4" stroke-width="0.8" opacity="0.3"/>
+            <line x1="93" y1="41" x2="93" y2="79" stroke="#f59e3a" stroke-width="0.8" opacity="0.2"/>
+            <line x1="93" y1="79" x2="60" y2="98" stroke="#f59e3a" stroke-width="0.8" opacity="0.3"/>
+            <line x1="60" y1="98" x2="27" y2="79" stroke="#f59e3a" stroke-width="0.8" opacity="0.3"/>
+            <line x1="27" y1="41" x2="60" y2="22" stroke="#00c8b4" stroke-width="0.8" opacity="0.3"/>
+            <circle cx="60" cy="60" r="7" fill="url(#cg2)" filter="url(#glow2)"/>
+            <circle cx="60" cy="60" r="2.5" fill="#fff" opacity="0.95"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- COLOR PALETTE -->
+    <div class="swatches">
+      <div class="swatch">
+        <div class="swatch-dot" style="background:#080d14; border:1px solid rgba(255,255,255,0.1);"></div>
+        <span class="swatch-label">#080D14</span>
+      </div>
+      <div class="swatch">
+        <div class="swatch-dot" style="background:#0e1620;"></div>
+        <span class="swatch-label">#0E1620</span>
+      </div>
+      <div class="swatch">
+        <div class="swatch-dot" style="background:#e8f0f8;"></div>
+        <span class="swatch-label">#E8F0F8</span>
+      </div>
+      <div class="swatch">
+        <div class="swatch-dot" style="background:#00c8b4;"></div>
+        <span class="swatch-label">#00C8B4</span>
+      </div>
+      <div class="swatch">
+        <div class="swatch-dot" style="background:#f59e3a;"></div>
+        <span class="swatch-label">#F59E3A</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- React + Babel + Tweaks -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <script type="text/babel" src="tweaks-panel.jsx"></script>
+
+  <script type="text/babel">
+    const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+      "accentColor": "#00c8b4",
+      "amberColor": "#f59e3a",
+      "bgColor": "#080d14",
+      "animationSpeed": 1,
+      "showWordmark": true,
+      "markSize": 124,
+      "nameOverride": "IRD"
+    }/*EDITMODE-END*/;
+
+    function LogoTweaks() {
+      const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
+
+      React.useEffect(() => {
+        // Apply colors
+        document.documentElement.style.setProperty('--teal', tweaks.accentColor);
+        document.documentElement.style.setProperty('--amber', tweaks.amberColor);
+        document.documentElement.style.setProperty('--bg', tweaks.bgColor);
+
+        // Accent fills
+        document.querySelectorAll('[fill="#00c8b4"]').forEach(el => el.setAttribute('fill', tweaks.accentColor));
+        document.querySelectorAll('[fill="#f59e3a"]').forEach(el => el.setAttribute('fill', tweaks.amberColor));
+        document.querySelectorAll('[stroke="#00c8b4"]').forEach(el => el.setAttribute('stroke', tweaks.accentColor));
+        document.querySelectorAll('[stroke="#f59e3a"]').forEach(el => el.setAttribute('stroke', tweaks.amberColor));
+
+        // Animation speed
+        const speed = tweaks.animationSpeed;
+        const rings = [
+          ['.ring-outer', 28],
+          ['.ring-mid', 18],
+          ['.ring-inner', 10],
+          ['.nodes-layer', 22],
+        ];
+        rings.forEach(([sel, base]) => {
+          const el = document.querySelector(sel);
+          if (el) el.style.animationDuration = `${base / speed}s`;
+        });
+
+        // Mark size
+        const wrap = document.querySelector('.mark-wrap');
+        if (wrap) { wrap.style.width = tweaks.markSize + 'px'; wrap.style.height = tweaks.markSize + 'px'; }
+
+        // Show/hide wordmark
+        const wm = document.getElementById('wordmarkEl');
+        if (wm) wm.style.display = tweaks.showWordmark ? 'flex' : 'none';
+
+        // Name override
+        const titleEl = document.querySelector('.wordmark-title');
+        if (titleEl) titleEl.innerHTML = `<span class="ird">${tweaks.nameOverride}</span>`;
+      }, [tweaks]);
+
+      return (
+        <TweaksPanel>
+          <TweakColor id="accentColor" title="Accent (Teal)" value={tweaks.accentColor} onChange={v => setTweak('accentColor', v)} />
+          <TweakColor id="amberColor" title="Accent (Amber)" value={tweaks.amberColor} onChange={v => setTweak('amberColor', v)} />
+          <TweakColor id="bgColor" title="Background" value={tweaks.bgColor} onChange={v => setTweak('bgColor', v)} />
+          <TweakSlider id="markSize" title="Mark Size" min={60} max={200} step={4} value={tweaks.markSize} onChange={v => setTweak('markSize', v)} />
+          <TweakSlider id="animationSpeed" title="Animation Speed" min={0.1} max={4} step={0.1} value={tweaks.animationSpeed} onChange={v => setTweak('animationSpeed', v)} />
+          <TweakToggle id="showWordmark" title="Show Wordmark" value={tweaks.showWordmark} onChange={v => setTweak('showWordmark', v)} />
+          <TweakText id="nameOverride" title="Acronym Override" value={tweaks.nameOverride} onChange={v => setTweak('nameOverride', v)} />
+        </TweaksPanel>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('tweaks-root')).render(<LogoTweaks />);
+  </script>
+
+  <div id="tweaks-root"></div>
+
+  <!-- SVG EXPORT SECTION -->
+  <script>
+  (function() {
+    var SVGs = {
+      "Mark Only (Dark)": '<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">\n  <!-- Outer ring -->\n  <circle cx="60" cy="60" r="52" fill="none" stroke="#00c8b4" stroke-width="0.8" stroke-opacity="0.35" stroke-dasharray="4 8"/>\n  <!-- Outer ticks -->\n  <rect x="59.2" y="7" width="1.6" height="5" rx="0.8" fill="#00c8b4" opacity="0.6"/>\n  <rect x="59.2" y="108" width="1.6" height="5" rx="0.8" fill="#00c8b4" opacity="0.6"/>\n  <rect x="7" y="59.2" width="5" height="1.6" rx="0.8" fill="#00c8b4" opacity="0.6"/>\n  <rect x="108" y="59.2" width="5" height="1.6" rx="0.8" fill="#00c8b4" opacity="0.6"/>\n  <!-- Mid ring -->\n  <circle cx="60" cy="60" r="38" fill="none" stroke="#00c8b4" stroke-width="1" stroke-opacity="0.5" stroke-dasharray="22 6"/>\n  <circle cx="60" cy="22" r="3" fill="#00c8b4" opacity="0.7"/>\n  <circle cx="93.04" cy="41" r="2.5" fill="#00c8b4" opacity="0.5"/>\n  <circle cx="93.04" cy="79" r="2.5" fill="#f59e3a" opacity="0.6"/>\n  <circle cx="60" cy="98" r="3" fill="#f59e3a" opacity="0.7"/>\n  <circle cx="26.96" cy="79" r="2.5" fill="#f59e3a" opacity="0.5"/>\n  <circle cx="26.96" cy="41" r="2.5" fill="#00c8b4" opacity="0.5"/>\n  <!-- Inner ring (amber — discovery track) -->\n  <circle cx="60" cy="60" r="24" fill="none" stroke="#f59e3a" stroke-width="1.2" stroke-opacity="0.6" stroke-dasharray="12 5"/>\n  <circle cx="60" cy="36" r="2" fill="#f59e3a" opacity="0.9"/>\n  <circle cx="80.78" cy="72" r="2" fill="#f59e3a" opacity="0.8"/>\n  <circle cx="39.22" cy="72" r="2" fill="#f59e3a" opacity="0.8"/>\n  <!-- Network edges -->\n  <line x1="60" y1="22" x2="93.04" y2="41" stroke="#00c8b4" stroke-width="0.7" opacity="0.25"/>\n  <line x1="93.04" y1="79" x2="60" y2="98" stroke="#f59e3a" stroke-width="0.7" opacity="0.25"/>\n  <line x1="60" y1="98" x2="26.96" y2="79" stroke="#f59e3a" stroke-width="0.7" opacity="0.25"/>\n  <line x1="26.96" y1="41" x2="60" y2="22" stroke="#00c8b4" stroke-width="0.7" opacity="0.25"/>\n  <!-- Core -->\n  <circle cx="60" cy="60" r="6" fill="#00c8b4"/>\n  <circle cx="60" cy="60" r="2.5" fill="#ffffff" opacity="0.9"/>\n</svg>',
+
+      "Horizontal · Dark": '<svg width="220" height="48" viewBox="0 0 220 48" fill="none" xmlns="http://www.w3.org/2000/svg">\n  <g transform="translate(6,6) scale(0.3)">\n    <circle cx="60" cy="60" r="52" fill="none" stroke="#00c8b4" stroke-width="1.2" stroke-opacity="0.4" stroke-dasharray="4 8"/>\n    <circle cx="60" cy="60" r="38" fill="none" stroke="#00c8b4" stroke-width="1.5" stroke-opacity="0.5" stroke-dasharray="22 6"/>\n    <circle cx="60" cy="60" r="24" fill="none" stroke="#f59e3a" stroke-width="1.8" stroke-opacity="0.65" stroke-dasharray="12 5"/>\n    <circle cx="60" cy="22" r="3.5" fill="#00c8b4"/>\n    <circle cx="93" cy="79" r="3" fill="#f59e3a"/>\n    <circle cx="27" cy="79" r="3" fill="#f59e3a" opacity="0.7"/>\n    <circle cx="60" cy="60" r="6" fill="#00c8b4"/>\n    <circle cx="60" cy="60" r="2.5" fill="#fff" opacity="0.9"/>\n  </g>\n  <text x="56" y="20" font-family="Outfit, sans-serif" font-size="18" font-weight="700" letter-spacing="3.6" fill="#e8f0f8">IRD</text>\n  <text x="56" y="35" font-family="DM Mono, monospace" font-size="7" font-weight="300" letter-spacing="2.1" fill="#00c8b4">PRIORITIZATION ENGINE</text>\n</svg>',
+
+      "Stacked · Light": '<svg width="120" height="148" viewBox="0 0 120 148" fill="none" xmlns="http://www.w3.org/2000/svg">\n  <rect width="120" height="148" rx="10" fill="#f0f4f8"/>\n  <g transform="translate(39,10) scale(0.35)">\n    <circle cx="60" cy="60" r="52" fill="none" stroke="#009b8c" stroke-width="1.2" stroke-opacity="0.4" stroke-dasharray="4 8"/>\n    <circle cx="60" cy="60" r="38" fill="none" stroke="#009b8c" stroke-width="1.5" stroke-opacity="0.5" stroke-dasharray="22 6"/>\n    <circle cx="60" cy="60" r="24" fill="none" stroke="#d4820a" stroke-width="1.8" stroke-opacity="0.65" stroke-dasharray="12 5"/>\n    <circle cx="60" cy="22" r="3.5" fill="#009b8c"/>\n    <circle cx="93" cy="79" r="3" fill="#d4820a"/>\n    <circle cx="27" cy="79" r="3" fill="#d4820a" opacity="0.7"/>\n    <circle cx="60" cy="60" r="6" fill="#009b8c"/>\n    <circle cx="60" cy="60" r="2.5" fill="#fff" opacity="0.95"/>\n  </g>\n  <line x1="16" y1="67" x2="104" y2="67" stroke="#009b8c" stroke-width="0.6" opacity="0.5"/>\n  <text x="60" y="88" font-family="Outfit, sans-serif" font-size="22" font-weight="700" letter-spacing="4.4" fill="#0e1620" text-anchor="middle">IRD</text>\n  <line x1="16" y1="96" x2="104" y2="96" stroke="#009b8c" stroke-width="0.6" opacity="0.5"/>\n  <text x="60" y="112" font-family="DM Mono, monospace" font-size="7" font-weight="300" letter-spacing="2" fill="#00897e" text-anchor="middle">PRIORITIZATION ENGINE</text>\n</svg>',
+
+      "Icon · Compact": '<svg width="80" height="80" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">\n  <circle cx="60" cy="60" r="52" fill="none" stroke="#00c8b4" stroke-width="1" stroke-opacity="0.3" stroke-dasharray="4 8"/>\n  <circle cx="60" cy="60" r="38" fill="none" stroke="#00c8b4" stroke-width="1.4" stroke-opacity="0.55" stroke-dasharray="22 6"/>\n  <circle cx="60" cy="60" r="24" fill="none" stroke="#f59e3a" stroke-width="1.8" stroke-opacity="0.7" stroke-dasharray="12 5"/>\n  <circle cx="60" cy="22" r="3.5" fill="#00c8b4"/>\n  <circle cx="93" cy="41" r="3" fill="#00c8b4" opacity="0.7"/>\n  <circle cx="93" cy="79" r="3" fill="#f59e3a"/>\n  <circle cx="60" cy="98" r="3.5" fill="#f59e3a"/>\n  <circle cx="27" cy="79" r="3" fill="#f59e3a" opacity="0.7"/>\n  <circle cx="27" cy="41" r="3" fill="#00c8b4" opacity="0.7"/>\n  <line x1="60" y1="22" x2="93" y2="41" stroke="#00c8b4" stroke-width="0.8" opacity="0.3"/>\n  <line x1="93" y1="41" x2="93" y2="79" stroke="#f59e3a" stroke-width="0.8" opacity="0.2"/>\n  <line x1="93" y1="79" x2="60" y2="98" stroke="#f59e3a" stroke-width="0.8" opacity="0.3"/>\n  <line x1="60" y1="98" x2="27" y2="79" stroke="#f59e3a" stroke-width="0.8" opacity="0.3"/>\n  <line x1="27" y1="41" x2="60" y2="22" stroke="#00c8b4" stroke-width="0.8" opacity="0.3"/>\n  <circle cx="60" cy="60" r="7" fill="#00c8b4"/>\n  <circle cx="60" cy="60" r="2.5" fill="#fff" opacity="0.95"/>\n</svg>'
+    };
+
+    function syntaxHL(code) {
+      return code
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/(&lt;\/?[\w-]+)/g, '<span class="tag">$1</span>')
+        .replace(/([\w-]+)=/g, '<span class="attr">$1</span>=')
+        .replace(/="([^"]*)"/g, '="<span class="val">$1</span>"');
+    }
+
+    function buildExportSection() {
+      var section = document.createElement('div');
+      section.className = 'export-section';
+
+      var title = document.createElement('span');
+      title.className = 'export-title';
+      title.textContent = 'SVG Code \u00b7 Copy to Implement';
+      section.appendChild(title);
+
+      var grid = document.createElement('div');
+      grid.className = 'export-grid';
+
+      Object.keys(SVGs).forEach(function(label) {
+        var code = SVGs[label];
+        var card = document.createElement('div');
+        card.className = 'export-card';
+
+        var header = document.createElement('div');
+        header.className = 'export-card-header';
+
+        var lbl = document.createElement('span');
+        lbl.className = 'export-card-label';
+        lbl.textContent = label;
+        header.appendChild(lbl);
+
+        var btn = document.createElement('button');
+        btn.className = 'copy-btn';
+        btn.textContent = 'Copy SVG';
+        (function(c, b) {
+          b.addEventListener('click', function() {
+            if (navigator.clipboard) {
+              navigator.clipboard.writeText(c).then(function() {
+                b.textContent = 'Copied \u2713';
+                b.classList.add('copied');
+                setTimeout(function() { b.textContent = 'Copy SVG'; b.classList.remove('copied'); }, 2000);
+              });
+            } else {
+              var ta = document.createElement('textarea');
+              ta.value = c; document.body.appendChild(ta); ta.select();
+              document.execCommand('copy'); document.body.removeChild(ta);
+              b.textContent = 'Copied \u2713'; b.classList.add('copied');
+              setTimeout(function() { b.textContent = 'Copy SVG'; b.classList.remove('copied'); }, 2000);
+            }
+          });
+        })(code, btn);
+        header.appendChild(btn);
+
+        var pre = document.createElement('div');
+        pre.className = 'export-code';
+        pre.innerHTML = syntaxHL(code);
+
+        card.appendChild(header);
+        card.appendChild(pre);
+        grid.appendChild(card);
+      });
+
+      section.appendChild(grid);
+
+      var notes = document.createElement('div');
+      notes.style.cssText = 'font-family:var(--font-mono);font-size:9px;color:var(--fg-dim);line-height:2;letter-spacing:0.05em;border-top:1px solid rgba(0,200,180,0.08);padding-top:16px;';
+      notes.innerHTML = '<span style="color:#00c8b4">Teal  #00C8B4</span> &nbsp;&mdash;&nbsp; Bayesian inference network / EBL layer<br/>'
+        + '<span style="color:#f59e3a">Amber #F59E3A</span> &nbsp;&mdash;&nbsp; Discovery track / novel candidate genes<br/>'
+        + '<span style="color:var(--fg-dim)">Background &nbsp;&nbsp;&nbsp;#080D14</span> (dark) &nbsp;&middot;&nbsp; <span style="color:var(--fg-dim)">#F0F4F8</span> (light)<br/>'
+        + '<span style="color:var(--fg-dim)">Typefaces &nbsp;&nbsp;&nbsp;&nbsp;Outfit 700</span> (wordmark) &nbsp;&middot;&nbsp; <span style="color:var(--fg-dim)">DM Mono 300</span> (subtitle)';
+      section.appendChild(notes);
+
+      document.querySelector('.canvas').appendChild(section);
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', buildExportSection);
+    } else {
+      buildExportSection();
+    }
+  })();
+  </script>
+</body>
+</html>
