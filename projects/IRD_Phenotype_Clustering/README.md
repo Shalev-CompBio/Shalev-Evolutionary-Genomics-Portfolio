@@ -1,252 +1,166 @@
-# **IRD Phenotype-Based Gene Clustering (Synthetic Demonstration)**
+# IRD Phenotype Clustering
 
-*A modular pipeline for phenotype-driven gene clustering using HPO semantic similarity — demonstrated entirely on synthetic data, designed for scalable multi-omics integration.*
+![Language](https://img.shields.io/badge/Language-Python-FFD43B)
+![Focus](https://img.shields.io/badge/Focus-Computational_Biology_%26_Network_Analysis-7B1FA2)
+![Status](https://img.shields.io/badge/Status-Demo_Available-00695C)
 
-![Language](https://img.shields.io/badge/Language-Python-3776AB)
-![Focus](https://img.shields.io/badge/Focus-HPO_Semantic_Similarity-7B1FA2)
-![Status](https://img.shields.io/badge/Status-Synthetic_Demo-00695C)
-
----
-
-## 🧬 **Overview**
-
-This project demonstrates a **phenotype-based gene clustering pipeline** built around semantic similarity analysis using the **Human Phenotype Ontology (HPO)**.
-The pipeline transforms raw gene lists into **phenotype-informed functional modules**, using:
-
-* High-resolution HPO annotation,
-* Resnik semantic similarity,
-* Best Match Average (BMA),
-* Rigorous IC-based term filtering,
-* Multigraph network construction,
-* Leiden community detection,
-* Module stability & silhouette evaluation.
-
-This public repository provides a **synthetic demonstration** of the workflow.
-The full internal pipeline is designed to expand into **multi-omics module integration** (phenotype + evolution + expression + interaction networks).
+*Shalev Yaacov — HPO-based phenotypic similarity clustering of IRD genes using graph community detection.*
 
 ---
 
-## 🔬 **Scientific Background**
+## Overview
 
-Inherited Retinal Diseases (IRD) involve hundreds of genes with substantial phenotypic heterogeneity.
-While these genes vary genetically, they often converge into **shared phenotypic modules**, reflecting common biological mechanisms (e.g., ciliary dysfunction, phototransduction defects).
+Inherited Retinal Diseases (IRDs) involve hundreds of genes with substantial phenotypic heterogeneity.
+While these genes vary genetically, they often converge into **shared phenotypic modules**, reflecting
+common biological mechanisms (e.g., ciliary dysfunction, phototransduction defects).
 
-The Human Phenotype Ontology (HPO) enables:
+The Human Phenotype Ontology (HPO) enables standardised representation of clinical phenotypes and
+computing semantic similarity between genes. This pipeline transforms a binary gene–HPO annotation
+matrix into **phenotype-informed functional modules** using:
 
-* Standardized representation of clinical phenotypes,
-* Mapping genes to phenotype profiles,
-* Computing semantic similarity between genes.
+- IC-based phenotype filtering (specificity, depth, gene frequency)
+- Lin's semantic similarity + Best Match Average (BMA) gene similarity
+- kNN and threshold graph construction with systematic parameter sweep
+- Leiden community detection with modularity × cohesion/separation graph selection
+- Perturbation-based stability scoring and core/peripheral gene classification
+- Fisher's exact test enrichment with Benjamini-Hochberg FDR for module phenotypic signatures
 
-Semantic similarity provides a complementary lens to evolutionary co-profiling (NPP/LPP), laying the foundation for a unified **multi-omics module discovery platform**.
+This public repository provides a **self-contained synthetic demonstration** of the complete workflow.
+The framework forms the phenotypic layer of a broader multi-omics module integration platform (phenotype
++ evolutionary co-profiling + expression + interaction networks).
 
 ---
 
-## 🧱 **Pipeline Structure (High-Level)**
+## 🔬 Scientific Background
+
+Semantic similarity provides a complementary lens to evolutionary co-profiling (NPP/LPP), capturing
+phenotypic convergence across IRD genes. IC-based filtering is essential for removing overly general
+HPO terms that inflate similarity scores and obscure true modules. Graph-based community detection
+(Leiden) is well-suited for complex similarity landscapes, and module stability under perturbation
+distinguishes robust biological signals from noise-driven assignments.
+
+---
+
+## Workflow
+
+| Step | Section | Description |
+|------|---------|-------------|
+| 1 | § 1 | Load binary gene × HPO annotation matrix |
+| 2 | § 2 | IC-based phenotype filtering (depth, IC, frequency, coverage thresholds) |
+| 3 | § 3 | Term–term similarity (Lin's / Jaccard proxy) → BMA gene–gene similarity |
+| 4 | § 4 | Build kNN and threshold graph variants |
+| 5 | § 5 | Leiden community detection; select best graph by modularity × cohesion/separation |
+| 6 | § 6 | Perturbation stability analysis; classify genes as core / peripheral / unstable |
+| 7 | § 7 | Module QC — flag small and large modules |
+| 8 | § 8 | Phenotypic signatures: Fisher's exact test + Benjamini-Hochberg FDR |
+| 9 | § 9 | Summary table across all modules |
+
+---
+
+## Files
 
 ```
-ird-phenotype-clustering/
-├── notebook/
-│   └── IRD_phenotype_Clustering_Pipeline.ipynb
+IRD_Phenotype_Clustering/
+├── README.md
+├── scripts/
+│   └── ird_phenotype_clustering_demo.ipynb   Full 9-section demo notebook
 ├── data/
-│   ├── raw/        # Place input files here
-│   └── processed/  # Intermediate matrices & annotations
-└── outputs/        # Final clusters, diagnostics, demo figures
+│   └── synthetic_gene_hpo_matrix.csv         Synthetic 40-gene × 60-HPO binary input
+└── outputs/
+    └── demo_figures/
+        ├── gene_similarity_matrix_demo.csv    Gene × gene BMA similarity matrix
+        ├── module_QC_assignment_demo.csv      Module sizes and QC status
+        ├── similarity_distribution.png        BMA gene–gene similarity histogram
+        ├── gene_stability_heatmap.png         Co-clustering stability matrix (40×40)
+        ├── module_size_distribution.png       Module size bar chart with QC thresholds
+        └── module_hpo_heatmap.png             Module × top HPO terms (−log₁₀ q-value)
 ```
 
-This repository contains a self-contained synthetic demonstration of the complete workflow.
+---
+
+## Input & Output
+
+**Input:** `data/synthetic_gene_hpo_matrix.csv`
+Binary matrix (rows = genes, columns = HPO term IDs, values = 0/1). 40 fabricated genes
+(`GENE_A01…GENE_D10`) × 60 fabricated HPO term IDs (`HP:SYNTH_001…HP:SYNTH_060`), generated
+with a fixed random seed and a block co-annotation structure to simulate biological modules.
+
+**Outputs** (all saved to `outputs/demo_figures/` on notebook execution):
+
+| File | Contents |
+|------|----------|
+| `gene_similarity_matrix_demo.csv` | 40×40 gene–gene BMA similarity matrix |
+| `module_QC_assignment_demo.csv` | Module ID, size, and QC status per community |
+| `similarity_distribution.png` | Histogram of pairwise BMA similarity scores |
+| `gene_stability_heatmap.png` | Co-clustering frequency heatmap (module boundaries marked) |
+| `module_size_distribution.png` | Module size bar chart with small/large thresholds |
+| `module_hpo_heatmap.png` | Module × HPO terms heatmap (FDR-significant signatures) |
 
 ---
 
-# ⚙️ **Pipeline Methodology**
-
-The pipeline is modular and progresses through three main phases:
-
----
-
-## ➤ **Stage 1 — HPO Annotation & Baseline Similarity**
-
-### **1. Gene Normalization**
-
-* Applies strict gene-symbol standardization
-* Eliminates ambiguous mappings
-* Produces a stable master list for downstream annotation
-
-### **2. HPO Annotation Extraction**
-
-* Maps genes to phenotype terms using the HPO annotation database
-* Multiple identifier-based rescue mechanisms ensure high annotation coverage
-* Outputs:
-
-  * Gene → HPO term table (long)
-  * Summary annotation table
-  * Binary gene–HPO matrix
-
-### **3. Baseline Semantic Similarity**
-
-* Computes **Information Content (IC)** per HPO term
-* Calculates:
-
-  * **Resnik term–term similarity**
-  * **BMA gene–gene similarity**
-* Produces the initial gene–gene similarity matrix.
-
-This stage establishes the raw semantic landscape used for refinement.
-
----
-
-## ➤ **Stage 1.5 — IC Rebuild & High-Specificity Filtering**
-
-A refined semantic similarity computation designed to enhance signal resolution.
-
-### Key Improvements:
-
-* Removal of **overly general** HPO terms (top ontology levels)
-* Filtering low-information-content terms
-* Recomputing IC using frequency-based scoring
-* Reconstructing term–term and gene–gene similarity matrices with improved selectivity
-
-### Result:
-
-A sparse, high-specificity gene–gene similarity matrix better suited for module detection.
-
----
-
-## ➤ **Stage 2 — Graph-Based Phenotype Module Discovery**
-
-This stage replaces simple clustering with a **network-theoretic modular analysis**.
-
-### **1. Multigraph Construction**
-
-Two complementary topologies are generated:
-
-* **k-NN graphs** (local topology preservation)
-* **Threshold graphs** (high-confidence global structure)
-
-The pipeline systematically tests multiple k-values and threshold percentiles.
-
-### **2. Community Detection (Leiden Algorithm)**
-
-* Leiden ensures well-connected, high-modularity communities
-* Applied across all graph variants
-* Best-performing configuration selected for downstream analysis
-
-### **3. Module Quality Metrics**
-
-Each module is evaluated via:
-
-* **Silhouette scores** (cohesion, separation)
-* **Stability under perturbation** (robustness to noise)
-* **Internal/external similarity**
-
-### **4. Core/Peripheral Gene Classification**
-
-Each gene receives one of:
-
-* **Core** — stable, highly coherent module members
-* **Peripheral** — biologically related but less cohesive
-* **Unassigned** — insufficient evidence to join a module
-
----
-
-## 📈 **Workflow Demonstration (Synthetic Data)**
-
-This repository includes synthetic examples illustrating the pipeline's core steps.
-
-> **Figure — Example phenotype-similarity heatmap** *(synthetic demonstration)*
-> ![Demo Heatmap Clustering](outputs/demo/demo_heatmap_clustering.png)
-
-These figures represent the analytical flow only — no real IRD or phenotype data are used.
-
----
-
-## 🧪 **Future Directions — Toward Multi-Omics Module Integration**
-
-This HPO-based module discovery workflow forms the **phenotypic layer** of a broader integrative platform.
-
-The complete internal pipeline (not included here) is designed to merge:
-
-* **Evolutionary modules** (NPP/LPP)
-* **Phenotype modules** (HPO similarity)
-* **Expression clusters**
-* **Interaction networks**
-* **Functional annotations**
-
-The long-term goal is a **multi-omics modular architecture** for IRD and ciliopathies, where each layer reinforces and validates biological mechanisms uncovered by others.
-
----
-
-## 🖥️ **How to Run the Demo**
+## Example Usage
 
 ```bash
-jupyter notebook notebook/IRD_phenotype_Clustering_Pipeline.ipynb
+# Open and run interactively
+jupyter notebook scripts/ird_phenotype_clustering_demo.ipynb
+
+# Run non-interactively
+jupyter nbconvert --to notebook --execute scripts/ird_phenotype_clustering_demo.ipynb \
+    --output scripts/ird_phenotype_clustering_demo_executed.ipynb
 ```
 
-Run cells sequentially to reproduce:
+---
 
-* Annotation extraction
-* IC filtering
-* Semantic similarity matrices
-* Graph construction
-* Module detection
-* Quality scoring
-* Synthetic visualizations
+## Key Methods
+
+| Method | Purpose |
+|--------|---------|
+| **IC-based filtering** | Retain specific HPO terms above an IC floor and depth floor; remove terms exceeding a gene-frequency ceiling or below a minimum gene-support count. Demo values are illustrative — the real pipeline uses calibrated thresholds not disclosed here. |
+| **Lin's similarity** | Semantic term–term similarity via Most Informative Common Ancestor (real pipeline uses `pyhpo`). Demo uses Jaccard co-annotation similarity as a self-contained proxy. |
+| **Best Match Average (BMA)** | Bidirectional best-match aggregation from term-level to gene-level pairwise scores. |
+| **kNN / threshold graphs** | Systematic topology sweep (illustrative k and percentile values) to explore community structure space. |
+| **Leiden algorithm** | Resolution-parameterised community detection with an illustrative demo resolution value. |
+| **Modularity × cohesion/separation** | Joint criterion for graph selection across the parameter sweep. |
+| **Perturbation stability** | Gaussian noise re-clustering over multiple iterations to score assignment confidence; core / peripheral / unstable thresholds are demo values. |
+| **Fisher's exact test + BH FDR** | One-sided HPO term enrichment per module; α = 0.05 (standard convention); module-frequency pre-filter applied before testing. |
 
 ---
 
-## 📁 **Key Outputs (Demo)**
+## Dependencies
 
-### **Data Files**
+```
+numpy
+pandas
+networkx
+python-igraph
+leidenalg
+scipy
+statsmodels
+matplotlib
+seaborn
+```
 
-* Gene master list (normalized)
-* HPO annotation tables
-* Term–term and gene–gene similarity matrices
-* Module assignments (core/peripheral/unassigned)
+Install with:
+```bash
+pip install numpy pandas networkx python-igraph leidenalg scipy statsmodels matplotlib seaborn
+```
 
-### **Visualizations**
-
-* Similarity heatmaps
-* Module projections (PCA/UMAP)
-* Silhouette scores
-* Module stability plots
-
-### **Reports**
-
-* Module summaries
-* QC diagnostics
-* Execution logs
-
-All outputs included here are **synthetic and demonstration-only**.
-
----
-
-## 🧠 Key Methodological Insights
-
-- Semantic similarity provides a complementary dimension to evolutionary profiling by capturing phenotypic convergence across IRD genes.
-- IC-based filtering is essential for removing overly general phenotype terms that inflate similarity scores and obscure true modules.
-- Graph-based community detection (Leiden) outperforms hierarchical clustering for complex similarity landscapes by producing well-connected modules.
-- Module stability and silhouette scoring are critical for distinguishing robust biological signals from noise.
-- The framework is intentionally modular, enabling future integration with additional omics layers (e.g., evolutionary NPP clusters, transcriptomics, PPI networks).
-- All results shown here are synthetic; the internal research workflow includes additional heuristics and data layers not shared publicly.
+> **Note:** The real research pipeline additionally requires `pyhpo` (≥ 4.0.0) and the HPO ontology
+> files (`hp.obo`, `phenotype.hpoa`) for IC computation via Lin's similarity. The demo replaces this
+> step with synthetic IC values and Jaccard-based term similarity to remain fully self-contained.
 
 ---
 
-## 🎯 Summary
+## ⚠️ Data & Privacy Disclaimer
 
-- Synthetic demonstration of an HPO-based phenotype clustering pipeline.  
-- Implements gene normalization, annotation extraction, IC filtering, and BMA semantic similarity.  
-- Includes graph-based community detection (Leiden) and robust module QC (silhouette, stability).  
-- Designed as the phenotypic layer of a broader multi-omics modular analysis framework.  
-- All data in this repository are synthetic and provided for demonstration purposes only.
-
----
-
-# ⚠️ **Data & Privacy Disclaimer**
-
-> **This repository contains synthetic demonstration data only.**
-No real IRD, phenotype, or similarity data are included.
-The internal research pipeline uses confidential datasets not provided here.
+> **All gene names, HPO term identifiers, and values in this project are entirely synthetic and fabricated.**
+> No real patient, clinical, or unpublished research data are included. Synthetic data are generated
+> with a fixed random seed to demonstrate pipeline functionality while ensuring full confidentiality.
+> All numeric thresholds in the demo are illustrative values chosen for this synthetic dataset
+> and do not reflect the calibrated parameters of the real unpublished pipeline. Real datasets
+> (full gene–HPO annotation matrices, IC values, clustering results) remain confidential.
 
 ---
 
-*This project is part of the Evolutionary Genomics & Multi-Omics Portfolio.*
+*Part of the Evolutionary Genomics & Multi-Omics Portfolio*
 

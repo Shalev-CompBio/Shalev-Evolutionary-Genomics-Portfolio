@@ -4,15 +4,14 @@
 ![Language](https://img.shields.io/badge/Languages-Python_%7C_R-FF9800)
 ![Institution](https://img.shields.io/badge/Institution-Hebrew_University_of_Jerusalem-00695C)
 
-
 ### 🧬 Decoding Disease Architecture Through Evolutionary Signals
 
-**Shalev Yaacov** | M.Sc. Researcher @ Hebrew University (Tabach Lab)  
+**Shalev Yaacov** | M.Sc. Researcher @ Hebrew University (Tabach Lab)
 *Evolutionary gene clustering, multi-omics integration, and phylogenetic profiling for uncovering IRD & cilia-related disease networks.*
 
 ---
 
-## 📌 Overview
+## Overview
 
 This portfolio gathers the computational frameworks, pipelines, and visualization tools I develop for studying **Inherited Retinal Diseases (IRD)** and **Ciliopathies**.
 
@@ -22,77 +21,62 @@ My work focuses on addressing **missing heritability** in genetic disorders. By 
 
 ---
 
-## 🎨 Visual Summary of My Evolutionary Genomics Portfolio
+## Visual Portfolio
 
-To quickly explore my work visually, check out the interactive portfolio:
+For an interactive, narrative walkthrough of this work:
 
-> **Interactive View:** [**Click here to launch**](https://shalev-compbio.github.io/Shalev-Evolutionary-Genomics-Portfolio/Visual_Portfolio/)
-> > > 
-(It includes evolutionary genomics tools, multi-omics visualizations, and project overviews.)
+**[Launch the interactive portfolio →](https://shalev-compbio.github.io/Shalev-Evolutionary-Genomics-Portfolio/Visual_Portfolio/)**
 
----
-
-## 🔬 Key Projects
-
-### 1. 🦠 [Cilia Cluster Analysis](./projects/cilia_clusters)
-* **Goal:** Systematic characterization of precomputed ciliary gene clusters using evolutionary and functional annotations.
-* **Approach:** Modular analytical pipeline evaluating cluster composition, annotations, enrichment, and evolutionary or phenotypic coherence.
-* **Includes:**
-    * Automated annotation and GO-term enrichment.
-    * Internal-distance and similarity metrics.
-    * Detection of submodules and coherent functional subsets.
-    * Visualizations of gene-gene relationships and conserved signatures.
+It includes a guided explanation of the NPP method, case-study summaries for each project below, and ways to get in touch.
 
 ---
 
-### 2. 👁️ [IRD Phenotype Integration](./projects/IRD_Phenotype_Clustering)
-* **Goal:** Identify phenotype-driven gene modules within IRD-associated gene sets.
-* **Approach:** Semantic similarity-based clustering using HPO annotations, designed for integration within a broader multi-omics framework.
-* **Includes:**
-    * Silhouette validation and stability assessment.
-    * Phenotype similarity matrices and semantic clustering.
-    * Prioritization support for unsolved IRD gene candidates (synthetic demonstration only).
+## Research Context
+
+This portfolio is a public sample of methods developed for an ongoing M.Sc. thesis project at the Hebrew University of Jerusalem, aimed at identifying novel disease-causing genes in Inherited Retinal Diseases that current diagnostic panels miss. The approach combines phenotypic similarity (HPO), evolutionary co-profiling (NPP), and functional/clinical annotation into a single discovery pipeline, rather than relying on any single signal alone.
+
+The five projects below are small-scale, simplified illustrations of individual methods from that pipeline, built specifically for public demonstration - **not the pipeline itself, and not its results.** They are presented in the order the corresponding stages are actually used, but each runs on synthetic data at a small fraction of the real scale. The actual implementation operates genome-wide, across thousands of species and real patient cohorts; its findings are unpublished pending the methodology manuscript currently in preparation.
 
 ---
 
-### 3. 📊 [High-Dimensional Visualization](./projects/heatmap_visualization)
-* **Goal:** Create clear, publication-ready heatmaps and similarity visualizations supporting exploratory multi-omics analyses.
-* **Tools:** Custom Python and R scripts for species-aligned matrices, clustered heatmaps, annotation layers, and comparison plots.
+## Key Projects
+
+### 1. [IRD Phenotype Clustering](./projects/IRD_Phenotype_Clustering)
+* **Goal:** Group known IRD genes into phenotype-driven functional modules from HPO annotations alone, as the first layer of the discovery pipeline.
+* **Approach:** Information-content-based term filtering, Lin/BMA semantic similarity, kNN and similarity-threshold graph construction, and Leiden community detection, with perturbation-based stability scoring and Fisher's exact enrichment to characterize each resulting module.
+* **Demonstrated on:** a synthetic 40-gene × 60-HPO-term matrix (`scripts/ird_phenotype_clustering_demo.ipynb`).
+
+### 2. [Cilia Cluster Analysis](./projects/cilia_clusters)
+* **Goal:** A focused case study applying the same module-validation logic to one functional gene class - ciliopathy genes - cross-checked against curated and literature evidence.
+* **Includes:** automated annotation and GO-term enrichment, internal-distance and similarity metrics, detection of coherent functional submodules, and visualizations of gene-gene relationships and conserved signatures.
+
+### 3. [High-Dimensional Visualization](./projects/heatmap_visualization)
+* **Goal:** The shared visualization layer used across the pipeline to inspect similarity structure at every stage.
+* **Tools:** custom Python and R scripts for species-aligned matrices, clustered heatmaps, annotation layers, and comparison plots.
+
+### 4. [Genomic Segmentation Demo](./projects/ird_lbs_barcode_segments)
+* **Goal:** Demonstrate the evolutionary co-profiling (NPP) side of the pipeline, run in parallel to the phenotypic layer, using a Local Barcode Segmentation (LBS)-inspired approach on synthetic data.
+* **Includes:** synthetic NPP matrices and barcode segments, segmentation and consensus-profile workflows, and signal-vs-noise validation experiments.
+
+### 5. [IRD HPO Anatomogram](./projects/IRD_HPO_Anatomogram)
+* **Goal:** Translate module-level phenotype data into anatomical body maps, making the pipeline's output interpretable for clinical collaborators.
+* **Approach:** maps HPO phenotype terms to organ systems and renders a color-coded human anatomogram showing which organs each gene module is most associated with.
+* **Includes:** HPO ontology parsing and organ-mapping pipeline (Python), per-module organ percentage computation, and gganatogram-based anatomical visualization (R).
 
 ---
 
-### 4. 🧬 [Genomic Segmentation Demo](./projects/ird_lbs_barcode_segments)
-* **Goal:** Demonstrate Local Barcode Segmentation (LBS)-inspired evolutionary profiling using synthetic data.
-* **Includes:**
-    * Synthetic NPP matrices and barcode segments.
-    * Segmentation and consensus-profile workflows.
-    * Signal vs. noise validation and benchmarking experiments.
+## Tech Stack & Methodology
 
----
-
-### 5. 🫁 [IRD HPO Anatomogram](./projects/IRD_HPO_Anatomogram)
-* **Goal:** Translate gene-cluster phenotype data into anatomical body maps — making computational results interpretable for clinical collaborators.
-* **Approach:** Maps HPO phenotype terms to organ systems and renders a color-coded human anatomogram showing which organs each gene cluster is most associated with.
-* **Includes:**
-    * HPO ontology parsing and organ-mapping pipeline (Python).
-    * Per-cluster organ percentage computation.
-    * gganatogram-based anatomical visualization (R).
-    * Designed as a communication layer for presenting multi-omics IRD findings to non-computational audiences.
-
----
-
-## 🛠️ Tech Stack & Methodology
-
-* **Languages:** Python (Pandas, Scikit-learn, SciPy), R (ggplot2, pheatmap, ComplexHeatmap).
+* **Languages:** Python (Pandas, Scikit-learn, SciPy), R (ggplot2, pheatmap, ComplexHeatmap), Git/GitHub.
 * **Core Methods:**
     * Normalized Phylogenetic Profiling (NPP).
-    * Comparative genomics & Supervised clustering.
-    * Multi-omics data integration.
-    * Feature engineering & ML-based prioritization.
+    * Unsupervised graph-based clustering (Leiden community detection).
+    * Comparative genomics and multi-omics data integration.
+    * Feature engineering and ML-based candidate prioritization.
 
 ---
 
-## 📬 Contact & Affiliation
+## Contact & Affiliation
 
 * **Lab:** [Prof. Yuval Tabach Lab](https://tabach-lab.com/), Faculty of Medicine.
 * **Institution:** Hebrew University of Jerusalem.
@@ -100,4 +84,5 @@ To quickly explore my work visually, check out the interactive portfolio:
 * **Location:** Jerusalem, Israel.
 
 ---
-***This repository evolves alongside my thesis research and will continue to expand with new analyses, tools, and polished workflows.***
+
+*This repository evolves alongside my thesis research and the methodology manuscript currently in preparation, and will continue to expand with new analyses and demonstrations.*
