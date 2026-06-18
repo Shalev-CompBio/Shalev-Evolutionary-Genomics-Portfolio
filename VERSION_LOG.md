@@ -18,3 +18,4 @@ This file records manual uploads and changes to the portfolio.
 | 2025-10-28 | Project: cilia_clusters        | Added detailed project README outlining the scientific rationale, the 6-step computational workflow, script descriptions, and usage examples.                                                            |
 | 2025-10-28 | Project: cilia_clusters        | Added example result images (`results/gene_category_distribution_per_cluster.png`, `results/Clusters_Dominated_by_Known_Genes.png`) and embedded them in the README.                                        |
 | 2026-06-17 | Project: IRD_Phenotype_Clustering | Replaced empty stub with full synthetic demo (notebook, synthetic gene-HPO matrix, demo figures, updated README). |
+| 2026-06-18 | Project: cilia_clusters | Fixed script filename mismatches, removed orphan stub, corrected broken How to Run example, generalized unpublished quantitative findings. |

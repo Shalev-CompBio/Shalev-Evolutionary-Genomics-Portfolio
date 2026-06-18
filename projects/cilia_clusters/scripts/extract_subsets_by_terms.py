@@ -93,7 +93,7 @@ def normalize_string_series(s: pd.Series) -> pd.Series:
 
 # 4. Explode helper ----------------------------------------------------------
 def explode_column(df: pd.DataFrame, col: str, sep_pattern: str, logger) -> pd.DataFrame:
-    """
+    r"""
     4.1 Explode a column that contains delimited lists into long form.
     - sep_pattern: regex for separators (e.g., r'[;,|\s]+').
     Returns new DataFrame with the exploded column named as original col.

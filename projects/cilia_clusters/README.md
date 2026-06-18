@@ -26,7 +26,7 @@
 
 The ciliary system is highly modular. While initial phylogenetic profiling identified major ciliary modules (like IFT and BBS), this pipeline was built to systematically expand and quantify this modularity.
 
-The objective was to begin with raw cluster outputs and construct a framework capable of evaluating and refining their biological meaning. We expanded the initial set from **14 to 27 cilia-associated clusters**, each assigned an evidence-based confidence level. Every gene was classified into categories such as *CiliaCarta*, *Literature-supported*, or *Novel Candidate*, enabling a shift from text-based enrichment toward a structured analysis of functional subnetworks.
+The objective was to begin with raw cluster outputs and construct a framework capable of evaluating and refining their biological meaning. The pipeline substantially expanded the initial set of cilia-associated clusters, each assigned an evidence-based confidence level. Every gene was classified into categories such as *CiliaCarta*, *Literature-supported*, or *Novel Candidate*, enabling a shift from text-based enrichment toward a structured analysis of functional subnetworks.
 
 ---
 
@@ -35,7 +35,7 @@ The objective was to begin with raw cluster outputs and construct a framework ca
 This project is structured as a chronological pipeline, where each script performs a specific task in the research flow.
 
 ### Step 1: Filtering (Data Ingestion)
-* **Scientific Goal:** Isolate a high-confidence set of "cilia-related" clusters from a raw dataset of 343 genomic clusters.
+* **Scientific Goal:** Isolate a high-confidence set of "cilia-related" clusters from a much larger raw dataset of genomic clusters.
 * **Script:** `extract_cilia_annotations.py`
 * **Function:** Scans annotation columns for specified terms (e.g., "cilia") and exports a clean subset of relevant clusters.
 
@@ -57,9 +57,9 @@ This project is structured as a chronological pipeline, where each script perfor
     * `group_overlap_analysis.py`: Computes gene-set overlap (counts/Jaccard) between evidence categories.
 
 ### Step 5: Validation & Benchmarking
-* **Scientific Goal:** Validate ~100 novel candidate genes against external evidence and published studies.
+* **Scientific Goal:** Validate the novel candidate genes identified by the pipeline against external evidence and published studies.
 * **Analysis:** Systematic comparison with Dobbelaere et al. (2023).
-* **Key Finding:** The pipeline identified **166 unique genes** missed by the comparative study. Our “Novel Candidates” aligned conceptually with their “Unknown [U]” category, supporting the predictive strength of our framework.
+* **Key Finding:** The pipeline identified additional candidate genes not captured by the comparative study. Our “Novel Candidates” aligned conceptually with their “Unknown [U]” category, supporting the predictive strength of our framework.
 
 ### Step 6: Visualization
 * **Scientific Goal:** Generate publication-ready figures summarizing evidence composition and evolutionary structure.
@@ -91,17 +91,23 @@ All Python scripts are robust CLI tools featuring `argparse`, `logging`, and `pa
 
 ## 💻 How to Run (Demo Example)
 
-All scripts include a `--help` flag for detailed options. Execute scripts in chronological order.
+The fully self-contained, runnable demonstration is the notebook:
+```bash
+jupyter notebook scripts/cilia_clusters_demo.ipynb
+```
+It generates its own synthetic gene-cluster data and runs the full analytical workflow end to end.
 
-**Example (Step 4 - Summary):**
+The CLI scripts below mirror the real production pipeline and accept the same flags (`--help` for full options), but operate on the full merged evidence dataset, which is not included here for confidentiality:
+
+**Example invocation (Step 4 - Summary):**
 ```bash
 python scripts/cluster_annotation_summary.py \
-    --input data/demo_merged_data.csv \
+    --input <merged_evidence_dataset>.csv \
     --cluster-col "Cluster_ID" \
     --category-col "Inclusion_criterion" \
     --outdir results/summary \
     --top-n 20
-````
+```
 
 ---
 
@@ -110,6 +116,8 @@ python scripts/cluster_annotation_summary.py \
 > **All data provided in this project are synthetic and for demonstration purposes only.**
 
 Real datasets (full NPP matrices, CiliaCarta, patient data) remain confidential. Demo files are randomly generated and intended solely to demonstrate the functionality of the pipeline.
+
+Specific quantitative results referenced in the narrative above (cluster counts, candidate gene counts) are generalized rather than stated exactly, as the underlying findings are part of unpublished research.
 
 ---
 
