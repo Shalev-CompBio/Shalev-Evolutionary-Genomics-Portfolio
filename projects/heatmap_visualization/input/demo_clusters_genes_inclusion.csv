@@ -1,0 +1,8 @@
+cluster_id,cluster_genes,Inclusion_criterion
+1,GENE_A1,CiliaCarta: Gold Standard
+1,GENE_A2,CiliaCarta: Gold Standard
+1,GENE_A3,CiliaCarta: Gold Standard
+2,GENE_A4,Novel cilia-associated candidate
+2,GENE_A5,Novel cilia-associated candidate
+2,GENE_A6,Novel cilia-associated candidate
+2,GENE_A7,Novel cilia-associated candidate

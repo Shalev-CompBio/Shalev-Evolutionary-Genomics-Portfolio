@@ -1,137 +1,119 @@
-# Heatmap Generation Scripts (LPP & NPP)
+```markdown
+# Heatmap Visualization — LPP & NPP Phylogenetic Profiles
 
-![Language](https://img.shields.io/badge/Language-R-276DC3)
-![Focus](https://img.shields.io/badge/Focus-Phylogenetic_Profiling_Visualization-7B1FA2)
-![Status](https://img.shields.io/badge/Status-Publication_Ready-00695C)
+![Language](https://img.shields.io/badge/Language-R-276DC3) ![Focus](https://img.shields.io/badge/Focus-Phylogenetic_Profiling_Visualization-7B1FA2) ![Status](https://img.shields.io/badge/Status-Publication_Ready-00695C)
 
-### 🧬 Visualizing Evolutionary Conservation Across Species
-
-**Shalev Yaacov** | M.Sc. Researcher @ Hebrew University (Tabach Lab)  
-*R-based tools for producing publication-ready LPP and NPP phylogenetic heatmaps using ComplexHeatmap.*
+*Shalev Yaacov — R scripts for generating publication-quality heatmaps
+of Local and Normalized Phylogenetic Profiles (LPP / NPP).*
 
 ---
 
-## 📌 Overview
+## Overview
 
-**Purpose:**  
-This module provides a set of R scripts for generating high-quality heatmaps from phylogenetic profiles. Both **LPP** (probabilistic presence/absence) and **NPP** (normalized evolutionary signal) visualizations are supported, enabling rapid exploration of evolutionary conservation and modularity.
-
-**Scientific Context:**  
-LPP and NPP heatmaps highlight evolutionary conservation across species in different ways.  
-- LPP emphasizes presence/absence transitions and strong evolutionary boundaries.  
-- NPP provides a continuous standardized signal, revealing subtle co-evolutionary trends.  
-
-Together, they offer complementary perspectives for studying gene-family evolution and functional modules.
-
----
-
-## 🔬 Scripts Included
-
-### 1. `gene_list_to_lpp_heatmap.R`
-*Generates a standard LPP heatmap for a single gene list.*  
-Ideal for rapid exploratory profiling using hierarchical clustering.
-
-### 2. `gene_list_to_npp_heatmap.R`
-*Creates a z-scored NPP heatmap with flexible row ordering and color clipping.*  
-Useful for detecting fine-grained evolutionary coherence while stabilizing extreme outliers.
-
-### 3. `lpp_multi_cluster_heatmap_with_inclusion.R`
-*Produces an advanced multi-cluster LPP heatmap with row gaps, per-cluster clustering, and evidence annotations.*  
-Designed for validating cluster structure and contrasting curated evidence categories.
+These scripts take a gene list and a phylogenetic profile matrix as input
+and produce a ComplexHeatmap figure with phylogenetically ordered species
+columns, clade color annotation, and hierarchical row clustering. Both LPP
+(probabilistic presence/absence, range 0–1) and NPP (z-scored evolutionary
+signal) are supported. A third script extends the single-gene-list design to
+multiple clusters simultaneously, adding per-cluster row gaps and an
+Inclusion Criterion annotation track. The output figures are publication-ready
+and were used directly in manuscript preparation without post-processing.
 
 ---
 
-## ⚙️ Core Workflow (All Scripts)
+## Rationale
 
-Each script:
+Phylogenetic profiling encodes the evolutionary conservation of each gene as
+a numeric vector across hundreds of species. The structure in that vector —
+which clades retain the gene, where conservation drops, which genes share
+similar patterns — is the primary biological signal. A heatmap with
+phylogenetically ordered columns and hierarchically clustered rows makes that
+structure immediately visible: conservation boundaries align with clade
+transitions, and genes that co-evolve appear adjacent after clustering.
 
-- Reads user-provided **gene lists**, **cluster annotations**, and **LPP/NPP matrices**.  
-- Aligns species columns to a **phylogenetically curated species map** for consistent evolutionary ordering.  
-- Determines row order by clustering, input order, or predefined ordering.  
-- Renders a high-quality **ComplexHeatmap** figure (PNG or optional PDF).  
-- Saves reproducibility files, including sorted matrices, row orders, run parameters, logs, and session info.
+LPP and NPP capture complementary aspects of the same signal. LPP values
+reflect the probability that a gene is present in a given species, emphasizing
+discrete conservation boundaries and presence/absence transitions across
+evolutionary distance. NPP z-scores capture the continuous deviation from
+genome-wide expectation, revealing subtle co-evolutionary trends that LPP
+thresholding may suppress. Using both on the same gene set exposes structure
+that neither alone resolves.
+
+The multi-cluster script adds a validation layer. After phenotypic clustering
+produces gene modules, the question is whether those modules also carry
+evolutionary coherence — whether genes grouped by clinical phenotype similarity
+also co-evolve. Rendering multiple clusters in a single heatmap with
+Inclusion Criterion annotation (Known IRD, Candidate, Gold Standard, Predicted)
+makes convergence between the phenotypic and evolutionary signals directly
+visible, which is the core claim the downstream analysis rests on.
 
 ---
 
-## 📁 Files & Recommended Structure
+## Scripts
+
+- `gene_list_to_lpp_heatmap.R` — standard LPP heatmap for a single gene list;
+  row clustering by 1 − Pearson distance, average linkage.
+- `gene_list_to_npp_heatmap.R` — NPP z-score heatmap; diverging color scale
+  with optional z-clipping; supports cluster, input, or file-defined row order.
+- `lpp_multi_cluster_heatmap_with_inclusion.R` — multi-cluster LPP heatmap
+  with row gaps between clusters and an Inclusion Criterion annotation track.
+
+---
+
+## Files
 
 ```
-
-projects/heatmap_visualization/
-├─ scripts/
-│  ├─ gene_list_to_lpp_heatmap.R
-│  ├─ gene_list_to_npp_heatmap.R
-│  └─ lpp_multi_cluster_heatmap_with_inclusion.R
-├─ input/
-│  ├─ demo_genes.csv
-│  ├─ demo_clusters_genes_inclusion.csv
-│  ├─ demo_lpp.tsv
-│  ├─ demo_npp.tsv
-│  └─ species_clades.csv
-├─ results/
-│  └─ example_multi_cluster_heatmap.png
-└─ README.md
-
-````
-
----
-
-## 📦 Requirements
-
-- R 4.0+  
-- CRAN: optparse, readr, stringr, dplyr, glue, data.table, tidyr, tools, randomcoloR  
-- Bioconductor: ComplexHeatmap, circlize  
-- Automatic dependency installation supported via `BiocManager`  
-- Recommended reproducible environment: **renv** or Docker  
-- On Windows: Cairo support may be required for high-quality PNG rendering
+heatmap_visualization/
+├── scripts/
+│   ├── gene_list_to_lpp_heatmap.R
+│   ├── gene_list_to_npp_heatmap.R
+│   └── lpp_multi_cluster_heatmap_with_inclusion.R
+├── input/
+│   ├── demo_genes.csv
+│   ├── demo_lpp.tsv
+│   ├── demo_npp.tsv
+│   ├── demo_clusters_genes_inclusion.csv
+│   └── species_clades.csv
+├── results/
+│   ├── Clusters_Dominated_by_Known_Genes.png
+│   ├── NPP_7_genes_HeatMap_2025.png
+│   └── LPP_7_genes_HeatMap_2025.png
+└── README.md
+```
 
 ---
 
-## 🧪 Input Formats
+## Input Formats
 
-### 1) Gene List (Scripts 1 & 2)
-- Provided as `"GENE1,GENE2,..."` or CSV with one gene per row.
-
-Example:
+**Gene list** (`demo_genes.csv`) — one column, header `gene`:
 ```csv
 gene
-ABCA4
-RHO
-USH2A
-````
+GENE_A1
+GENE_A2
+GENE_A3
+```
 
-### 2) Cluster Details (Script 3)
+**LPP/NPP matrix** (`demo_lpp.tsv`, `demo_npp.tsv`) — tab-separated;
+first column = gene names, remaining columns = species taxids or
+scientific names:
+```
+gene    9606    10090   7955
+GENE_A1 0.95    0.87    0.03
+GENE_A2 0.91    0.79    0.01
+```
 
-CSV with one gene per row, including cluster information and evidence annotations.
-
-Required columns: `cluster_id`, `cluster_genes`, `Inclusion_criterion`
-
-Example:
-
+**Cluster details** (`demo_clusters_genes_inclusion.csv`) — required columns
+`cluster_id`, `cluster_genes`, `Inclusion_criterion`:
 ```csv
 cluster_id,cluster_genes,Inclusion_criterion
-949,MT-ND5,Literature
-949,MT-CYB,Literature
-1257,TTC30B,CiliaCarta: Gold Standard
-1257,CLUAP1,CiliaCarta: Predicted
+CLUSTER_01,GENE_A1,CiliaCarta: Gold Standard
+CLUSTER_01,GENE_A2,CiliaCarta: Gold Standard
+CLUSTER_02,GENE_B1,Novel cilia-associated candidate
+CLUSTER_02,GENE_B2,Novel cilia-associated candidate
 ```
 
-### 3) LPP/NPP Profile Matrices
-
-Tab/CSV/RDS tables with first column = gene names and remaining columns = species/taxids.
-
-Example:
-
-```
-gene    9606    10090   3702
-ABCA4   0.95    0.85    0.02
-RHO     0.99    0.88    0.01
-```
-
-### 4) Clades Mapping
-
-Defines species-to-clade relationships and fixes column order.
-
+**Species–clade map** (`species_clades.csv`) — required columns
+`scientific_name`, `taxid`, `clade`:
 ```csv
 scientific_name,taxid,clade
 Homo_sapiens,9606,Mammalia
@@ -141,22 +123,20 @@ Danio_rerio,7955,Actinopteri
 
 ---
 
-## ▶️ How to Run — Examples
+## Example Usage
 
-### Standard LPP Heatmap
-
+**Standard LPP heatmap:**
 ```bash
 Rscript scripts/gene_list_to_lpp_heatmap.R \
-  --genes "ABCA4,RHO,USH2A" \
+  --csv input/demo_genes.csv \
   --lpp input/demo_lpp.tsv \
   --clades input/species_clades.csv \
-  --outdir heatmap_runs \
-  --out_prefix demo_lpp \
-  --min_height_in 8
+  --outdir results/demo \
+  --out_prefix LPP_demo \
+  --min_height_in 6
 ```
 
-### Standard NPP Heatmap
-
+**Standard NPP heatmap:**
 ```bash
 Rscript scripts/gene_list_to_npp_heatmap.R \
   --csv input/demo_genes.csv \
@@ -164,110 +144,59 @@ Rscript scripts/gene_list_to_npp_heatmap.R \
   --clades input/species_clades.csv \
   --row_order cluster \
   --z_clip 3 \
-  --outdir heatmap_runs \
-  --out_prefix demo_npp
+  --outdir results/demo \
+  --out_prefix NPP_demo
 ```
 
-### Multi-Cluster Annotated LPP Heatmap
-
+**Multi-cluster LPP heatmap:**
 ```bash
 Rscript scripts/lpp_multi_cluster_heatmap_with_inclusion.R \
   --clusters input/demo_clusters_genes_inclusion.csv \
   --lpp input/demo_lpp.tsv \
   --species input/species_clades.csv \
-  --selected "949,1257" \
-  --outdir heatmap_runs \
-  --label demo_multi_cluster \
+  --outdir results/demo \
+  --label MultiCluster_demo \
   --seed 42
 ```
 
 ---
 
-## 🎛️ Main CLI Options (Summary)
+## Example Outputs
 
-Common options:
+### Figure 1 — Multi-Cluster LPP with Inclusion Criterion Annotation
+![Multi-cluster LPP heatmap with per-cluster row gaps and evidence annotation](results/Clusters_Dominated_by_Known_Genes.png)
 
-* `--clusters`, `--csv`, `--genes`
-* `--lpp`, `--npp`
-* `--species`, `--clades`
-* `--outdir`
-* `--out_prefix`, `--label`
-* `--seed`
-* `--png_width`, `--min_height_in`, `--png_height_per_gene`
+### Figure 2 — Standard NPP Heatmap
+![NPP z-score heatmap with diverging color scale and clade annotation](results/NPP_7_genes_HeatMap_2025.png)
 
-NPP-specific:
-
-* `--drop_first_rowcol`
-* `--z_clip`
-* `--row_order` (cluster / input / file)
-
-Multi-cluster specific:
-
-* `--selected`
-* `--allow_explode`
-* `--method` (average / single, etc.)
+### Figure 3 — Standard LPP Heatmap
+![LPP presence/absence heatmap with hierarchical row clustering](results/LPP_7_genes_HeatMap_2025.png)
 
 ---
 
-## 📤 Outputs (Per Run)
+## Dependencies
 
-Each execution generates:
+```
+# CRAN
+optparse, readr, stringr, dplyr, glue, data.table, tidyr, randomcoloR
 
-* Main heatmap PNG (optional PDF)
-* Sorted matrix files
-* Row-order file
-* `runinfo_<timestamp>.txt` (all parameters)
-* `runlog_<timestamp>.txt` (console output)
-* Optional `session_info.txt`
+# Bioconductor
+ComplexHeatmap, circlize
+```
 
-All outputs are stored in timestamped subfolders.
-
----
-
-## 🖼️ Example Outputs
-
-### 1. Multi-Cluster Annotated LPP (Figure X3)
-
-![LPP heatmap showing multiple clusters with Inclusion criteria annotations](results/Clusters_Dominated_by_Known_Genes.png)
-
-### 2. Standard NPP Heatmap (Figure X4)
-
-![Example NPP heatmap](results/NPP_7_genes_HeatMap_2025.png)
-
-### 3. Standard LPP Heatmap (Figure X5)
-
-![Example LPP heatmap](results/LPP_7_genes_HeatMap_2025.png)
+Automatic installation via `BiocManager` is included in each script.
+Recommended environment management: **renv** or Docker.
+On Windows, Cairo support may be required for high-resolution PNG export.
 
 ---
 
-## 🧠 Key Design Decisions
+## Data & Privacy Disclaimer
 
-* **Clustering:** Pearson distance with average/single linkage for stable co-evolutionary grouping
-* **Species Columns:** Fixed phylogenetic order for biological interpretability
-* **Color Scales:**
-
-  * LPP: sequential (0→1)
-  * NPP: diverging with optional clipping
-* **Reproducibility:** Timestamped runs, logs, dependency checks, environment capture
+> All gene names, cluster IDs, and profile values in `input/` are entirely
+> synthetic and provided solely to demonstrate script functionality. No real
+> LPP/NPP matrices, gene clusters, or internal laboratory data are included.
 
 ---
 
-## 🔧 Troubleshooting
-
-* Matrix reading errors: check separators and headers
-* Missing genes: verify symbol consistency (case-insensitive rescue included)
-* Species mismatch: ensure taxid/scientific_name matches the LPP/NPP matrix
-* Figure cropping: tune `--png_width`, `--min_height_in`, `--png_height_per_gene`
-
----
-
-## ⚠️ Data & Privacy Disclaimer
-
-> **All data used in this project are synthetic and provided solely for demonstration purposes.**
-
-Real datasets (LPP/NPP matrices, species maps, gene clusters, or any internal laboratory resources) remain confidential.  
-All demo files in `input/` are small, randomly generated tables intended only to illustrate script functionality.
-
----
-
-*This project is part of the Evolutionary Genomics & Multi-Omics Portfolio.*
+*Part of the Evolutionary Genomics & Multi-Omics Portfolio.*
+```

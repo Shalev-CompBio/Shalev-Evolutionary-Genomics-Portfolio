@@ -1,0 +1,6 @@
+run_stamp  :  20260619_143940
+args  :  input/demo_genes.csv, input/demo_lpp.csv, input/species_clades.csv, results/demo, LPP_demo, 6, 10, FALSE
+n_genes  :  7
+lpp_file  :  input/demo_lpp.csv
+clades_file  :  input/species_clades.csv
+out_base  :  results/demo/run_20260619_143940/LPP_demo_7_genes_20260619

@@ -1,0 +1,6 @@
+run_stamp  :  20260619_144006
+args  :  input/demo_genes.csv, input/demo_npp.csv, input/species_clades.csv, FALSE, NA, cluster, results/demo, NPP_demo, 6, 10, FALSE
+n_genes  :  7
+npp_file  :  input/demo_npp.csv
+clades_file  :  input/species_clades.csv
+out_base  :  results/demo/npp_runs_7g_20260619_144006/NPP_demo

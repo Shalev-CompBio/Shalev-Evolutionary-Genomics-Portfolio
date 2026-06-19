@@ -1,0 +1,41 @@
+[INFO] === START RUN ===
+[INFO] Timestamp: 20260619_144030
+[INFO] Label: MultiCluster_demo
+[INFO] Outdir: C:\dev\portfolio\projects\heatmap_visualization\results\demo
+[INFO] Reading clusters CSV
+[OK]   Loaded clusters_details: 7 rows x 3 cols
+[INFO] Reading LPP matrix
+[INFO] Reading LPP from 'input/demo_lpp.csv' (ext='csv')
+[OK]   Loaded LPP matrix: 7 genes x 20 species
+[INFO] Reading species_to_clades CSV
+[OK]   Loaded species map: 20 rows
+[INFO] Validating required columns in input files.
+[OK]   Required columns validated.
+[INFO] No selected clusters provided (--selected): using all clusters found in clusters file.
+[OK]   cluster_genes column appears normalized (no semicolons found).
+[OK]   All 7 selected genes are present in LPP.
+[INFO] Mapping species scientific names to taxids for LPP columns.
+[WARN] 20 species names in LPP matrix header could not be mapped to taxid via species map. Examples: 9606, 10090, 10116, 9913, 9031. Keeping original names.
+[OK]   Renamed LPP columns to mapped taxid (or kept original name if unmapped).
+[OK]   Top clade annotation constructed.
+[INFO] Processing evidence categories (Inclusion_criterion).
+[INFO] Evidence counts BEFORE merge:
+[INFO] 
+       CiliaCarta: Gold Standard Novel cilia-associated candidate 
+                               3                                4 
+[INFO] Evidence counts AFTER merge:
+[INFO] 
+       CiliaCarta: Gold Standard Novel cilia-associated candidate 
+                               3                                4 
+[OK]   Evidence mapping aligned to final ordered gene list.
+[INFO] Setting up cluster factor and row annotations.
+[OK]   Cluster color palette generated.
+[OK]   Right-side annotations constructed (Cluster & Inclusion).
+[INFO] Assembling Heatmap object...
+[OK]   Heatmap object constructed.
+[INFO] Exporting PNG: C:\dev\portfolio\projects\heatmap_visualization\results\demo/MultiCluster_demo_20260619_144030.png (9.0 x 8.0 in)
+[OK]   Figure exported successfully: C:\dev\portfolio\projects\heatmap_visualization\results\demo\MultiCluster_demo_20260619_144030.png
+[OK]   Gene->cluster mapping saved: C:\dev\portfolio\projects\heatmap_visualization\results\demo/MultiCluster_demo_genes_map_20260619_144030.csv (n=7)
+[OK]   Run info saved: C:\dev\portfolio\projects\heatmap_visualization\results\demo\MultiCluster_demo_runinfo_20260619_144030.txt
+[OK]   Complete run log saved: C:\dev\portfolio\projects\heatmap_visualization\results\demo\MultiCluster_demo_runlog_20260619_144030.txt
+[INFO] === END RUN ===
