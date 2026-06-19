@@ -85,6 +85,8 @@ IRD_HPO_Anatomogram/
         └── module_1_cluster1_demo.png    Example output (synthetic data)
 ```
 
+![Anatomogram demo – synthetic data](outputs/demo/module_1_cluster1_demo.png)
+
 ---
 
 ## Input & Output
