@@ -7,8 +7,7 @@
 ![Status](https://img.shields.io/badge/Status-Synthetic_Demo-00695C)
 
 > **Note:** All gene names, module assignments, and cluster results in this repository are **synthetic and fabricated**.
-> The HPO ontology file (`hp.obo`) and phenotype-to-organ mappings are derived from the publicly available
-> [Human Phenotype Ontology](https://hpo.jax.org). No real patient or research data is included.
+> No real patient or research data is included.
 
 ---
 
@@ -43,15 +42,12 @@ IRD_HPO_Anatomogram/
 │
 ├── data/
 │   ├── gene_hpo_module_DEMO.csv          ← Synthetic gene-HPO-module input (DEMO)
-│   ├── combined_phenotype_map.csv         ← HPO term → organ mapping (from hp.obo)
-│   ├── HPO_Organ_Label_Mapping.csv        ← Human-readable organ labels
-│   ├── gganatogram_organs_input_DEMO.csv  ← Final organ-% table (DEMO output of step 2)
-│   └── hp.obo                             ← ⚠ Download separately (see below)
+│   ├── HPO_Organ_Label_Mapping.csv        ← gganatogram organ keys → human-readable labels
+│   └── gganatogram_organs_input_DEMO.csv  ← Final organ-% table (output of demo notebook)
 │
 ├── scripts/
-│   ├── 01_hpo_structure_builder.ipynb    ← Step 1: Parse HPO ontology → organ map
-│   ├── 02_hpo_to_organ_mapping.ipynb     ← Step 2: Gene clusters → organ percentages
-│   └── 03_gganatomogram_Plot.Rmd         ← Step 3: Render anatomogram figure
+│   ├── hpo_organ_mapping_demo.ipynb      ← Demo: HPO term → organ mapping + % aggregation
+│   └── gganatomogram_Plot.Rmd            ← Render anatomogram figure from the output CSV
 │
 └── outputs/
     └── demo/
@@ -60,60 +56,41 @@ IRD_HPO_Anatomogram/
 
 ---
 
-## ⚙️ Pipeline — Three Steps
+## ⚙️ Pipeline — Two Demo Steps
 
-### Step 1 — HPO Ontology Parsing (`01_hpo_structure_builder.ipynb`)
-
-**Input:** `hp.obo` (download from [HPO releases](https://hpo.jax.org/data/ontology))
-
-**What it does:**
-- Parses the HPO OBO file (19,393 terms, 23,748 is_a edges)
-- Builds the HPO term hierarchy (parent-child relationships)
-- Maps HPO terms to anatomical organ systems via text-matching and keyword dictionaries
-- Outputs: `combined_phenotype_map.csv` — the HPO→organ mapping table
-
-**Key parameters:**
-```python
-MIN_DEPTH = 2            # Exclude very general top-level terms
-EXCLUDE_TERMS = [        # Exclude non-anatomical categories
-    "History", "Exposure", "Procedure", ...
-]
-SYSTEM_KEYWORDS = {      # Keyword dictionaries per body system
-    "nervous_system": ["brain", "cerebral", "neuron", ...],
-    "circulation":    ["blood", "cardiac", "vascular", ...],
-    ...
-}
-```
-
----
-
-### Step 2 — Gene → Organ Mapping (`02_hpo_to_organ_mapping.ipynb`)
+### Step 1 — HPO Mapping & Organ Percentage Aggregation (`hpo_organ_mapping_demo.ipynb`)
 
 **Inputs:**
-- `gene_hpo_module_DEMO.csv` — gene symbols, HPO term IDs, and module assignments
-- `combined_phenotype_map.csv` — from Step 1
+- `data/gene_hpo_module_DEMO.csv` — synthetic gene–HPO–module annotation table
+- `data/HPO_Organ_Label_Mapping.csv` — organ key → label reference
 
 **What it does:**
-- For each gene cluster (module), collects all associated HPO terms
-- Looks up which organ(s) each HPO term maps to
-- Computes: **% of genes in the module** with at least one phenotype linked to each organ
-- Outputs: `gganatogram_organs_input_*.csv` with columns `module_id, organ, value`
+- Applies a keyword-based mapping from HPO term names to anatomical organ keys.
+  This is a simplified illustrative approach for the demo; the real pipeline uses
+  full HPO ontology traversal via `pronto` (BFS over the `is_a` DAG, no internet required,
+  but needs the `hp.obo` file).
+- For each module, computes the percentage of genes with at least one phenotype
+  mapped to each organ: `value = (genes with organ phenotype / module size) × 100`
+- Outputs: `data/gganatogram_organs_input_DEMO.csv` with columns `module_id, organ, value`
 
-**Key parameter:**
-```python
-MIN_PERCENT_TO_REPORT_ORGAN = 5.0   # Minimum % threshold for inclusion
-```
+**Key simplification (demo vs. real):**
+
+| Demo notebook | Real pipeline |
+|---------------|---------------|
+| Keyword substring matching on HPO term names | BFS traversal from each HPO term up the `is_a` DAG to the nearest organ target ancestor |
+| No external files needed beyond `pandas` | Requires `hp.obo` (~10 MB) and `pronto` |
+| Covers terms whose names contain explicit anatomical keywords | Covers all HPO terms regardless of name content |
 
 ---
 
-### Step 3 — Anatomogram Visualization (`03_gganatomogram_Plot.Rmd`)
+### Step 2 — Anatomogram Visualization (`gganatomogram_Plot.Rmd`)
 
-**Input:** `gganatogram_organs_input_DEMO.csv`
+**Input:** `data/gganatogram_organs_input_DEMO.csv`
 
 **What it does:**
 - Joins module organ-% values onto the full human male anatomy background
-- Renders a color-mapped figure: grey (0%) → yellow → orange → dark red (100%)
-- Adds organ labels for top-K organs by phenotype burden
+- Renders a color-mapped figure: grey (0 %) → yellow → orange → dark red (100 %)
+- Adds organ labels for the top-K organs by phenotype burden
 - Exports PDF (vector), PNG (preview), and TIFF (print-quality)
 
 ---
@@ -124,7 +101,7 @@ The synthetic demo input (`gene_hpo_module_DEMO.csv`) contains 3 fabricated gene
 
 | Module | Biological theme (synthetic) | Dominant organs |
 |---|---|---|
-| 1 | Neurological / retinal | brain, nerve, eye |
+| 1 | Neurological / retinal | eye, retina, brain |
 | 2 | Metabolic / visceral | kidney, liver, blood |
 | 3 | Cardiac / muscular | heart, skeletal muscle |
 
@@ -141,37 +118,34 @@ The synthetic demo input (`gene_hpo_module_DEMO.csv`) contains 3 fabricated gene
 ### Requirements
 
 ```bash
-# Python (for notebooks)
-pip install pandas numpy pathlib
+# Python (for the demo notebook)
+pip install pandas jupyter
 
-# R (for anatomogram plot)
+# R (for the anatomogram plot)
 Rscript -e 'install.packages(c("ggplot2","dplyr","readr","scales","ggrepel"))'
-Rscript -e 'devtools::install_github("jespermaag/gganatogram")'
+# gganatogram must be installed from GitHub:
+Rscript -e 'if (!requireNamespace("devtools")) install.packages("devtools"); devtools::install_github("jespermaag/gganatogram")'
 ```
 
-### Step 1 — Download hp.obo
+> **Note:** The demo notebook requires only `pandas` and runs without any ontology file.
+> The real pipeline additionally requires `pronto` and the `hp.obo` HPO ontology file
+> (available from [https://hpo.jax.org/data/ontology](https://hpo.jax.org/data/ontology));
+> no download is needed for the demo.
 
-```
-Download from: https://hpo.jax.org/data/ontology
-Save as: data/hp.obo
-```
-
-### Step 2 — Run the pipeline
-
-Open notebooks in order in Jupyter:
+### Run the demo
 
 ```bash
-jupyter notebook scripts/01_hpo_structure_builder.ipynb
-jupyter notebook scripts/02_hpo_to_organ_mapping.ipynb
+# Step 1 — Run the Python notebook (generates gganatogram_organs_input_DEMO.csv)
+jupyter notebook scripts/hpo_organ_mapping_demo.ipynb
 ```
 
-Then in RStudio, open `scripts/03_gganatomogram_Plot.Rmd`, set `MODULE_ID` and knit.
+Then in RStudio, open `scripts/gganatomogram_Plot.Rmd`, set `MODULE_ID` to 1, 2, or 3, and knit.
 
 ---
 
 ## 🧠 Key Methodological Insights
 
-- **HPO hierarchy traversal** is essential: fine-grained terms (e.g., *Retinal dystrophy*) must be propagated to organ-level categories (e.g., *eye*) for meaningful aggregation.
+- **HPO hierarchy traversal** is essential in the full pipeline: fine-grained terms (e.g., *Retinal dystrophy*) must be propagated to organ-level categories (e.g., *eye*) for meaningful aggregation. The demo approximates this with keyword matching.
 - The **% of genes** metric is intentionally simple — designed for clinical readability, not statistical testing.
 - The pipeline is **module-agnostic**: it works with any gene clustering output that provides gene → HPO → module assignments.
 - This visualization serves as a **clinical communication layer** on top of computational gene clustering results.
@@ -182,7 +156,6 @@ Then in RStudio, open `scripts/03_gganatomogram_Plot.Rmd`, set `MODULE_ID` and k
 
 > All gene names, entrez IDs, module assignments, and cluster results in this repository are **entirely synthetic and fabricated**.
 > No real patient, clinical, or unpublished research data are included.
-> The `combined_phenotype_map.csv` is derived solely from the publicly available `hp.obo` ontology file.
 
 ---
 
