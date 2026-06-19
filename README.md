@@ -16,7 +16,7 @@ tools I develop as part of an ongoing M.Sc. thesis at the Hebrew University
 of Jerusalem, aimed at identifying novel disease-causing genes in
 Inherited Retinal Diseases (IRD) that current diagnostic panels miss.
 
-**Research Context**
+#### **Research Context**
 
 The research partitions 450+ IRD-associated genes into co-evolved functional
 modules using Normalized Phylogenetic Profiling (NPP) across ~2,000 genomes
@@ -40,12 +40,6 @@ for the findings should wait for the manuscript.
 
 ## Visual Portfolio
 
-<div align="center">
-
-<a href="https://shalev-compbio.github.io/Shalev-Evolutionary-Genomics-Portfolio/Visual_Portfolio/"><img src="./Visual_Portfolio/IRD_logo.svg" width="80" alt="IRD Logo"/></a>
-
-</div>
-
 > [![Visual Portfolio](https://img.shields.io/badge/Visual_Portfolio-Launch_Interactive_Site_%E2%86%92-E91E63?style=for-the-badge)](https://shalev-compbio.github.io/Shalev-Evolutionary-Genomics-Portfolio/Visual_Portfolio/)
 > *Narrative walkthrough of the research — NPP methodology, project case studies, and contact.*
 
@@ -53,7 +47,7 @@ for the findings should wait for the manuscript.
 
 ## Projects
 
-The five projects fall into three categories reflecting their role in the full pipeline.
+**The five projects fall into three categories reflecting their role in the full pipeline.**
 
 ---
 
