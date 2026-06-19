@@ -80,7 +80,7 @@ any consensus as a reliable query.
 ## Files
 
 ```
-ird_lbs_barcode_segments/
+LBS_Consensus_Profiling/
 ├── notebook/
 │   └── consensus_profile_demo.ipynb
 ├── data/
@@ -102,9 +102,9 @@ ird_lbs_barcode_segments/
 
 Species window selection is guided by visual inspection of phylogenetic
 heatmaps. An example of the heatmap output that informs this step is in the
-`heatmap_visualization` project:
+`LPP_NPP_Heatmap_Visualization` project:
 
-![Example phylogenetic heatmap used to guide LBS selection](../heatmap_visualization/results/NPP_7_genes_HeatMap_2025.png)
+![Example phylogenetic heatmap used to guide LBS selection](../LPP_NPP_Heatmap_Visualization/results/NPP_7_genes_HeatMap_2025.png)
 
 ---
 

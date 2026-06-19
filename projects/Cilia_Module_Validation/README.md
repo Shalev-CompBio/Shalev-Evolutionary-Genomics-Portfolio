@@ -83,7 +83,7 @@ All Python scripts are robust CLI tools featuring `argparse`, `logging`, and `pa
 | `group_overlap_analysis.py` | **(Step 4)** Calculates Jaccard/overlap between evidence groups. |
 | `cluster_evidence_viz.py` | **(Step 6)** Creates stacked barplots for evidence composition. |
 
-> *(Note: The R script `lpp_multi_cluster_heatmap_with_inclusion.R` is located in the [`../heatmap_visualization`](../heatmap_visualization) project folder.)*
+> *(Note: The R script `lpp_multi_cluster_heatmap_with_inclusion.R` is located in the [`../LPP_NPP_Heatmap_Visualization`](../LPP_NPP_Heatmap_Visualization) project folder.)*
 
 ---
 

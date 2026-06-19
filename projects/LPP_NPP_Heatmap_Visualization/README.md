@@ -62,7 +62,7 @@ visible, which is the core claim the downstream analysis rests on.
 ## Files
 
 ```
-heatmap_visualization/
+LPP_NPP_Heatmap_Visualization/
 ├── scripts/
 │   ├── gene_list_to_lpp_heatmap.R
 │   ├── gene_list_to_npp_heatmap.R

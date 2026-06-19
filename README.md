@@ -44,15 +44,15 @@ The five projects below are small-scale, simplified illustrations of individual 
 * **Approach:** Information-content-based term filtering, Lin/BMA semantic similarity, kNN and similarity-threshold graph construction, and Leiden community detection, with perturbation-based stability scoring and Fisher's exact enrichment to characterize each resulting module.
 * **Demonstrated on:** a synthetic 40-gene × 60-HPO-term matrix (`scripts/ird_phenotype_clustering_demo.ipynb`).
 
-### 2. [Cilia Cluster Analysis](./projects/cilia_clusters)
+### 2. [Cilia Cluster Analysis](./projects/Cilia_Module_Validation)
 * **Goal:** A focused case study applying the same module-validation logic to one functional gene class - ciliopathy genes - cross-checked against curated and literature evidence.
 * **Includes:** automated annotation and GO-term enrichment, internal-distance and similarity metrics, detection of coherent functional submodules, and visualizations of gene-gene relationships and conserved signatures.
 
-### 3. [High-Dimensional Visualization](./projects/heatmap_visualization)
+### 3. [High-Dimensional Visualization](./projects/LPP_NPP_Heatmap_Visualization)
 * **Goal:** The shared visualization layer used across the pipeline to inspect similarity structure at every stage.
 * **Tools:** custom Python and R scripts for species-aligned matrices, clustered heatmaps, annotation layers, and comparison plots.
 
-### 4. [Genomic Segmentation Demo](./projects/ird_lbs_barcode_segments)
+### 4. [Genomic Segmentation Demo](./projects/LBS_Consensus_Profiling)
 * **Goal:** Demonstrate the evolutionary co-profiling (NPP) side of the pipeline, run in parallel to the phenotypic layer, using a Local Barcode Segmentation (LBS)-inspired approach on synthetic data.
 * **Includes:** synthetic NPP matrices and barcode segments, segmentation and consensus-profile workflows, and signal-vs-noise validation experiments.
 
