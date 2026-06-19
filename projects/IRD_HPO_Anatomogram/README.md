@@ -85,8 +85,6 @@ IRD_HPO_Anatomogram/
         └── module_1_cluster1_demo.png    Example output (synthetic data)
 ```
 
-![Anatomogram demo – synthetic data](outputs/demo/module_1_cluster1_demo.png)
-
 ---
 
 ## Input & Output
@@ -118,6 +116,16 @@ jupyter notebook scripts/hpo_organ_mapping_demo.ipynb
 > The demo notebook requires only `pandas` and runs without any ontology file.
 > The full pipeline additionally requires `pronto` and `hp.obo`
 > (available from [hpo.jax.org/data/ontology](https://hpo.jax.org/data/ontology)).
+
+---
+
+## Example Output
+
+![Anatomogram demo – synthetic data](outputs/demo/module_1_cluster1_demo.png)
+
+*Module 1 (neurological/retinal) — organs colored by phenotype burden;
+grey = no mapped phenotypes, dark red = 100% of module genes carry at
+least one phenotype mapping to that organ. Generated from synthetic data.*
 
 ---
 
