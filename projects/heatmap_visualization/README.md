@@ -1,4 +1,3 @@
-```markdown
 # Heatmap Visualization — LPP & NPP Phylogenetic Profiles
 
 ![Language](https://img.shields.io/badge/Language-R-276DC3) ![Focus](https://img.shields.io/badge/Focus-Phylogenetic_Profiling_Visualization-7B1FA2) ![Status](https://img.shields.io/badge/Status-Publication_Ready-00695C)
@@ -199,4 +198,3 @@ On Windows, Cairo support may be required for high-resolution PNG export.
 ---
 
 *Part of the Evolutionary Genomics & Multi-Omics Portfolio.*
-```
