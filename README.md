@@ -12,21 +12,29 @@ multi-omics data.*
 ## Overview
 
 This repository is a curated public sample of the computational methods and
-tools I develop as part of my M.Sc. thesis research.
-The research partitions 450+ IRD-associated genes into co-evolved functional modules using
-Normalized Phylogenetic Profiling (NPP) across ~2,000 genomes and HPO-based phenotypic
-clustering, builds a bidirectional phenotype-to-gene inference engine for
-clinical prioritization, and derives a genome-scale candidate ranking model
-validated against 4,254+ real-world cases in collaboration with Hadassah Medical Center.
-The pipeline operates on real patient data and remains
-unpublished pending the methodology manuscript in preparation.
+tools I develop as part of an ongoing M.Sc. thesis at the Hebrew University
+of Jerusalem, aimed at identifying novel disease-causing genes in
+Inherited Retinal Diseases (IRD) that current diagnostic panels miss.
 
-What is here is a structured window into the methods: five focused demonstrations
-and tools drawn from the same framework, each running on fully synthetic data.
-They are not a replica of the pipeline, and they are not its results — they are
-illustrations of the reasoning and implementation behind it. A reader who works
-through them will understand the approach; a reader looking for the findings
-should wait for the manuscript.
+**Research Context**
+
+The research partitions 450+ IRD-associated genes into co-evolved functional
+modules using Normalized Phylogenetic Profiling (NPP) across ~2,000 genomes
+and HPO-based phenotypic clustering, builds a bidirectional phenotype-to-gene
+inference engine for clinical prioritization, and derives a genome-scale
+candidate ranking model validated against 4,254+ real-world cases in
+collaboration with Hadassah Medical Center.
+The approach deliberately combines phenotypic, evolutionary, and functional signals —
+rather than relying on any single one alone — into a unified discovery pipeline.
+Its findings remain unpublished pending the methodology manuscript in preparation.
+
+What is here is a structured window into the methods: five focused
+demonstrations and tools drawn from the same framework, presented roughly in
+the order the corresponding stages are used, each running on fully synthetic
+data at a fraction of the real scale. They are not the pipeline, and not its
+results — they are illustrations of the reasoning and implementation behind it.
+A reader who works through them will understand the approach; a reader looking
+for the findings should wait for the manuscript.
 
 ---
 
@@ -34,7 +42,7 @@ should wait for the manuscript.
 
 <div align="center">
 
-[![IRD Logo](./Visual_Portfolio/IRD_logo.svg)](https://shalev-compbio.github.io/Shalev-Evolutionary-Genomics-Portfolio/Visual_Portfolio/)
+<a href="https://shalev-compbio.github.io/Shalev-Evolutionary-Genomics-Portfolio/Visual_Portfolio/"><img src="./Visual_Portfolio/IRD_logo.svg" width="80" alt="IRD Logo"/></a>
 
 </div>
 
