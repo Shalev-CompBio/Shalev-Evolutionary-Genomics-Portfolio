@@ -1,86 +1,135 @@
 # Evolutionary Genomics & Multi-Omics Portfolio
 
-![Genomics](https://img.shields.io/badge/Focus-Genomics_%26_Bioinformatics-7B1FA2) ![Language](https://img.shields.io/badge/Languages-Python_%7C_R-FF9800) ![Institution](https://img.shields.io/badge/Institution-Hebrew_University_of_Jerusalem-00695C)
+![Genomics](https://img.shields.io/badge/Focus-Computational_Genomics_%26_Bioinformatics-7B1FA2) ![Language](https://img.shields.io/badge/Languages-Python_%7C_R-FF9800) ![Institution](https://img.shields.io/badge/Institution-Hebrew_University_of_Jerusalem-00695C)
 
-### 🧬 Decoding Disease Architecture Through Evolutionary Signals
-
-**Shalev Yaacov** | M.Sc. Researcher @ Hebrew University (Tabach Lab)
-*Evolutionary gene clustering, multi-omics integration, and phylogenetic profiling for uncovering IRD & cilia-related disease networks.*
+*Shalev Yaacov — M.Sc. Researcher, Tabach Lab, Hebrew University of Jerusalem.
+Computational pipeline development for novel gene discovery in Inherited Retinal
+Diseases, integrating evolutionary profiling, phenotypic clustering, and
+multi-omics data.*
 
 ---
 
 ## Overview
 
-This portfolio gathers the computational frameworks, pipelines, and visualization tools I develop for studying **Inherited Retinal Diseases (IRD)** and **Ciliopathies**.
+This repository is a curated public sample of the computational methods and
+tools I develop as part of my M.Sc. thesis research.
+The research partitions 450+ IRD-associated genes into co-evolved functional modules using
+Normalized Phylogenetic Profiling (NPP) across ~2,000 genomes and HPO-based phenotypic
+clustering, builds a bidirectional phenotype-to-gene inference engine for
+clinical prioritization, and derives a genome-scale candidate ranking model
+validated against 4,254+ real-world cases in collaboration with Hadassah Medical Center.
+The pipeline operates on real patient data and remains
+unpublished pending the methodology manuscript in preparation.
 
-My work focuses on addressing **missing heritability** in genetic disorders. By integrating **Normalized Phylogenetic Profiling (NPP)** with transcriptomic, phenotypic, and molecular datasets, I aim to uncover evolutionarily conserved gene modules and new disease candidates.
-
-> **Note:** All datasets in this repository are synthetic, transformed, or strictly demonstrative to ensure confidentiality and compliance with institutional agreements.
+What is here is a structured window into the methods: five focused demonstrations
+and tools drawn from the same framework, each running on fully synthetic data.
+They are not a replica of the pipeline, and they are not its results — they are
+illustrations of the reasoning and implementation behind it. A reader who works
+through them will understand the approach; a reader looking for the findings
+should wait for the manuscript.
 
 ---
 
 ## Visual Portfolio
 
-For an interactive, narrative walkthrough of this work:
+<div align="center">
 
-**[Launch the interactive portfolio →](https://shalev-compbio.github.io/Shalev-Evolutionary-Genomics-Portfolio/Visual_Portfolio/)**
+[![IRD Logo](./Visual_Portfolio/IRD_logo.svg)](https://shalev-compbio.github.io/Shalev-Evolutionary-Genomics-Portfolio/Visual_Portfolio/)
 
-It includes a guided explanation of the NPP method, case-study summaries for each project below, and ways to get in touch.
+</div>
 
----
-
-## Research Context
-
-This portfolio is a public sample of methods developed for an ongoing M.Sc. thesis project at the Hebrew University of Jerusalem, aimed at identifying novel disease-causing genes in Inherited Retinal Diseases that current diagnostic panels miss. The approach combines phenotypic similarity (HPO), evolutionary co-profiling (NPP), and functional/clinical annotation into a single discovery pipeline, rather than relying on any single signal alone.
-
-The five projects below are small-scale, simplified illustrations of individual methods from that pipeline, built specifically for public demonstration - **not the pipeline itself, and not its results.** They are presented in the order the corresponding stages are actually used, but each runs on synthetic data at a small fraction of the real scale. The actual implementation operates genome-wide, across thousands of species and real patient cohorts; its findings are unpublished pending the methodology manuscript currently in preparation.
+> [![Visual Portfolio](https://img.shields.io/badge/Visual_Portfolio-Launch_Interactive_Site_%E2%86%92-E91E63?style=for-the-badge)](https://shalev-compbio.github.io/Shalev-Evolutionary-Genomics-Portfolio/Visual_Portfolio/)
+> *Narrative walkthrough of the research — NPP methodology, project case studies, and contact.*
 
 ---
 
-## Key Projects
+## Projects
 
-### 1. [IRD Phenotype Clustering](./projects/IRD_Phenotype_Clustering)
-* **Goal:** Group known IRD genes into phenotype-driven functional modules from HPO annotations alone, as the first layer of the discovery pipeline.
-* **Approach:** Information-content-based term filtering, Lin/BMA semantic similarity, kNN and similarity-threshold graph construction, and Leiden community detection, with perturbation-based stability scoring and Fisher's exact enrichment to characterize each resulting module.
-* **Demonstrated on:** a synthetic 40-gene × 60-HPO-term matrix (`scripts/ird_phenotype_clustering_demo.ipynb`).
-
-### 2. [Cilia Cluster Analysis](./projects/Cilia_Module_Validation)
-* **Goal:** A focused case study applying the same module-validation logic to one functional gene class - ciliopathy genes - cross-checked against curated and literature evidence.
-* **Includes:** automated annotation and GO-term enrichment, internal-distance and similarity metrics, detection of coherent functional submodules, and visualizations of gene-gene relationships and conserved signatures.
-
-### 3. [High-Dimensional Visualization](./projects/LPP_NPP_Heatmap_Visualization)
-* **Goal:** The shared visualization layer used across the pipeline to inspect similarity structure at every stage.
-* **Tools:** custom Python and R scripts for species-aligned matrices, clustered heatmaps, annotation layers, and comparison plots.
-
-### 4. [Genomic Segmentation Demo](./projects/LBS_Consensus_Profiling)
-* **Goal:** Demonstrate the evolutionary co-profiling (NPP) side of the pipeline, run in parallel to the phenotypic layer, using a Local Barcode Segmentation (LBS)-inspired approach on synthetic data.
-* **Includes:** synthetic NPP matrices and barcode segments, segmentation and consensus-profile workflows, and signal-vs-noise validation experiments.
-
-### 5. [IRD HPO Anatomogram](./projects/IRD_HPO_Anatomogram)
-* **Goal:** Translate module-level phenotype data into anatomical body maps, making the pipeline's output interpretable for clinical collaborators.
-* **Approach:** maps HPO phenotype terms to organ systems and renders a color-coded human anatomogram showing which organs each gene module is most associated with.
-* **Includes:** HPO ontology parsing and organ-mapping pipeline (Python), per-module organ percentage computation, and gganatogram-based anatomical visualization (R).
+The five projects fall into three categories reflecting their role in the full pipeline.
 
 ---
 
-## Tech Stack & Methodology
+### 〉 Pipeline Stages
+*Core methodological steps — each demonstrated on synthetic data at reduced scale*
 
-* **Languages:** Python (Pandas, Scikit-learn, SciPy), R (ggplot2, pheatmap, ComplexHeatmap), Git/GitHub.
-* **Core Methods:**
-    * Normalized Phylogenetic Profiling (NPP).
-    * Unsupervised graph-based clustering (Leiden community detection).
-    * Comparative genomics and multi-omics data integration.
-    * Feature engineering and ML-based candidate prioritization.
+#### [IRD_Phenotype_Clustering](./projects/IRD_Phenotype_Clustering)
+*HPO-based semantic similarity clustering of IRD genes into functional disease modules*
+
+Computes pairwise semantic similarity across IRD gene HPO annotations using
+Lin similarity with Best-Match Average, constructs a gene–gene similarity graph,
+and applies Leiden community detection to produce phenotype-driven disease modules.
+Includes IC-based term filtering, perturbation stability scoring, and Fisher's
+exact module characterization.
+
+#### [LBS_Consensus_Profiling](./projects/LBS_Consensus_Profiling)
+*Consensus-based evolutionary barcode detection for gene module signatures*
+
+Explores a complementary evolutionary approach: identifying a Local Barcode Segment
+— a species window where a gene group displays a distinctive, concentrated
+conservation pattern — and using consensus profiles built from that window as query
+signatures for genome-wide candidate retrieval. Compares five aggregation strategies
+with coherence validation and a noise-based negative control.
+
+---
+
+### 〉 Validation Case Study
+*Module structure tested against a well-characterized functional gene class*
+
+#### [Cilia_Module_Validation](./projects/Cilia_Module_Validation)
+*Cross-validation of module structure against curated ciliopathy gene evidence*
+
+Applies the clustering and annotation logic to ciliopathy genes — a well-characterized
+functional class with curated external evidence (CiliaCarta, literature). Serves as an
+interpretability check: module structure should recover known biology before it is
+trusted to reveal unknown biology.
+
+---
+
+### 〉 Shared Tools
+*Visualization and translation layers used across multiple pipeline stages*
+
+#### [LPP_NPP_Heatmap_Visualization](./projects/LPP_NPP_Heatmap_Visualization)
+*Publication-ready LPP and NPP phylogenetic profile heatmaps via ComplexHeatmap*
+
+R scripts for generating species-aligned, clade-annotated heatmaps from Local and
+Normalized Phylogenetic Profile matrices. Supports single gene lists, multi-cluster
+layouts with Inclusion Criterion annotation, and both LPP (presence/absence, 0–1)
+and NPP (z-score, diverging scale) profile types. Output figures were used directly
+in manuscript preparation.
+
+#### [IRD_HPO_Anatomogram](./projects/IRD_HPO_Anatomogram)
+*Translating gene module phenotype signatures into anatomical body maps*
+
+Maps HPO phenotype annotations from gene modules to organ systems and renders
+color-coded anatomograms for clinical and non-computational audiences. The
+non-trivial step — traversing the HPO DAG from fine-grained terms upward to
+anatomical categories — is what makes the output meaningful rather than arbitrary.
+
+---
+
+## Tech Stack
+
+- **Python**: Pandas, NumPy, SciPy, scikit-learn, NetworkX, pronto
+- **R**: ComplexHeatmap, circlize, ggplot2, gganatogram
+- **Methods**: semantic similarity, graph-based clustering, phylogenetic profiling,
+  Naive Bayes probabilistic scoring, multi-omics integration
 
 ---
 
 ## Contact & Affiliation
 
-* **Lab:** [Prof. Yuval Tabach Lab](https://tabach-lab.com/), Faculty of Medicine.
-* **Institution:** Hebrew University of Jerusalem.
-* **Role:** M.Sc. Candidate in Genomics & Bioinformatics.
-* **Location:** Jerusalem, Israel.
+- **Lab**: [Prof. Yuval Tabach Lab](https://tabach-lab.com/), Faculty of Medicine
+- **Institution**: Hebrew University of Jerusalem
+- **Role**: M.Sc. Candidate in Genomics & Bioinformatics
 
 ---
 
-*This repository evolves alongside my thesis research and the methodology manuscript currently in preparation, and will continue to expand with new analyses and demonstrations.*
+> All datasets in this repository are fully synthetic.
+> No real patient data, unpublished genomic results, or proprietary laboratory resources are included.
+> The actual pipeline, its scale, and its findings remain confidential pending publication.
+
+---
+
+**This repository evolves alongside my thesis research and the methodology manuscript currently in preparation, and will continue to expand with new analyses and demonstrations.**
+
+---
