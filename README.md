@@ -1,8 +1,6 @@
 # Evolutionary Genomics & Multi-Omics Portfolio
 
-![Genomics](https://img.shields.io/badge/Focus-Genomics_%26_Bioinformatics-7B1FA2)
-![Language](https://img.shields.io/badge/Languages-Python_%7C_R-FF9800)
-![Institution](https://img.shields.io/badge/Institution-Hebrew_University_of_Jerusalem-00695C)
+![Genomics](https://img.shields.io/badge/Focus-Genomics_%26_Bioinformatics-7B1FA2) ![Language](https://img.shields.io/badge/Languages-Python_%7C_R-FF9800) ![Institution](https://img.shields.io/badge/Institution-Hebrew_University_of_Jerusalem-00695C)
 
 ### 🧬 Decoding Disease Architecture Through Evolutionary Signals
 
