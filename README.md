@@ -47,6 +47,41 @@ for the findings should wait for the manuscript.
 
 ---
 
+## Repository Structure
+
+```
+portfolio/
+├── README.md
+├── Visual_Portfolio/
+│   └── index.html
+└── projects/
+    ├── IRD_Phenotype_Clustering/
+    │   ├── README.md
+    │   ├── RATIONALE.md
+    │   └── scripts/ird_phenotype_clustering_demo.ipynb
+    ├── Cilia_Module_Validation/
+    │   ├── README.md
+    │   └── scripts/cilia_clusters_demo.ipynb
+    ├── LPP_NPP_Heatmap_Visualization/
+    │   ├── README.md
+    │   ├── scripts/gene_list_to_lpp_heatmap.R
+    │   ├── scripts/gene_list_to_npp_heatmap.R
+    │   └── scripts/lpp_multi_cluster_heatmap_with_inclusion.R
+    ├── LBS_Consensus_Profiling/
+    │   ├── README.md
+    │   └── notebook/consensus_profile_demo.ipynb
+    └── IRD_HPO_Anatomogram/
+        ├── README.md
+        └── scripts/hpo_organ_mapping_demo.ipynb
+```
+
+Each project contains a README with scientific rationale, workflow
+description, and usage instructions. `IRD_Phenotype_Clustering` additionally
+includes a dedicated `RATIONALE.md` with an extended discussion of method
+design decisions.
+
+---
+
 ## Projects
 
 **The five projects fall into three categories reflecting their role in the full pipeline.**
