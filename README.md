@@ -47,6 +47,16 @@ for the findings should wait for the manuscript.
 
 ---
 
+## Flagship Project
+
+*The deepest computational demonstration in this portfolio — a full deep-learning system, in its own repository:*
+
+> [![Flagship Project](https://img.shields.io/badge/Flagship_Project-pytorch--multimodal--gene--classifier_%E2%86%92-EE4C2C?style=for-the-badge)](https://github.com/Shalev-CompBio/pytorch-multimodal-gene-classifier)
+>
+> *Three-tower PyTorch fusion network — NPP, ESM2 embeddings, and PPI network topology — trained on the phenotypic modules defined here, then applied genome-wide for IRD candidate gene discovery.*
+
+---
+
 ## Repository Structure
 
 ```
@@ -80,11 +90,33 @@ description, and usage instructions. `IRD_Phenotype_Clustering` additionally
 includes a dedicated `RATIONALE.md` with an extended discussion of method
 design decisions.
 
+The flagship deep-learning extension, `pytorch-multimodal-gene-classifier`, is
+not part of this tree — it has its own dependency stack (PyTorch, ESM2) and
+scale, and is maintained as a separate repository (see Flagship Project above).
+
 ---
 
 ## Projects
 
-**The five projects fall into three categories reflecting their role in the full pipeline.**
+**Leading the list: the flagship deep-learning extension, an independent repository. Below it, the five projects in this repository, grouped into three categories reflecting their role in the full pipeline.**
+
+---
+
+### ★ Flagship Extension
+*The pipeline's deepest computational demonstration — a full deep-learning system, maintained as an independent repository*
+
+#### [pytorch-multimodal-gene-classifier ↗](https://github.com/Shalev-CompBio/pytorch-multimodal-gene-classifier) ![Flagship](https://img.shields.io/badge/-Flagship-EE4C2C)
+*Three-tower PyTorch fusion network for genome-wide IRD candidate gene discovery*
+
+Builds directly on the phenotypic modules defined in `IRD_Phenotype_Clustering`
+(below) as training labels, fusing evolutionary conservation (NPP),
+ESM2 protein language model embeddings, and protein-protein interaction (PPI)
+network topology in a three-tower deep learning architecture to recover known
+IRD gene-phenotype relationships and rank candidates genome-wide. Includes a
+full controlled ablation across all modality combinations, a genome-wide
+inference and concordance framework, and the most extensive ML/DL engineering
+demonstration in this research program. A separate repository, given its
+independent dependency stack and scale.
 
 ---
 
