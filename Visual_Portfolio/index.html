@@ -1,0 +1,1838 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shalev Yaacov, Computational Genomics</title>
+    <meta name="description"
+        content="Shalev Yaacov · Computational genomics & bioinformatics researcher · Hebrew University, Tabach Lab. Decoding inherited retinal disease through evolutionary signal." />
+
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='none' stroke='%2300c8b4' stroke-width='2' stroke-opacity='0.5' stroke-dasharray='4 6'/><circle cx='50' cy='50' r='32' fill='none' stroke='%2300c8b4' stroke-width='2.5' stroke-opacity='0.7' stroke-dasharray='14 4'/><circle cx='50' cy='50' r='19' fill='none' stroke='%23f59e3a' stroke-width='2.5' stroke-opacity='0.8' stroke-dasharray='8 4'/><circle cx='50' cy='18' r='3' fill='%2300c8b4'/><circle cx='78' cy='66' r='2.5' fill='%23f59e3a'/><circle cx='22' cy='66' r='2.5' fill='%23f59e3a'/><circle cx='50' cy='50' r='7' fill='%2300c8b4'/><circle cx='50' cy='50' r='3' fill='%23ffffff' opacity='0.9'/></svg>" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..900,0..100,0..1&family=Inter+Tight:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet" />
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        serif: ['Fraunces', 'Georgia', 'serif'],
+                        sans: ['"Inter Tight"', 'system-ui', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --paper: #F4F1EA;
+            --paper-2: #ECE7DC;
+            --ink: #1A1814;
+            --ink-2: #3A352D;
+            --ink-3: #6E665A;
+            --rule: #1a18141a;
+            --accent: #E14B2A;
+            /* vermillion */
+            --accent-2: #C03A1F;
+            --accent-soft: #E14B2A1a;
+            --grid: #1a18140d;
+        }
+
+        html.dark {
+            --paper: #0E0D0B;
+            --paper-2: #16140F;
+            --ink: #EFEAE0;
+            --ink-2: #C9C2B3;
+            --ink-3: #8A8270;
+            --rule: #efeae022;
+            --accent: #FF6A45;
+            --accent-2: #FF8A6E;
+            --accent-soft: #FF6A4522;
+            --grid: #efeae00f;
+        }
+
+        html,
+        body {
+            background: var(--paper);
+            color: var(--ink);
+        }
+
+        body {
+            font-family: '"Inter Tight"', system-ui, sans-serif;
+            font-feature-settings: "ss01", "cv11";
+            -webkit-font-smoothing: antialiased;
+            text-rendering: geometricPrecision;
+        }
+
+        .font-serif {
+            font-family: 'Fraunces', Georgia, serif;
+            font-variation-settings: "opsz" 96, "SOFT" 30, "WONK" 0;
+            letter-spacing: -0.02em;
+        }
+
+        .font-mono {
+            font-family: '"JetBrains Mono"', ui-monospace, monospace;
+        }
+
+        /* Paper grain */
+        .paper-grain {
+            background-image:
+                radial-gradient(circle at 25% 35%, var(--grid) 0.5px, transparent 0.5px),
+                radial-gradient(circle at 75% 65%, var(--grid) 0.5px, transparent 0.5px);
+            background-size: 4px 4px, 7px 7px;
+        }
+
+        /* Hairline rules */
+        .rule {
+            border-color: var(--rule);
+        }
+
+        .rule-t {
+            border-top: 1px solid var(--rule);
+        }
+
+        .rule-b {
+            border-bottom: 1px solid var(--rule);
+        }
+
+        .rule-l {
+            border-left: 1px solid var(--rule);
+        }
+
+        .rule-r {
+            border-right: 1px solid var(--rule);
+        }
+
+        @media (min-width: 768px) {
+            .md\:rule-r {
+                border-right: 1px solid var(--rule);
+            }
+        }
+
+        /* Section divider - subtle accent-tinted hairline + tick */
+        .section-divider {
+            position: relative;
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, var(--rule) 18%, var(--rule) 82%, transparent 100%);
+        }
+
+        .section-divider::before {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent);
+            opacity: 0.85;
+            box-shadow: 0 0 0 4px var(--paper);
+        }
+
+        /* Section tag - small chip on every major section */
+        .section-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 10px 5px 8px;
+            border-radius: 999px;
+            border: 1px solid var(--rule);
+            background: color-mix(in oklab, var(--hue, var(--accent)) 12%, transparent);
+            font-family: '"JetBrains Mono"', monospace;
+            font-size: 10.5px;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--ink-2);
+        }
+
+        .section-tag .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--hue, var(--accent));
+        }
+
+        /* Per-section muted hue palette (heatmap-inspired warm → cool flow) */
+        .hue-warm {
+            --hue: #C97A3D;
+        }
+
+        /* §01 muted amber */
+        .hue-coral {
+            --hue: #C0563A;
+        }
+
+        /* §02 muted coral */
+        .hue-rose {
+            --hue: #B0494E;
+        }
+
+        /* §03 dusty rose */
+        .hue-sage {
+            --hue: #6E8A6A;
+        }
+
+        /* §04 muted sage */
+        .hue-indigo {
+            --hue: #4A6E96;
+        }
+
+        /* §05 muted indigo */
+        html.dark .hue-warm {
+            --hue: #D9925A;
+        }
+
+        html.dark .hue-coral {
+            --hue: #D9785A;
+        }
+
+        html.dark .hue-rose {
+            --hue: #C77078;
+        }
+
+        html.dark .hue-sage {
+            --hue: #93B58E;
+        }
+
+        html.dark .hue-indigo {
+            --hue: #7AA2C8;
+        }
+
+        /* Section wash — soft hue glow at one corner, paper underneath */
+        .hue-wash {
+            background:
+                radial-gradient(110% 55% at 0% 0%, color-mix(in oklab, var(--hue) 10%, transparent) 0%, transparent 60%),
+                radial-gradient(80% 50% at 100% 100%, color-mix(in oklab, var(--hue) 5%, transparent) 0%, transparent 60%),
+                var(--paper);
+        }
+
+        .hue-wash-alt {
+            background:
+                radial-gradient(110% 55% at 100% 0%, color-mix(in oklab, var(--hue) 11%, transparent) 0%, transparent 60%),
+                radial-gradient(80% 50% at 0% 100%, color-mix(in oklab, var(--hue) 5%, transparent) 0%, transparent 60%),
+                var(--paper-2);
+        }
+
+        /* Hue rule — a faint colored hairline at the top of each section */
+        .hue-rule {
+            position: relative;
+        }
+
+        .hue-rule::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            height: 1px;
+            background: linear-gradient(90deg,
+                    transparent 0%,
+                    color-mix(in oklab, var(--hue) 55%, transparent) 18%,
+                    color-mix(in oklab, var(--hue) 55%, transparent) 82%,
+                    transparent 100%);
+        }
+
+        /* Continuous palette ribbon */
+        .palette-ribbon {
+            height: 4px;
+            background: linear-gradient(90deg,
+                    #C97A3D 0%,
+                    #C0563A 25%,
+                    #B0494E 50%,
+                    #6E8A6A 75%,
+                    #4A6E96 100%);
+            opacity: 0.55;
+        }
+
+        /* Legacy classes still used elsewhere - keep working */
+        .accent-wash {
+            background: var(--paper);
+        }
+
+        .accent-wash-2 {
+            background: var(--paper-2);
+        }
+
+        /* Editorial label */
+        .eyebrow {
+            font-family: '"JetBrains Mono"', monospace;
+            font-size: 11px;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--ink-3);
+        }
+
+        /* Anchor link underline */
+        .ink-link {
+            background-image: linear-gradient(currentColor, currentColor);
+            background-size: 100% 1px;
+            background-repeat: no-repeat;
+            background-position: 0 100%;
+            transition: background-size .3s ease;
+        }
+
+        .ink-link:hover {
+            background-size: 0% 1px;
+            background-position: 100% 100%;
+        }
+
+        /* Marquee */
+        @keyframes marquee {
+            from {
+                transform: translateX(0);
+            }
+
+            to {
+                transform: translateX(-50%);
+            }
+        }
+
+        .marquee-track {
+            animation: marquee 40s linear infinite;
+            width: max-content;
+        }
+
+        /* Cursor */
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+
+        .cursor-blink::after {
+            content: "▍";
+            margin-left: 2px;
+            animation: blink 1s steps(1) infinite;
+            color: var(--accent);
+        }
+
+        /* Subtle entrance */
+        .reveal {
+            opacity: 0;
+            transform: translateY(14px);
+            transition: opacity .9s ease, transform .9s ease;
+        }
+
+        .reveal.in {
+            opacity: 1;
+            transform: none;
+        }
+
+        /* NPP cell */
+        .cell {
+            transition: transform .15s ease, filter .15s ease;
+        }
+
+        .cell.hot {
+            background: var(--accent);
+        }
+
+        .cell.on {
+            background: var(--ink);
+        }
+
+        .cell.off {
+            background: transparent;
+        }
+
+        .npp-row.dim .cell {
+            opacity: 0.18;
+        }
+
+        .npp-row.lit .cell {
+            opacity: 1;
+        }
+
+        .npp-row.lit .cell.on {
+            transform: scaleY(1.0);
+        }
+
+        .npp-col-marker {
+            background: var(--accent-soft);
+        }
+
+        /* Project row */
+        .proj-row {
+            transition: background .35s ease;
+        }
+
+        .proj-row:hover {
+            background: var(--accent-soft);
+        }
+
+        .proj-row[data-open="true"] {
+            background: var(--accent-soft);
+        }
+
+        .proj-detail {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows .5s ease;
+        }
+
+        .proj-detail>div {
+            overflow: hidden;
+        }
+
+        .proj-row[data-open="true"]+.proj-detail {
+            grid-template-rows: 1fr;
+        }
+
+        /* Cmd K palette */
+        .palette-bg {
+            background: color-mix(in oklab, var(--paper) 70%, transparent);
+            backdrop-filter: blur(10px);
+        }
+
+        .palette-card {
+            background: var(--paper);
+        }
+
+        /* Toggle switch */
+        .switch-track {
+            background: var(--ink);
+        }
+
+        html.dark .switch-track {
+            background: var(--accent);
+        }
+
+        /* DNA stripe SVG */
+        .accent-fill {
+            fill: var(--accent);
+        }
+
+        .ink-fill {
+            fill: var(--ink);
+        }
+
+        .ink-stroke {
+            stroke: var(--ink);
+        }
+
+        .accent-stroke {
+            stroke: var(--accent);
+        }
+
+        /* Hide scrollbar on horizontal scrollers */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Selection */
+        ::selection {
+            background: var(--accent);
+            color: var(--paper);
+        }
+
+        /* Tweaks panel */
+        .tweaks {
+            position: fixed;
+            right: 24px;
+            bottom: 24px;
+            z-index: 60;
+            background: var(--paper);
+            border: 1px solid var(--rule);
+            box-shadow: 0 30px 60px -20px rgba(0, 0, 0, .25);
+            border-radius: 12px;
+            padding: 14px 16px;
+            min-width: 240px;
+            display: none;
+        }
+
+        .tweaks.open {
+            display: block;
+        }
+
+        .tweaks label {
+            font-size: 11px;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--ink-3);
+        }
+
+        /* Phylo strip */
+        .specie-tick {
+            stroke: var(--ink);
+            stroke-width: 1;
+        }
+
+        .specie-tick.lost {
+            stroke: var(--accent);
+            stroke-width: 2;
+        }
+
+        /* Bio-marker dot */
+        .pulse-dot::before {
+            content: "";
+            position: absolute;
+            inset: -4px;
+            border-radius: 9999px;
+            border: 1px solid var(--accent);
+            animation: pulse 2.4s ease-out infinite;
+            opacity: 0;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(.8);
+                opacity: .9;
+            }
+
+            100% {
+                transform: scale(2.2);
+                opacity: 0;
+            }
+        }
+
+        /* Number ticker hover */
+        .num-hover {
+            transition: color .25s ease, transform .25s ease;
+            display: inline-block;
+        }
+
+        .num-hover:hover {
+            color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        /* Section index sticky */
+        .toc-link {
+            color: var(--ink-3);
+        }
+
+        .toc-link.active {
+            color: var(--ink);
+        }
+
+        .toc-link.active .toc-bar {
+            background: var(--accent);
+            width: 28px;
+        }
+
+        .toc-bar {
+            display: inline-block;
+            width: 12px;
+            height: 1px;
+            background: var(--ink-3);
+            margin-right: 8px;
+            transition: width .3s, background .3s;
+            vertical-align: middle;
+        }
+
+        /* Lab note card */
+        .note-card {
+            background: var(--paper-2);
+        }
+
+        /* For wonky big number */
+        .wonk {
+            font-variation-settings: "opsz" 144, "SOFT" 50, "WONK" 1;
+        }
+
+        /* Smooth hover lift */
+        .lift:hover {
+            transform: translateY(-2px);
+        }
+
+        /* ---- IRD Logo ring animations (in nav) ---- */
+        @keyframes irdRotCW {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes irdRotCCW {
+            to {
+                transform: rotate(-360deg);
+            }
+        }
+
+        @keyframes irdCorePulse {
+
+            0%,
+            100% {
+                r: 6;
+            }
+
+            50% {
+                r: 8;
+            }
+        }
+
+        @keyframes irdGlowBreathe {
+
+            0%,
+            100% {
+                opacity: .16;
+            }
+
+            50% {
+                opacity: .38;
+            }
+        }
+
+        .ird-ring-outer {
+            animation: irdRotCW 28s linear infinite;
+            transform-origin: 60px 60px;
+        }
+
+        .ird-ring-mid {
+            animation: irdRotCCW 18s linear infinite;
+            transform-origin: 60px 60px;
+        }
+
+        .ird-ring-inner {
+            animation: irdRotCW 10s linear infinite;
+            transform-origin: 60px 60px;
+        }
+
+        .ird-nodes {
+            animation: irdRotCCW 22s linear infinite;
+            transform-origin: 60px 60px;
+        }
+
+        .ird-core-pulse {
+            animation: irdCorePulse 3s ease-in-out infinite;
+        }
+
+        .ird-glow {
+            animation: irdGlowBreathe 5s ease-in-out infinite;
+        }
+    </style>
+
+</head>
+
+<body class="paper-grain">
+
+    <!-- ========== TOP BAR ========== -->
+    <header class="fixed top-0 inset-x-0 z-40 backdrop-blur"
+        style="background: color-mix(in oklab, var(--paper) 78%, transparent); border-bottom: 1px solid var(--rule);">
+        <div class="palette-ribbon"></div>
+        <div class="max-w-[1400px] mx-auto px-6 md:px-10 h-14 flex items-center justify-between">
+
+
+            <a href="#top" class="flex items-center gap-3 group">
+                <svg width="28" height="28" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"
+                    class="shrink-0">
+                    <defs>
+                        <filter id="nav-glow-t" x="-40%" y="-40%" width="180%" height="180%">
+                            <feGaussianBlur stdDeviation="3" result="b" />
+                            <feMerge>
+                                <feMergeNode in="b" />
+                                <feMergeNode in="SourceGraphic" />
+                            </feMerge>
+                        </filter>
+                        <filter id="nav-glow-c" x="-100%" y="-100%" width="300%" height="300%">
+                            <feGaussianBlur stdDeviation="5" result="b" />
+                            <feMerge>
+                                <feMergeNode in="b" />
+                                <feMergeNode in="SourceGraphic" />
+                            </feMerge>
+                        </filter>
+                        <radialGradient id="nav-cg" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stop-color="#00ffd0" />
+                            <stop offset="100%" stop-color="#00c8b4" />
+                        </radialGradient>
+                    </defs>
+                    <circle class="ird-glow" cx="60" cy="60" r="54" fill="none" stroke="#00c8b4" stroke-width="28"
+                        filter="url(#nav-glow-t)" opacity="0.16" />
+                    <g class="ird-ring-outer">
+                        <circle cx="60" cy="60" r="52" fill="none" stroke="#00c8b4" stroke-width="0.8"
+                            stroke-opacity="0.35" stroke-dasharray="4 8" />
+                        <rect x="59.2" y="7" width="1.6" height="5" rx="0.8" fill="#00c8b4" opacity="0.6" />
+                        <rect x="59.2" y="108" width="1.6" height="5" rx="0.8" fill="#00c8b4" opacity="0.6" />
+                        <rect x="7" y="59.2" width="5" height="1.6" rx="0.8" fill="#00c8b4" opacity="0.6" />
+                        <rect x="108" y="59.2" width="5" height="1.6" rx="0.8" fill="#00c8b4" opacity="0.6" />
+                    </g>
+                    <g class="ird-ring-mid">
+                        <circle cx="60" cy="60" r="38" fill="none" stroke="#00c8b4" stroke-width="1"
+                            stroke-opacity="0.5" stroke-dasharray="22 6" />
+                        <circle cx="60" cy="22" r="3" fill="#00c8b4" opacity="0.7" />
+                        <circle cx="93.04" cy="41" r="2.5" fill="#00c8b4" opacity="0.5" />
+                        <circle cx="93.04" cy="79" r="2.5" fill="#f59e3a" opacity="0.6" />
+                        <circle cx="60" cy="98" r="3" fill="#f59e3a" opacity="0.7" />
+                        <circle cx="26.96" cy="79" r="2.5" fill="#f59e3a" opacity="0.5" />
+                        <circle cx="26.96" cy="41" r="2.5" fill="#00c8b4" opacity="0.5" />
+                    </g>
+                    <g class="ird-ring-inner">
+                        <circle cx="60" cy="60" r="24" fill="none" stroke="#f59e3a" stroke-width="1.2"
+                            stroke-opacity="0.6" stroke-dasharray="12 5" />
+                        <circle cx="60" cy="36" r="2" fill="#f59e3a" opacity="0.9" />
+                        <circle cx="80.78" cy="72" r="2" fill="#f59e3a" opacity="0.8" />
+                        <circle cx="39.22" cy="72" r="2" fill="#f59e3a" opacity="0.8" />
+                    </g>
+                    <g class="ird-nodes" filter="url(#nav-glow-t)">
+                        <circle cx="60" cy="8" r="3.5" fill="#00c8b4" opacity="0.55" />
+                        <circle cx="112" cy="60" r="3" fill="#00c8b4" opacity="0.4" />
+                        <circle cx="8" cy="60" r="3" fill="#00c8b4" opacity="0.4" />
+                        <circle cx="105" cy="22" r="2.5" fill="#f59e3a" opacity="0.45" />
+                    </g>
+                    <circle class="ird-core-pulse" cx="60" cy="60" r="6" fill="url(#nav-cg)"
+                        filter="url(#nav-glow-c)" />
+                    <circle cx="60" cy="60" r="2.5" fill="#ffffff" opacity="0.9" />
+                </svg>
+
+
+
+                <span class="font-serif text-[18px] tracking-tight">Shalev Yaacov</span>
+                <span class="hidden md:inline eyebrow ml-2">Computational Genomics</span>
+            </a>
+
+            <nav class="hidden md:flex items-center gap-7 text-[13px]" style="color: var(--ink-2);">
+                <a href="#question" class="ink-link">Question</a>
+                <a href="#method" class="ink-link">Method</a>
+                <a href="#work" class="ink-link">Work</a>
+                <a href="#toolkit" class="ink-link">Toolkit</a>
+                <a href="#contact" class="ink-link">Contact</a>
+            </nav>
+
+            <div class="flex items-center gap-3">
+                <button id="cmdk-btn"
+                    class="hidden sm:flex items-center gap-2 px-2.5 py-1.5 rounded-md font-mono text-[11px]"
+                    style="border:1px solid var(--rule); color: var(--ink-3);">
+                    <span>Search</span>
+                    <kbd class="px-1.5 py-0.5 rounded" style="background: var(--paper-2); color: var(--ink-2);">⌘K</kbd>
+                </button>
+                <button id="theme-btn" aria-label="Toggle theme" class="w-9 h-9 grid place-items-center rounded-md"
+                    style="border:1px solid var(--rule);">
+                    <svg id="theme-icon-sun" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+                        <circle cx="12" cy="12" r="4" />
+                        <path
+                            d="M12 2v2M12 20v2M2 12h2M20 12h2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ========== HERO ========== -->
+    <section id="top" class="relative min-h-screen pt-14">
+        <div class="max-w-[1400px] mx-auto px-6 md:px-10 pt-20 md:pt-32 pb-20">
+
+            <!-- meta line -->
+            <div class="flex items-center justify-between mb-12">
+                <div class="section-tag hue-warm">
+                    <span class="dot"></span>
+                    §00 · Introduction · Available, M.Sc. researcher, Tabach Lab HUJI · Faculty Excellence Scholar
+                    (2024–26)
+                </div>
+                <div class="hidden md:flex items-center gap-6 eyebrow">
+                    <span>Jerusalem, IL · 31.7°N</span>
+                    <span id="clock">–</span>
+                    <span>v · 2026</span>
+                </div>
+            </div>
+
+            <!-- Big editorial headline -->
+            <div class="grid grid-cols-12 gap-x-6 gap-y-10">
+                <div class="col-span-12 lg:col-span-9">
+                    <h1 class="font-serif leading-[0.92] tracking-tight text-[14vw] md:text-[148px] lg:text-[180px]">
+                        <span class="block">Decoding the</span>
+                        <span class="block italic" style="color: var(--accent);">missing
+                            <span class="wonk">heritability</span>
+                        </span>
+                        <span class="block">of vision.</span>
+                    </h1>
+                </div>
+
+                <div class="col-span-12 lg:col-span-3 lg:col-start-10 lg:pt-10">
+                    <div class="eyebrow mb-3">A note from Shalev</div>
+                    <p class="text-[15px] leading-relaxed" style="color: var(--ink-2);">
+                        I'm a computational biology researcher building tools that read evolution like a manuscript,
+                        looking for the genes that scribble themselves into species together, and the ones that vanish
+                        in the same paragraph.
+                        My work focuses on <em class="font-serif">Inherited Retinal Diseases</em>: 40% of patients still
+                        receive no genetic diagnosis. The rest is a search problem.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Stats strip -->
+            <div class="mt-20 grid grid-cols-2 md:grid-cols-4 rule-t rule-b">
+
+                <div class="p-6 md:p-8 rule-r">
+                    <div class="font-serif text-5xl md:text-6xl num-hover">~2,000</div>
+                    <div class="eyebrow mt-2">eukaryotic species</div>
+                </div>
+
+                <div class="p-6 md:p-8 md:rule-r">
+                    <div class="font-serif text-5xl md:text-6xl num-hover">20,000</div>
+                    <div class="eyebrow mt-2">human genes profiled</div>
+                </div>
+
+                <div class="p-6 md:p-8 rule-r" style="border-top: 1px solid var(--rule);">
+                    <div class="font-serif text-5xl md:text-6xl num-hover" style="color: #B0494E;">
+                        ≈ 40%
+                    </div>
+                    <div class="eyebrow mt-2">IRD cases without diagnosis</div>
+                </div>
+
+                <div class="p-6 md:p-8" style="border-top: 1px solid var(--rule);">
+                    <div class="font-serif text-5xl md:text-6xl num-hover">4,254+</div>
+                    <div class="eyebrow mt-2">clinical cases validated</div>
+                </div>
+
+            </div>
+
+            <!-- bottom marquee -->
+            <div class="overflow-hidden rule-t rule-b py-4" style="background: var(--paper-2);">
+                <div
+                    class="flex gap-8 marquee-track whitespace-nowrap font-serif text-[28px] md:text-[36px] tracking-tight">
+                    <span class="inline-flex items-center gap-8 shrink-0">
+                        <span style="color:#C97A3D;">Phylogenetic Profiling</span> <span
+                            style="color: var(--ink-3);">·</span>
+                        <span style="color:#C0563A;">Multi-Omics Integration</span> <span
+                            style="color: var(--ink-3);">·</span>
+                        <span style="color:#B0494E;">Machine Learning</span> <span style="color: var(--ink-3);">·</span>
+                        <span style="color:#8C6F70;">Inherited Retinal Disease</span> <span
+                            style="color: var(--ink-3);">·</span>
+                        <span style="color:#6E8A6A;">Co-evolution</span> <span style="color: var(--ink-3);">·</span>
+                        <span style="color:#4A6E96;">HPO Phenotype Mapping</span> <span
+                            style="color: var(--ink-3);">·</span>
+                    </span>
+                    <span class="inline-flex items-center gap-8 shrink-0" aria-hidden="true">
+                        <span style="color:#C97A3D;">Phylogenetic Profiling</span> <span
+                            style="color: var(--ink-3);">·</span>
+                        <span style="color:#C0563A;">Multi-Omics Integration</span> <span
+                            style="color: var(--ink-3);">·</span>
+                        <span style="color:#B0494E;">Machine Learning</span> <span style="color: var(--ink-3);">·</span>
+                        <span style="color:#8C6F70;">Inherited Retinal Disease</span> <span
+                            style="color: var(--ink-3);">·</span>
+                        <span style="color:#6E8A6A;">Co-evolution</span> <span style="color: var(--ink-3);">·</span>
+                        <span style="color:#4A6E96;">HPO Phenotype Mapping</span> <span
+                            style="color: var(--ink-3);">·</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+        </div>
+    </section>
+
+    <!-- ========== THE QUESTION ========== -->
+    <section id="question" class="py-28 md:py-40 hue-warm hue-wash hue-rule">
+        <div class="max-w-[1400px] mx-auto px-6 md:px-10">
+            <div class="grid grid-cols-12 gap-x-6 gap-y-12">
+
+                <div class="col-span-12 lg:col-span-3">
+                    <div class="section-tag mb-5"><span class="dot"></span>§01 · The Question · Why this work matters
+                    </div>
+                    <div class="sticky top-24">
+                        <div class="font-serif text-5xl md:text-6xl leading-[0.95] tracking-tight">Where is the missing
+                            half hiding?</div>
+                    </div>
+                </div>
+
+                <div class="col-span-12 lg:col-span-9 lg:col-start-4 space-y-10 max-w-3xl">
+                    <p class="font-serif text-2xl md:text-3xl leading-snug" style="color: var(--ink);">
+                        For <em>≈40%</em> of patients with inherited retinal disease, modern sequencing returns
+                        a verdict of
+                        <span style="color: var(--accent);">unsolved</span>. The mutations are there, somewhere; we are
+                        not yet asking the right question.
+                    </p>
+
+                    <p class="text-[17px] leading-relaxed" style="color: var(--ink-2);">
+                        Most diagnostic pipelines read a gene the way you'd read a single sentence; does it spell a
+                        known disease? But genes don't function alone. They co-evolve in modules across hundreds of
+                        millions of years, leaving a graded fingerprint of conservation and loss across the tree of
+                        life. <span style="color: var(--ink);">That fingerprint is where I look.</span>
+                    </p>
+
+                    <!-- Pull-quote -->
+                    <figure class="rule-t rule-b py-10 my-6">
+                        <blockquote class="font-serif text-3xl md:text-[42px] leading-[1.1] tracking-tight">
+                            "Genes that travel together
+                            <span style="color: var(--accent);">work</span> together."
+                        </blockquote>
+                        <figcaption class="eyebrow mt-4">Working principle of normalized phylogenetic profiling
+                        </figcaption>
+                    </figure>
+
+                    <p class="text-[17px] leading-relaxed" style="color: var(--ink-2);">
+                        So I build the <em>second look</em>. Computational frameworks that compare ~2,000 eukaryotic
+                        genomes at once, normalize evolutionary signal against phylogenetic distance, integrate
+                        transcriptomics and HPO phenotypes, and rank candidates whose evolutionary biography matches the
+                        disease. The output isn't a final answer; it's a much shorter, much sharper list of suspects to
+                        take to the bench.
+                    </p>
+
+                    <!-- Three-card breakdown -->
+                    <div class="grid md:grid-cols-3 gap-px rule-t rule-l" style="background: var(--rule);">
+                        <div class="p-6 rule-r rule-b" style="background: var(--paper);">
+                            <div class="eyebrow mb-3">A.</div>
+                            <div class="font-serif text-2xl mb-2">Read evolution</div>
+                            <p class="text-[14px]" style="color: var(--ink-3);">Build a continuous similarity profile
+                                for every human gene across ~2,000 eukaryotic genomes.</p>
+                        </div>
+                        <div class="p-6 rule-r rule-b" style="background: var(--paper);">
+                            <div class="eyebrow mb-3">B.</div>
+                            <div class="font-serif text-2xl mb-2">Find the rhymes</div>
+                            <p class="text-[14px]" style="color: var(--ink-3);">Detect genes whose normalized profiles
+                                co-vary across clades using NPP correlations.</p>
+                        </div>
+                        <div class="p-6 rule-r rule-b" style="background: var(--paper);">
+                            <div class="eyebrow mb-3">C.</div>
+                            <div class="font-serif text-2xl mb-2">Match the phenotype</div>
+                            <p class="text-[14px]" style="color: var(--ink-3);">Layer HPO ontology + transcriptomics to
+                                score candidates bidirectionally, gene↔phenotype.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== THE METHOD (interactive) ========== -->
+    <section id="method" class="py-28 md:py-40 hue-coral hue-wash-alt hue-rule">
+        <div class="max-w-[1400px] mx-auto px-6 md:px-10">
+
+            <div class="grid grid-cols-12 gap-x-6 gap-y-12 mb-16">
+                <div class="col-span-12 lg:col-span-3">
+                    <div class="section-tag mb-5"><span class="dot"></span>§02 · The Method · How NPP works</div>
+                </div>
+                <div class="col-span-12 lg:col-span-9 lg:col-start-4">
+                    <h2 class="font-serif text-5xl md:text-7xl leading-[0.95] tracking-tight">
+                        A <em style="color: var(--accent);">Normalized Phylogenetic Profile</em>, dissected.
+                    </h2>
+                    <p class="mt-6 text-[17px] max-w-3xl" style="color: var(--ink-2);">
+                        Each row below is a gene. Each column is a species, sorted left-to-right by evolutionary
+                        distance. Cell intensity reflects a <em>continuous</em> conservation score, normalized against
+                        phylogenetic distance, and a vermillion column marks a clade where related genes' scores drop in
+                        concert; a co-evolutionary signature. <span style="color: var(--ink);">Hover a row</span> to
+                        read its profile. <span style="color: var(--ink);">Hover a species</span> to see how it
+                        participates across the matrix.
+                    </p>
+                </div>
+            </div>
+
+            <!-- THE INTERACTIVE MATRIX -->
+            <div class="rule" style="border:1px solid var(--rule); background: var(--paper); border-radius: 4px;">
+                <!-- top bar with species label -->
+                <div class="flex items-center justify-between px-5 py-3 rule-b font-mono text-[11px]"
+                    style="color: var(--ink-3);">
+                    <span>NPP_MATRIX · 13 genes × 30 species (preview)</span>
+                    <span id="hover-readout" style="color: var(--ink);">hover a cell to read</span>
+                </div>
+
+                <div class="grid grid-cols-[160px_1fr] md:grid-cols-[200px_1fr]">
+                    <!-- LEFT: gene labels -->
+                    <div class="rule-r" id="gene-labels"></div>
+                    <!-- RIGHT: matrix grid -->
+                    <div class="relative overflow-x-auto" id="matrix-wrap">
+                        <div id="matrix"></div>
+                        <!-- species axis -->
+                        <div id="species-axis" class="font-mono text-[10px] flex"></div>
+                    </div>
+                </div>
+
+                <!-- Bottom: legend + step explainer -->
+                <div class="grid md:grid-cols-2 gap-px rule-t" style="background: var(--rule);">
+                    <div class="p-6" style="background: var(--paper);">
+                        <div class="flex flex-wrap items-center gap-x-6 gap-y-3 font-mono text-[12px]">
+                            <div class="flex items-center gap-2"><span class="inline-block w-3 h-3"
+                                    style="background: var(--ink);"></span> High similarity</div>
+                            <div class="flex items-center gap-2"><span class="inline-block w-3 h-3"
+                                    style="background: var(--accent);"></span> Co-loss signature</div>
+                            <div class="flex items-center gap-2"><span class="inline-block w-3 h-3"
+                                    style="border:1px solid var(--rule);"></span> Low / absent</div>
+                        </div>
+                        <div class="mt-6 grid grid-cols-3 gap-4 text-[12px]" style="color: var(--ink-3);">
+                            <div>
+                                <div class="eyebrow mb-1">A</div>"IRD cluster", correlated drop in vertebrate clade
+                            </div>
+                            <div>
+                                <div class="eyebrow mb-1">B</div>"Cilia cluster", independent co-variation elsewhere
+                            </div>
+                            <div>
+                                <div class="eyebrow mb-1">C</div>Noise, no aligned signal
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6" style="background: var(--paper);">
+                        <div class="eyebrow mb-3">How NPP reads this</div>
+                        <ol class="space-y-2 text-[13.5px]" style="color: var(--ink-2);">
+                            <li><span class="font-mono mr-2" style="color: var(--accent);">01.</span> Map each gene's
+                                orthologs across ~2,000 eukaryotic genomes.</li>
+                            <li><span class="font-mono mr-2" style="color: var(--accent);">02.</span> Score conservation
+                                as a continuous similarity, normalized against evolutionary distance.</li>
+                            <li><span class="font-mono mr-2" style="color: var(--accent);">03.</span> Cluster genes
+                                whose normalized profiles correlate across clades.</li>
+                            <li><span class="font-mono mr-2" style="color: var(--accent);">04.</span> Surface clusters
+                                enriched for IRD-related function (450+ known IRD genes as anchors).</li>
+                            <li><span class="font-mono mr-2" style="color: var(--accent);">05.</span> Re-rank with HPO +
+                                transcriptomics; validate against real-world variant cohorts.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mini-glossary (for the non-bio reader) -->
+            <details class="mt-10 group" style="border-top:1px solid var(--rule);">
+                <summary class="cursor-pointer flex items-center justify-between py-5 list-none">
+                    <span class="eyebrow">Glossary · for non-biologists</span>
+                    <span class="font-mono text-[11px]" style="color: var(--ink-3);">[+] expand</span>
+                </summary>
+                <div class="grid md:grid-cols-3 gap-px rule-t rule-l" style="background: var(--rule);">
+                    <div class="p-5" style="background: var(--paper);">
+                        <div class="font-serif text-xl mb-1">Phylogenetic profile</div>
+                        <p class="text-[13px]" style="color: var(--ink-3);">A continuous vector of normalized similarity
+                            scores; one per species; describing how conserved a gene is across the tree of life.</p>
+                    </div>
+                    <div class="p-5" style="background: var(--paper);">
+                        <div class="font-serif text-xl mb-1">Co-evolution</div>
+                        <p class="text-[13px]" style="color: var(--ink-3);">Two genes co-evolve when their normalized
+                            profiles rise and fall together across clades, suggesting shared function.</p>
+                    </div>
+                    <div class="p-5" style="background: var(--paper);">
+                        <div class="font-serif text-xl mb-1">HPO</div>
+                        <p class="text-[13px]" style="color: var(--ink-3);">Human Phenotype Ontology, a controlled
+                            vocabulary describing patient symptoms, used to link genes to organs.</p>
+                    </div>
+                </div>
+            </details>
+        </div>
+    </section>
+
+    <!-- ========== SELECTED WORK ========== -->
+    <section id="work" class="py-28 md:py-40 hue-rose hue-wash hue-rule">
+        <div class="max-w-[1400px] mx-auto px-6 md:px-10">
+
+            <div class="flex items-end justify-between mb-12">
+                <div>
+                    <div class="section-tag mb-5"><span class="dot"></span>§03 · Selected Work · Projects &amp;
+                        portfolio</div>
+                    <h2 class="font-serif text-5xl md:text-7xl leading-[0.95] tracking-tight">Field<br />notebook.</h2>
+                    <p class="mt-4 text-[15px] max-w-xl" style="color: var(--ink-3);">Six built &amp; shipped projects.
+                        Click any row to expand the case study.</p>
+                </div>
+                <div class="hidden md:block eyebrow text-right">
+                    <div>05 / 2024 to present</div>
+                    <div>R · Python · PyTorch · Bioconductor · scikit-learn</div>
+                </div>
+            </div>
+
+            <!-- Project list -->
+            <div id="projects" class="rule-t">
+                <!-- rows injected by JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== TOOLKIT ========== -->
+    <section id="toolkit" class="py-28 md:py-40 hue-sage hue-wash-alt hue-rule">
+        <div class="max-w-[1400px] mx-auto px-6 md:px-10">
+
+            <div class="grid grid-cols-12 gap-x-6 gap-y-12 mb-16">
+                <div class="col-span-12 lg:col-span-3">
+                    <div class="section-tag mb-5"><span class="dot"></span>§04 · Toolkit · Skills &amp; experience</div>
+                </div>
+                <div class="col-span-12 lg:col-span-9 lg:col-start-4">
+                    <h2 class="font-serif text-5xl md:text-7xl leading-[0.95] tracking-tight">
+                        What's in the <em style="color: var(--accent);">drawer</em>.
+                    </h2>
+                    <p class="mt-6 text-[17px] max-w-3xl" style="color: var(--ink-2);">
+                        A pragmatic mix of computational and wet-lab craft. The dry side runs the analyses; the wet side
+                        keeps me honest about what biology actually does when you ask it a question.
+                    </p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-12 gap-px rule-t rule-l" style="background: var(--rule);">
+
+                <!-- Languages -->
+                <div class="col-span-12 md:col-span-6 p-8 rule-r rule-b" style="background: var(--paper);">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="font-serif text-2xl">Languages & Environments</div>
+                        <span class="eyebrow">A</span>
+                    </div>
+                    <div class="space-y-4 font-mono text-[13px]">
+                        <div class="flex items-baseline gap-4">
+                            <span class="w-28 shrink-0" style="color: var(--ink-3);">python</span>
+                            <span class="flex-1" style="color: var(--ink);">pandas · numpy · scikit-learn ·
+                                biopython · PyTorch</span>
+                            <span style="color: var(--accent);">●●●●○</span>
+                        </div>
+                        <div class="flex items-baseline gap-4">
+                            <span class="w-28 shrink-0" style="color: var(--ink-3);">R</span>
+                            <span class="flex-1" style="color: var(--ink);">tidyverse · Bioconductor · ComplexHeatmap ·
+                                gganatogram</span>
+                            <span style="color: var(--accent);">●●●●○</span>
+                        </div>
+                        <div class="flex items-baseline gap-4">
+                            <span class="w-28 shrink-0" style="color: var(--ink-3);">shell</span>
+                            <span class="flex-1" style="color: var(--ink);">bash · awk · HPC (SLURM) job submission</span>
+                            <span style="color: var(--accent);">●●●○○</span>
+                        </div>
+                        <div class="flex items-baseline gap-4">
+                            <span class="w-28 shrink-0" style="color: var(--ink-3);">git</span>
+                            <span class="flex-1" style="color: var(--ink);">version control · code review</span>
+                            <span style="color: var(--accent);">●●●○○</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analytical methods -->
+                <div class="col-span-12 md:col-span-6 p-8 rule-b" style="background: var(--paper);">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="font-serif text-2xl">Analytical Methods</div>
+                        <span class="eyebrow">B</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-x-6 gap-y-4 text-[13.5px]">
+                        <div>
+                            <div class="font-medium">Machine learning</div>
+                            <div style="color: var(--ink-3);" class="text-[12px]">Naïve Bayes · Random Forest · XGBoost
+                                ·
+                                supervised + unsupervised · deep learning (PyTorch, multi-modal fusion, ESM2)</div>
+                        </div>
+                        <div>
+                            <div class="font-medium">Phylogenetics</div>
+                            <div style="color: var(--ink-3);" class="text-[12px]">NPP · ortholog mapping · co-evolution
+                                clustering</div>
+                        </div>
+                        <div>
+                            <div class="font-medium">Multi-omics</div>
+                            <div style="color: var(--ink-3);" class="text-[12px]">transcriptomics · PPI networks ·
+                                phenomics (HPO) · real clinical data</div>
+                        </div>
+                        <div>
+                            <div class="font-medium">Visualization</div>
+                            <div style="color: var(--ink-3);" class="text-[12px]">heatmaps · anatomograms · publication
+                                figures</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Wet lab -->
+                <div class="col-span-12 md:col-span-8 p-8 rule-r rule-b" style="background: var(--paper);">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="font-serif text-2xl">Wet-lab craft</div>
+                        <span class="eyebrow">C</span>
+                    </div>
+                    <p class="text-[15px] mb-6" style="color: var(--ink-2);">
+                        Before the matrices, there were pipettes. Recombinant expression of bovine lactoferrin and human
+                        keratin in <em>E. coli</em> and <em>Arabidopsis</em>, in collaboration with <a
+                            href="https://www.miruku.com/" target="_blank" class="ink-link font-medium"
+                            style="color: var(--ink);">Miruku</a> at Prof. Oded Shoseyov's lab – including a
+                        co-authored chapter in <em>Alternative Dairy Products and Technologies</em>.
+                    </p>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-[12px] font-mono">
+                        <div class="px-3 py-2 rounded" style="background: var(--paper-2);">cloning</div>
+                        <div class="px-3 py-2 rounded" style="background: var(--paper-2);">FPLC</div>
+                        <div class="px-3 py-2 rounded" style="background: var(--paper-2);">qPCR</div>
+                        <div class="px-3 py-2 rounded" style="background: var(--paper-2);">ELISA</div>
+                        <div class="px-3 py-2 rounded" style="background: var(--paper-2);">plant transformation</div>
+                        <div class="px-3 py-2 rounded" style="background: var(--paper-2);">selection</div>
+                        <div class="px-3 py-2 rounded" style="background: var(--paper-2);">protein purification</div>
+                        <div class="px-3 py-2 rounded" style="background: var(--paper-2);">recombinant expression</div>
+                    </div>
+                    <div class="flex flex-col gap-2 mt-6">
+                        <a href="rec_2.pdf" target="_blank"
+                            class="inline-flex items-center gap-2 text-[13px] ink-link font-mono w-max"
+                            style="color: var(--accent);">
+                            ↗ recommendation letter (Shoseyov lab)
+                        </a>
+                        <a href="https://doi.org/10.1016/B978-0-443-28890-6.00017-5" target="_blank"
+                            class="inline-flex items-center gap-2 text-[13px] ink-link font-mono w-max"
+                            style="color: var(--accent);">
+                            ↗ Co-authored book chapter (Alternative Dairy Products)
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Earlier work -->
+                <div class="col-span-12 md:col-span-4 p-8 rule-b" style="background: var(--paper);">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="font-serif text-2xl">Origin story</div>
+                        <span class="eyebrow">D</span>
+                    </div>
+                    <div class="eyebrow mb-1">B.Sc. · Octopus motor learning</div>
+                    <div class="text-[13px] mb-3" style="color: var(--ink-3);">B.Sc. Marine Biotechnology, internship in
+                        Marine Agriculture, Ruppin
+                        Academic Center · GPA 91/100</div>
+                    <p class="text-[14px]" style="color: var(--ink-2);">
+                        Designed and analyzed behavioral experiments on octopus learning strategies. Where my taste for
+                        data on stubborn, complex biological systems began.
+                    </p>
+                    <a href="rec_1.pdf" target="_blank"
+                        class="inline-flex items-center gap-2 mt-4 text-[12px] ink-link font-mono"
+                        style="color: var(--accent);">
+                        ↗ recommendation letter
+                    </a>
+                </div>
+
+                <!-- Databases & Tools -->
+                <div class="col-span-12 md:col-span-7 p-8 rule-r rule-b" style="background: var(--paper);">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="font-serif text-2xl">Databases & Tools</div>
+                        <span class="eyebrow">E</span>
+                    </div>
+                    <div class="flex flex-wrap gap-3 text-[12px] font-mono">
+                        <div class="px-3 py-2 rounded" style="background: var(--paper-2);">Clustal Omega</div>
+                        <div class="px-3 py-2 rounded" style="background: var(--paper-2);">BLAST</div>
+                        <div class="px-3 py-2 rounded" style="background: var(--paper-2);">PyMOL</div>
+                        <div class="px-3 py-2 rounded" style="background: var(--paper-2);">PDB</div>
+                        <div class="px-3 py-2 rounded" style="background: var(--paper-2);">AlphaFold</div>
+                        <div class="px-3 py-2 rounded" style="background: var(--paper-2);">Rummagene</div>
+                        <div class="px-3 py-2 rounded" style="background: var(--paper-2);">FUMA</div>
+                        <div class="px-3 py-2 rounded" style="background: var(--paper-2);">EnrichR</div>
+                        <div class="px-3 py-2 rounded" style="background: var(--paper-2);">Cytoscape</div>
+                        <div class="px-3 py-2 rounded" style="background: var(--paper-2);">STRING</div>
+                        <div class="px-3 py-2 rounded" style="background: var(--paper-2);">UniProt</div>
+                        <div class="px-3 py-2 rounded" style="background: var(--paper-2);">GeneCards</div>
+                        <div class="px-3 py-2 rounded" style="background: var(--paper-2);">OMIM</div>
+                        <div class="px-3 py-2 rounded" style="background: var(--paper-2);">ClinVar</div>
+                        <div class="px-3 py-2 rounded" style="background: var(--paper-2);">gnomAD</div>
+                        <div class="px-3 py-2 rounded" style="background: var(--paper-2);">UCSC Genome Browser</div>
+                        <div class="px-3 py-2 rounded" style="background: var(--paper-2);">NCBI</div>
+                        <div class="px-3 py-2 rounded" style="background: var(--paper-2);">Ensembl</div>
+                        <div class="px-3 py-2 rounded" style="background: var(--paper-2);">Seurat</div>
+                        <div class="px-3 py-2 rounded" style="background: var(--paper-2);">Scanpy</div>
+                    </div>
+                </div>
+
+                <!-- AI-Integrated Workflows -->
+                <div class="col-span-12 md:col-span-5 p-8 rule-b" style="background: var(--paper);">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="font-serif text-2xl">AI-Integrated Workflows</div>
+                        <span class="eyebrow">F</span>
+                    </div>
+                    <ul class="space-y-3 text-[14px]" style="color: var(--ink-2);">
+                        <li class="flex gap-3"><span class="font-mono shrink-0 mt-0.5"
+                                style="color: var(--accent);">▸</span><span>Claude Code, Cursor, Codex, Google Labs
+                                (research-grade use for pipeline development and scientific reasoning)</span></li>
+                        <li class="flex gap-3"><span class="font-mono shrink-0 mt-0.5"
+                                style="color: var(--accent);">▸</span><span>Custom agent and prompt engineering</span>
+                        </li>
+                        <li class="flex gap-3"><span class="font-mono shrink-0 mt-0.5"
+                                style="color: var(--accent);">▸</span><span>Local LLM inference via Ollama</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== CONTACT ========== -->
+    <section id="contact" class="py-28 md:py-40 hue-indigo hue-wash hue-rule">
+        <div class="max-w-[1400px] mx-auto px-6 md:px-10">
+            <div class="grid grid-cols-12 gap-x-6 gap-y-12">
+                <div class="col-span-12 lg:col-span-7">
+                    <div class="section-tag mb-5"><span class="dot"></span>§05 · Correspond · Get in touch</div>
+                    <h2 class="font-serif text-6xl md:text-[120px] leading-[0.92] tracking-tight">
+                        Let's <em style="color: var(--accent);">talk</em><br />biology<br />and data.
+                    </h2>
+                    <p class="mt-8 text-[17px] max-w-xl" style="color: var(--ink-2);">
+                        Open to research collaborations, R&D roles in computational biology / machine learning, and
+                        conversations with curious people from any discipline.
+                    </p>
+                </div>
+
+                <div class="col-span-12 lg:col-span-5 lg:col-start-8">
+                    <div class="rule-t">
+                        <a href="mailto:shalev.yaacov1@mail.huji.ac.il" id="email-card" class="block py-6 rule-b group">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <div class="eyebrow mb-2">Email · click to copy</div>
+                                    <div class="font-serif text-2xl tracking-tight" id="email-text">
+                                        shalev.yaacov1@mail.huji.ac.il</div>
+                                </div>
+                                <span class="font-mono text-2xl group-hover:translate-x-1 transition-transform"
+                                    style="color: var(--accent);">→</span>
+                            </div>
+                        </a>
+                        <a href="https://www.linkedin.com/in/shalev-yaacov-bio-tech/" target="_blank"
+                            class="block py-6 rule-b group">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <div class="eyebrow mb-2">LinkedIn</div>
+                                    <div class="font-serif text-2xl tracking-tight">@shalev-yaacov-bio-tech</div>
+                                </div>
+                                <span class="font-mono text-2xl group-hover:translate-x-1 transition-transform"
+                                    style="color: var(--accent);">↗</span>
+                            </div>
+                        </a>
+                        <a href="https://github.com/shalev-compbio/Shalev-Evolutionary-Genomics-Portfolio"
+                            target="_blank" class="block py-6 rule-b group">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <div class="eyebrow mb-2">GitHub</div>
+                                    <div class="font-serif text-2xl tracking-tight">@shalev-compbio</div>
+                                </div>
+                                <span class="font-mono text-2xl group-hover:translate-x-1 transition-transform"
+                                    style="color: var(--accent);">↗</span>
+                            </div>
+                        </a>
+                        <a href="CV_Shalev_Yaacov.pdf" download class="block py-6 rule-b group">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <div class="eyebrow mb-2">Curriculum Vitae</div>
+                                    <div class="font-serif text-2xl tracking-tight">Download · PDF</div>
+                                </div>
+                                <span class="font-mono text-2xl group-hover:translate-x-1 transition-transform"
+                                    style="color: var(--accent);">↓</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer line -->
+            <div class="mt-24 pt-8 rule-t flex flex-col md:flex-row md:items-center md:justify-between gap-3 eyebrow">
+                <div>© 2026 Shalev Yaacov · Hebrew University of Jerusalem</div>
+                <div>All matrices are illustrative. Real findings live in the manuscripts.</div>
+                <div>Continuously evolving.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== COMMAND PALETTE ========== -->
+    <div id="palette" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 palette-bg" id="palette-bg-click"></div>
+        <div class="relative max-w-xl mx-auto mt-[18vh] palette-card rounded-xl overflow-hidden"
+            style="border: 1px solid var(--rule); box-shadow: 0 30px 80px -20px rgba(0,0,0,.3);">
+            <div class="flex items-center gap-3 p-4 rule-b">
+                <span class="font-mono text-[12px]" style="color: var(--ink-3);">⌘K</span>
+                <input id="palette-input" type="text" placeholder="Jump to a section, project, or skill…"
+                    class="flex-1 bg-transparent outline-none text-[15px]" />
+                <kbd class="font-mono text-[11px] px-2 py-1 rounded"
+                    style="background: var(--paper-2); color: var(--ink-3);">esc</kbd>
+            </div>
+            <div id="palette-results" class="max-h-[50vh] overflow-y-auto p-2"></div>
+        </div>
+    </div>
+
+    <!-- ========== TWEAKS PANEL ========== -->
+    <div id="tweaks-panel" class="tweaks">
+        <div class="flex items-center justify-between mb-4">
+            <div class="font-serif text-lg">Tweaks</div>
+            <button id="tweaks-close" class="font-mono text-xs" style="color: var(--ink-3);">close ✕</button>
+        </div>
+
+        <div class="space-y-4">
+            <div>
+                <label>Accent</label>
+                <div class="flex gap-2 mt-2">
+                    <button data-accent="#E14B2A" class="w-7 h-7 rounded-full"
+                        style="background:#E14B2A; outline: 2px solid var(--accent); outline-offset: 2px;"></button>
+                    <button data-accent="#1E5BFF" class="w-7 h-7 rounded-full" style="background:#1E5BFF;"></button>
+                    <button data-accent="#0A8F5A" class="w-7 h-7 rounded-full" style="background:#0A8F5A;"></button>
+                    <button data-accent="#7A2BE6" class="w-7 h-7 rounded-full" style="background:#7A2BE6;"></button>
+                    <button data-accent="#C5A100" class="w-7 h-7 rounded-full" style="background:#C5A100;"></button>
+                </div>
+            </div>
+
+            <div>
+                <label>Theme</label>
+                <div class="flex gap-2 mt-2 font-mono text-[11px]">
+                    <button data-theme="light" class="px-3 py-1.5 rounded"
+                        style="border:1px solid var(--rule);">Paper</button>
+                    <button data-theme="dark" class="px-3 py-1.5 rounded"
+                        style="border:1px solid var(--rule);">Carbon</button>
+                </div>
+            </div>
+
+            <div>
+                <label>Display heading</label>
+                <div class="flex gap-2 mt-2 font-mono text-[11px]">
+                    <button data-font="serif" class="px-3 py-1.5 rounded"
+                        style="border:1px solid var(--rule);">Fraunces</button>
+                    <button data-font="sans" class="px-3 py-1.5 rounded" style="border:1px solid var(--rule);">Inter
+                        Tight</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== SCRIPTS ========== -->
+    <script>
+        /* ----- TWEAKS DEFAULTS ----- */
+        const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+            "accent": "#0A8F5A",
+            "theme": "dark",
+            "fontHeading": "serif"
+        }/*EDITMODE-END*/;
+
+        /* ----- SMALL UTILITIES ----- */
+        const $ = (s, p = document) => p.querySelector(s);
+        const $$ = (s, p = document) => Array.from(p.querySelectorAll(s));
+
+        /* ----- THEME ----- */
+        function applyTheme(t) {
+            document.documentElement.classList.toggle('dark', t === 'dark');
+            localStorage.setItem('shalev:theme', t);
+        }
+        function applyAccent(hex) {
+            document.documentElement.style.setProperty('--accent', hex);
+            // also set vermillion-soft variant
+            document.documentElement.style.setProperty('--accent-soft', hex + '1a');
+            localStorage.setItem('shalev:accent', hex);
+        }
+        function applyHeadingFont(f) {
+            document.documentElement.style.setProperty(
+                '--heading-font',
+                f === 'sans' ? '"Inter Tight", system-ui, sans-serif' : "'Fraunces', Georgia, serif"
+            );
+            // swap .font-serif headings to chosen font
+            $$('.font-serif').forEach(el => {
+                if (f === 'sans') {
+                    el.style.fontFamily = '"Inter Tight", system-ui, sans-serif';
+                    el.style.fontVariationSettings = '';
+                } else {
+                    el.style.fontFamily = '';
+                    el.style.fontVariationSettings = '';
+                }
+            });
+            localStorage.setItem('shalev:font', f);
+        }
+
+        /* init */
+        const initTheme = localStorage.getItem('shalev:theme') || TWEAK_DEFAULTS.theme;
+        const initAccent = localStorage.getItem('shalev:accent') || TWEAK_DEFAULTS.accent;
+        const initFont = localStorage.getItem('shalev:font') || TWEAK_DEFAULTS.fontHeading;
+        applyTheme(initTheme);
+        applyAccent(initAccent);
+        applyHeadingFont(initFont);
+
+        $('#theme-btn').addEventListener('click', () => {
+            const next = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
+            applyTheme(next);
+        });
+
+        /* ----- CLOCK ----- */
+        function tickClock() {
+            const d = new Date();
+            const opts = { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jerusalem' };
+            $('#clock').textContent = d.toLocaleTimeString('en-GB', opts) + ' IL';
+        }
+        tickClock(); setInterval(tickClock, 30_000);
+
+        /* ----- HERO TICKER ----- */
+        const tickerLines = [
+            "training a candidate-prioritization model on HPO + NPP features",
+            "curating a clean orthology table for ~2,000 eukaryotes",
+            "writing up the cilia co-loss cluster results",
+            "open to R&D collaborations and reading recommendations",
+        ];
+        let tIdx = 0, cIdx = 0, tDel = false;
+        const tEl = $('#hero-ticker');
+        function typeTick() {
+            if (!tEl) return;
+            const cur = tickerLines[tIdx];
+            if (!tDel) {
+                tEl.textContent = cur.slice(0, ++cIdx);
+                if (cIdx === cur.length) { tDel = true; setTimeout(typeTick, 2400); return; }
+            } else {
+                tEl.textContent = cur.slice(0, --cIdx);
+                if (cIdx === 0) { tDel = false; tIdx = (tIdx + 1) % tickerLines.length; }
+            }
+            setTimeout(typeTick, tDel ? 18 : 38);
+        }
+        if (tEl) typeTick();
+
+        /* ----- NPP MATRIX ----- */
+        /* gene labels + pattern: 1 conserved, 2 hotspot, 0 absent */
+        const genes = [
+            { id: 'IRD-A1', cluster: 'A · IRD', note: 'co-loss · vertebrate clade' },
+            { id: 'IRD-A2', cluster: 'A · IRD', note: 'co-loss · vertebrate clade' },
+            { id: 'IRD-A3', cluster: 'A · IRD', note: 'co-loss · vertebrate clade' },
+            { id: 'IRD-A4', cluster: 'A · IRD', note: 'co-loss · vertebrate clade' },
+            { id: 'IRD-A5', cluster: 'A · IRD', note: 'co-loss · vertebrate clade' },
+            { id: 'CIL-B1', cluster: 'B · cilia', note: 'co-loss · alveolate clade' },
+            { id: 'CIL-B2', cluster: 'B · cilia', note: 'co-loss · alveolate clade' },
+            { id: 'CIL-B3', cluster: 'B · cilia', note: 'co-loss · alveolate clade' },
+            { id: 'CIL-B4', cluster: 'B · cilia', note: 'co-loss · alveolate clade' },
+            { id: 'NSE-01', cluster: 'C · noise', note: 'no aligned signal' },
+            { id: 'NSE-02', cluster: 'C · noise', note: 'no aligned signal' },
+            { id: 'NSE-03', cluster: 'C · noise', note: 'no aligned signal' },
+            { id: 'NSE-04', cluster: 'C · noise', note: 'no aligned signal' },
+        ];
+        const matrix = [
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 0, 2, 2, 2, 2, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 0, 1, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 0, 0, 0, 1, 1],
+            [1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 0, 0, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 0, 0, 0, 0, 1, 1],
+            [1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 0, 1, 0, 1, 1],
+            [1, 1, 0, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1],
+            [0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0],
+            [1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1],
+            [0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 1, 0],
+        ];
+        const speciesNames = [
+            'S. cerevisiae', 'C. albicans', 'N. crassa', 'U. maydis', 'C. cinerea',
+            'A. thaliana', 'O. sativa', 'C. reinhardtii',
+            'D. discoideum',
+            'M. brevicollis', 'S. rosetta', 'C. owczarzaki', 'A. macrogynus',
+            'T. adhaerens', 'N. vectensis', 'H. magnipapillata',
+            'C. elegans', 'D. melanogaster', 'S. purpuratus', 'B. floridae',
+            'D. rerio', 'X. tropicalis', 'G. gallus', 'M. musculus', 'H. sapiens',
+            'P. tetraurelia', 'T. thermophila', 'P. falciparum', 'D. discoideum-2', 'C. merolae',
+        ];
+
+        const matrixEl = $('#matrix');
+        const labelsEl = $('#gene-labels');
+        const axisEl = $('#species-axis');
+        const readout = $('#hover-readout');
+
+        /* render labels */
+        labelsEl.innerHTML = genes.map((g, i) => `
+  <div class="px-4 py-1.5 flex items-center justify-between font-mono text-[11px] cursor-pointer rule-b" data-row="${i}">
+    <span style="color: var(--ink);">${g.id}</span>
+    <span style="color: var(--ink-3);">${g.cluster.split(' ')[0]}</span>
+  </div>
+`).join('');
+
+        /* render matrix */
+        const cellH = 26; // px
+        matrixEl.style.display = 'grid';
+        matrixEl.style.gridTemplateRows = `repeat(${genes.length}, ${cellH}px)`;
+        matrixEl.style.minWidth = '720px';
+        matrixEl.innerHTML = matrix.map((row, ri) => `
+  <div class="npp-row grid rule-b" data-row="${ri}" style="grid-template-columns: repeat(${row.length}, 1fr);">
+    ${row.map((v, ci) => {
+            const cls = v === 2 ? 'hot' : (v === 1 ? 'on' : 'off');
+            return `<div class="cell ${cls}" data-row="${ri}" data-col="${ci}" style="border-right:1px solid var(--rule); ${v === 0 ? 'background:transparent' : ''}"></div>`;
+        }).join('')}
+  </div>
+`).join('');
+
+        /* species axis: tick + label */
+        axisEl.style.minWidth = '720px';
+        axisEl.innerHTML = `
+  <div class="grid w-full py-2 px-0" style="grid-template-columns: repeat(${speciesNames.length}, 1fr); border-top:1px solid var(--rule);">
+    ${speciesNames.map((s, i) => `
+      <div class="text-center" data-col="${i}" style="font-size:9px; color:var(--ink-3); writing-mode: vertical-rl; transform: rotate(180deg); height: 80px; padding-top: 6px;">
+        ${s}
+      </div>
+    `).join('')}
+  </div>
+`;
+
+        /* hover behavior */
+        function clearHighlights() {
+            $$('.npp-row').forEach(r => r.classList.remove('lit', 'dim'));
+            $$('.cell').forEach(c => c.style.outline = '');
+        }
+        matrixEl.addEventListener('mouseleave', () => { clearHighlights(); readout.textContent = 'hover a cell to read'; });
+        labelsEl.addEventListener('mouseleave', () => { clearHighlights(); readout.textContent = 'hover a cell to read'; });
+
+        matrixEl.addEventListener('mousemove', e => {
+            const cell = e.target.closest('.cell');
+            if (!cell) return;
+            const ri = +cell.dataset.row, ci = +cell.dataset.col;
+            $$('.npp-row').forEach(r => {
+                r.classList.toggle('lit', +r.dataset.row === ri);
+                r.classList.toggle('dim', +r.dataset.row !== ri);
+            });
+            const v = matrix[ri][ci];
+            const state = v === 2 ? 'co-loss hotspot' : (v === 1 ? 'present (conserved)' : 'absent');
+            readout.innerHTML = `<span style="color:var(--ink-3)">gene</span> <span style="color:var(--ink)">${genes[ri].id}</span> &nbsp;·&nbsp; <span style="color:var(--ink-3)">species</span> <span style="color:var(--ink)">${speciesNames[ci]}</span> &nbsp;·&nbsp; <span style="color:${v === 2 ? 'var(--accent)' : 'var(--ink-2)'}">${state}</span>`;
+        });
+
+        labelsEl.addEventListener('mousemove', e => {
+            const lab = e.target.closest('[data-row]');
+            if (!lab) return;
+            const ri = +lab.dataset.row;
+            $$('.npp-row').forEach(r => {
+                r.classList.toggle('lit', +r.dataset.row === ri);
+                r.classList.toggle('dim', +r.dataset.row !== ri);
+            });
+            readout.innerHTML = `<span style="color:var(--ink-3)">cluster</span> <span style="color:var(--ink)">${genes[ri].cluster}</span> &nbsp;·&nbsp; <span style="color:var(--ink-3)">${genes[ri].note}</span>`;
+        });
+
+        /* ----- PROJECTS ----- */
+        const projects = [
+            {
+                n: '01',
+                title: 'IRD Phenotype Clustering',
+                stack: ['Python', 'Unsupervised Clustering', 'HPO'],
+                role: 'bidirectional gene↔phenotype prediction',
+                summary: 'A predictive framework that scores candidate genes by combining NPP-derived evolutionary similarity with HPO phenotype profiles, validated against 4,254 real-world IRD cases.',
+                bullets: [
+                    'Driving a data-driven reconstruction of classical disease boundaries to form highly specific functional modules.',
+                    'Engineered features from HPO term hierarchies and continuous NPP similarity vectors.',
+                    'Building and validating ensemble classification models (XGBoost, Random Forest) against an established dataset of 450+ IRD genes.',
+                    'Output: ranked candidates supporting bidirectional inference, predicting genes from phenotypes and phenotypes from genes.',
+                ],
+                href: 'https://github.com/shalev-compbio/Shalev-Evolutionary-Genomics-Portfolio/tree/main/projects/IRD_Phenotype_Clustering',
+                accent: '#E14B2A',
+            },
+            {
+                n: '02',
+                title: 'Cilia Cluster Analysis',
+                stack: ['R', 'NPP', 'phylogenetics'],
+                role: 'co-evolutionary module discovery',
+                summary: 'Identified ciliary co-evolutionary modules by integrating normalized phylogenetic profiles with functional annotations across ~2,000 eukaryotic genomes.',
+                bullets: [
+                    'Built a reproducible R pipeline that joins NPP correlations with cilia-related GO terms.',
+                    'Recovered known ciliary clusters and surfaced novel candidates whose enrichment exceeded random clustering.',
+                    'Output: prioritized ciliary candidate list, ranked by cluster score and functional convergence.',
+                ],
+                href: 'https://github.com/shalev-compbio/Shalev-Evolutionary-Genomics-Portfolio/tree/main/projects/Cilia_Module_Validation',
+                accent: '#0A8F5A',
+            },
+            {
+                n: '03',
+                title: 'High-Dimensional Visualization',
+                stack: ['R', 'ComplexHeatmap'],
+                role: 'visual pipeline for 20k × 2k similarity matrices',
+                summary: 'Heatmap pipelines that render 20,000-gene × ~2,000-species normalized similarity matrices at publication quality.',
+                bullets: [
+                    'Custom row/column annotation tracks (clade, function, phenotype burden).',
+                    'Optimized rendering for very wide matrices, readable without losing structure.',
+                    'Output: figure-ready visuals adopted across lab manuscripts and presentations.',
+                ],
+                href: 'https://github.com/shalev-compbio/Shalev-Evolutionary-Genomics-Portfolio/tree/main/projects/LPP_NPP_Heatmap_Visualization',
+                accent: '#1E5BFF',
+            },
+            {
+                n: '04',
+                title: 'Genomic Segmentation (LBS)',
+                stack: ['Python', 'algorithms'],
+                role: 'signal recovery for fragmented profiles',
+                summary: 'Implemented Local Barcode Segmentation to recover robust co-evolutionary signal from disjoint genomic regions where global similarity is diluted.',
+                bullets: [
+                    'Translated the LBS algorithm into a Python module with unit tests.',
+                    'Isolates clade-aligned signal that whole-gene NPP can miss.',
+                    'Output: segment-level profiles that downstream NPP clustering treats as more separable.',
+                ],
+                href: 'https://github.com/shalev-compbio/Shalev-Evolutionary-Genomics-Portfolio/tree/main/projects/LBS_Consensus_Profiling',
+                accent: '#C5A100',
+            },
+            {
+                n: '05',
+                title: 'IRD HPO Anatomogram',
+                stack: ['R', 'HPO', 'gganatogram'],
+                role: 'clinical translation of cluster results',
+                summary: 'A pipeline that turns gene-cluster × phenotype matrices into color-coded anatomical figures clinicians can read at a glance.',
+                bullets: [
+                    'Traverses HPO ontology to map fine-grained terms to organ systems.',
+                    'Aggregates per cluster: % of genes carrying terms mapped to each organ.',
+                    'Output: anatomograms adopted as the lay-translation layer of the lab\'s outputs.',
+                ],
+                href: 'https://github.com/shalev-compbio/Shalev-Evolutionary-Genomics-Portfolio/tree/main/projects/IRD_HPO_Anatomogram',
+                accent: '#7A2BE6',
+            },
+            {
+                n: '06',
+                title: 'Multimodal Deep Learning Classifier',
+                stack: ['PyTorch', 'Deep Learning', 'ESM2'],
+                role: 'three-tower fusion network — flagship ML/DL extension',
+                summary: 'Fuses evolutionary conservation, ESM2 protein-language embeddings, and protein–protein interaction network topology in a three-tower PyTorch architecture, recovering known IRD gene–phenotype relationships and ranking candidates genome-wide — the deepest computational extension of the pipeline.',
+                bullets: [
+                    'Fused three independent modalities — NPP, ESM2, and PPI network topology — in a three-tower PyTorch architecture, evaluated across all 7 possible tower combinations.',
+                    'Found PPI network topology to be the single strongest predictor of module membership — stronger than evolutionary conservation, protein sequence, or all three combined.',
+                    'Reached 0.44 macro-F1 (~7.5× random baseline) on a 17-class problem trained on only 434 labeled genes, validated via 5-fold stratified cross-validation.',
+                    'Output: genome-wide candidate predictions across ~19,573 genes, with a concordance and reliability framework for prioritization.',
+                ],
+                href: 'https://github.com/Shalev-CompBio/pytorch-multimodal-gene-classifier/tree/main',
+                accent: '#EE4C2C',
+                flagship: true,
+            },
+            {
+                n: '07',
+                title: 'Clinical Data Infrastructure (Pre-Cure Biotech)',
+                stack: ['Python', 'Cloud Deployment', 'LLM Integration', 'Budibase'],
+                role: 'industry practicum — forward deployed engineering',
+                summary: 'Designed and deployed a relational data management system for a personalized oncology startup, replacing manual spreadsheet-based workflows with structured, queryable infrastructure.',
+                bullets: [
+                    'Translated complex biological workflows into a structured, queryable data schema.',
+                    'Built a Python backend for analytics and automation.',
+                    'Developed an AI-assisted layer (incl. OCR) for experimental data interpretation.',
+                ],
+                href: null,
+                accent: '#C03A1F',
+            },
+        ];
+
+        const projWrap = $('#projects');
+        projWrap.innerHTML = projects.map((p, i) => `
+  <div>
+    <div class="proj-row rule-b cursor-pointer px-2" data-idx="${i}">
+      <div class="grid grid-cols-12 gap-4 items-baseline py-7">
+        <div class="col-span-1 font-mono text-[12px]" style="color: var(--ink-3);">${p.n}</div>
+        <div class="col-span-11 md:col-span-5 font-serif text-3xl md:text-4xl tracking-tight">${p.title}${p.flagship ? `<span class="inline-flex items-center gap-1.5 ml-3 align-middle font-mono text-[10px] tracking-widest uppercase" style="color:${p.accent};"><span style="width:5px;height:5px;border-radius:50%;background:${p.accent};display:inline-block;"></span>flagship</span>` : ''}</div>
+        <div class="hidden md:flex col-span-3 gap-2 flex-wrap font-mono text-[11px]" style="color: var(--ink-3);">
+          ${p.stack.map(s => `<span class="px-2 py-0.5 rounded" style="background:var(--paper-2); border:1px solid var(--rule);">${s}</span>`).join('')}
+        </div>
+        <div class="hidden md:block col-span-2 text-[12.5px]" style="color: var(--ink-2);">${p.role}</div>
+        <div class="col-span-1 text-right font-mono text-[14px] proj-arrow" style="color: var(--ink-3);">+</div>
+      </div>
+    </div>
+    <div class="proj-detail rule-b">
+      <div>
+        <div class="grid grid-cols-12 gap-6 px-2 py-10">
+          <div class="col-span-12 md:col-span-5">
+            <div class="eyebrow mb-3" style="color:${p.accent};">${p.role}</div>
+            <p class="font-serif text-2xl leading-snug">${p.summary}</p>
+          </div>
+          <div class="col-span-12 md:col-span-5 md:col-start-7">
+            <ul class="space-y-3 text-[14.5px]" style="color: var(--ink-2);">
+              ${p.bullets.map(b => `<li class="flex gap-3"><span class="font-mono shrink-0 mt-1" style="color:${p.accent};">▸</span><span>${b}</span></li>`).join('')}
+            </ul>
+            ${p.href ? `<a href="${p.href}" target="_blank" class="inline-flex items-center gap-2 mt-6 font-mono text-[12px] ink-link" style="color: ${p.accent};">↗ View source on GitHub</a>` : `<span class="inline-flex items-center gap-2 mt-6 font-mono text-[12px]" style="color: var(--ink-3);">Confidential industry engagement — repository not public.</span>`}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+`).join('');
+
+        projWrap.addEventListener('click', e => {
+            const row = e.target.closest('.proj-row');
+            if (!row) return;
+            const wasOpen = row.dataset.open === 'true';
+            $$('.proj-row', projWrap).forEach(r => {
+                r.dataset.open = 'false';
+                const ar = $('.proj-arrow', r); if (ar) ar.textContent = '+';
+            });
+            if (!wasOpen) {
+                row.dataset.open = 'true';
+                const ar = $('.proj-arrow', row); if (ar) ar.textContent = '−';
+            }
+        });
+
+        /* ----- COMMAND PALETTE ----- */
+        const paletteItems = [
+            ...['question', 'method', 'work', 'toolkit', 'contact'].map(id => ({ label: 'Section: ' + id[0].toUpperCase() + id.slice(1), kind: 'section', href: '#' + id })),
+            ...projects.map(p => ({ label: 'Project: ' + p.title, kind: 'project', href: '#work', idx: projects.indexOf(p) })),
+            { label: 'Email Shalev', kind: 'action', href: 'mailto:shalev.yaacov1@mail.huji.ac.il' },
+            { label: 'Open LinkedIn', kind: 'action', href: 'https://www.linkedin.com/in/shalev-yaacov-bio-tech/' },
+            { label: 'Open GitHub', kind: 'action', href: 'https://github.com/shalev-compbio/Shalev-Evolutionary-Genomics-Portfolio' },
+            { label: 'Download CV', kind: 'action', href: 'CV_Shalev_Yaacov.pdf' },
+            { label: 'Toggle theme', kind: 'action', action: () => $('#theme-btn').click() },
+            { label: 'Open Tweaks panel', kind: 'action', action: () => openTweaks() },
+        ];
+
+        const palette = $('#palette');
+        const paletteInput = $('#palette-input');
+        const paletteResults = $('#palette-results');
+
+        function renderPalette(q = '') {
+            const items = paletteItems
+                .filter(i => i.label.toLowerCase().includes(q.toLowerCase()))
+                .slice(0, 8);
+            paletteResults.innerHTML = items.map((i, idx) => `
+    <button data-idx="${idx}" class="w-full text-left px-3 py-2.5 rounded-md flex items-center justify-between hover:bg-[var(--paper-2)] transition-colors">
+      <span class="text-[14px]">${i.label}</span>
+      <span class="font-mono text-[10px]" style="color: var(--ink-3);">${i.kind}</span>
+    </button>
+  `).join('') || `<div class="px-3 py-6 text-center font-mono text-[12px]" style="color: var(--ink-3);">no matches</div>`;
+            paletteResults._items = items;
+        }
+
+        function openPalette() {
+            palette.classList.remove('hidden');
+            paletteInput.value = '';
+            renderPalette('');
+            setTimeout(() => paletteInput.focus(), 30);
+        }
+        function closePalette() { palette.classList.add('hidden'); }
+
+        document.addEventListener('keydown', e => {
+            if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); openPalette(); }
+            if (e.key === 'Escape') {
+                closePalette();
+                closeTweaks();
+                $$('.proj-row[data-open="true"]').forEach(r => { r.dataset.open = 'false'; const ar = $('.proj-arrow', r); if (ar) ar.textContent = '+'; });
+            }
+        });
+        $('#cmdk-btn').addEventListener('click', openPalette);
+        $('#palette-bg-click').addEventListener('click', closePalette);
+        paletteInput.addEventListener('input', e => renderPalette(e.target.value));
+        paletteResults.addEventListener('click', e => {
+            const btn = e.target.closest('button[data-idx]');
+            if (!btn) return;
+            const item = paletteResults._items[+btn.dataset.idx];
+            if (!item) return;
+            if (item.action) item.action();
+            else if (item.href.startsWith('#')) document.querySelector(item.href).scrollIntoView({ behavior: 'smooth', block: 'start' });
+            else if (item.href.startsWith('mailto:') || item.href.endsWith('.pdf')) window.location.href = item.href;
+            else window.open(item.href, '_blank');
+            closePalette();
+            if (item.kind === 'project') {
+                setTimeout(() => {
+                    const rows = $$('.proj-row');
+                    rows.forEach(r => r.dataset.open = 'false');
+                    rows[item.idx].dataset.open = 'true';
+                    const ar = $('.proj-arrow', rows[item.idx]); if (ar) ar.textContent = '−';
+                    rows[item.idx].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 400);
+            }
+        });
+
+        /* ----- EMAIL COPY ----- */
+        $('#email-card').addEventListener('click', e => {
+            e.preventDefault();
+            navigator.clipboard?.writeText('shalev.yaacov1@mail.huji.ac.il');
+            const t = $('#email-text');
+            const orig = t.textContent;
+            t.textContent = 'copied to clipboard ✓';
+            t.style.color = 'var(--accent)';
+            setTimeout(() => { t.textContent = orig; t.style.color = ''; }, 1400);
+        });
+
+        /* ----- REVEAL ON SCROLL ----- */
+        const io = new IntersectionObserver((entries) => {
+            entries.forEach(en => en.isIntersecting && en.target.classList.add('in'));
+        }, { threshold: 0.12 });
+        $$('section').forEach(s => { s.classList.add('reveal'); io.observe(s); });
+
+        /* ----- TWEAKS PANEL ----- */
+        const tweaksPanel = $('#tweaks-panel');
+        function openTweaks() { tweaksPanel.classList.add('open'); }
+        function closeTweaks() { tweaksPanel.classList.remove('open'); }
+        $('#tweaks-close').addEventListener('click', closeTweaks);
+
+        window.addEventListener('message', e => {
+            if (!e.data || typeof e.data !== 'object') return;
+            if (e.data.type === '__activate_edit_mode') openTweaks();
+            if (e.data.type === '__deactivate_edit_mode') closeTweaks();
+        });
+        window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+
+        $$('[data-accent]', tweaksPanel).forEach(b => {
+            b.addEventListener('click', () => {
+                const c = b.dataset.accent;
+                applyAccent(c);
+                $$('[data-accent]', tweaksPanel).forEach(x => x.style.outline = '');
+                b.style.outline = '2px solid var(--accent)'; b.style.outlineOffset = '2px';
+                window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { accent: c } }, '*');
+            });
+        });
+        $$('[data-theme]', tweaksPanel).forEach(b => {
+            b.addEventListener('click', () => {
+                const t = b.dataset.theme; applyTheme(t);
+                window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { theme: t } }, '*');
+            });
+        });
+        $$('[data-font]', tweaksPanel).forEach(b => {
+            b.addEventListener('click', () => {
+                const f = b.dataset.font; applyHeadingFont(f);
+                window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { fontHeading: f } }, '*');
+            });
+        });
+
+    </script>
+</body>
+
+</html>
