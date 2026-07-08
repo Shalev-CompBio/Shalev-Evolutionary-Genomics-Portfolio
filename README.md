@@ -2,7 +2,7 @@
 
 ![Genomics](https://img.shields.io/badge/Focus-Computational_Genomics_%26_Bioinformatics-7B1FA2) ![Language](https://img.shields.io/badge/Languages-Python_%7C_R-FF9800) ![Institution](https://img.shields.io/badge/Institution-Hebrew_University_of_Jerusalem-00695C)
 
-*Shalev Yaacov — M.Sc. Researcher, Tabach Lab, Hebrew University of Jerusalem.
+*Shalev Yaacov - M.Sc. Researcher, Tabach Lab, Hebrew University of Jerusalem.
 Computational pipeline development for novel gene discovery in Inherited Retinal Diseases,
 integrating evolutionary profiling, phenotypic clustering, and multi-omics data.*
 
