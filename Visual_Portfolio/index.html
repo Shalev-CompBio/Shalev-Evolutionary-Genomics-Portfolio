@@ -1,0 +1,2860 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shalev Yaacov · Multi-modal models for genetic diagnosis</title>
+    <meta name="description"
+        content="Shalev Yaacov — computational frameworks that fuse evolutionary conservation, protein-sequence embeddings and interaction networks to rank candidate disease genes against clinical phenotypes. Validated on real patient cohorts." />
+
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><style>.f1{fill:%231E5BFF}.f2{fill:%23C03A1F}.dot{fill:%23F4F1EA;stroke:%231A1814;stroke-width:1.5}@media(prefers-color-scheme:dark)%7B.dot%7Bfill:%230E0D0B;stroke:%23EFEAE0%7D%7D</style><circle cx='50' cy='50' r='45' fill='none' stroke='%231E5BFF' stroke-width='2' stroke-opacity='0.55' stroke-dasharray='4 6'/><circle cx='50' cy='50' r='32' fill='none' stroke='%231E5BFF' stroke-width='2.5' stroke-opacity='0.75' stroke-dasharray='14 4'/><circle cx='50' cy='50' r='19' fill='none' stroke='%23C03A1F' stroke-width='2.5' stroke-opacity='0.85' stroke-dasharray='8 4'/><circle cx='50' cy='18' r='3' class='f1'/><circle cx='78' cy='66' r='2.5' class='f2'/><circle cx='22' cy='66' r='2.5' class='f2'/><circle cx='50' cy='50' r='7' class='f1'/><circle cx='50' cy='50' r='3' class='dot'/></svg>" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..900,0..100,0..1&family=Inter+Tight:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet" />
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        serif: ['Fraunces', 'Georgia', 'serif'],
+                        sans: ['"Inter Tight"', 'system-ui', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <template id="__bundler_thumbnail" data-bg-color="#0E0D0B">
+        <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="60" cy="60" r="52" fill="none" stroke="#0A8F5A" stroke-width="1.5" stroke-dasharray="4 8"
+                opacity="0.6" />
+            <circle cx="60" cy="60" r="38" fill="none" stroke="#0A8F5A" stroke-width="1.5" opacity="0.7" />
+            <circle cx="60" cy="60" r="6" fill="#0A8F5A" />
+        </svg>
+    </template>
+    <style>
+        :root {
+            --paper: #F4F1EA;
+            --paper-2: #ECE7DC;
+            --ink: #1A1814;
+            --ink-2: #3A352D;
+            --ink-3: #6E665A;
+            --rule: #1a18141a;
+            --accent: #E14B2A;
+            --accent-2: #C03A1F;
+            --accent-soft: #E14B2A1a;
+            --grid: #1a18140d;
+
+            /* Diagram phase palette — shared by D1 / D2 / D3 */
+            --ph-1: #5B77A8;
+            /* data / evolutionary input */
+            --ph-2: #3E8570;
+            /* similarity + validation */
+            --ph-3: #6F6A9E;
+            /* network */
+            --ph-4: #8B7159;
+            /* characterisation / output */
+            --agree: #4F8A86;
+        }
+
+        html.dark {
+            --paper: #0E0D0B;
+            --paper-2: #16140F;
+            --ink: #EFEAE0;
+            --ink-2: #C9C2B3;
+            --ink-3: #8A8270;
+            --rule: #efeae022;
+            --accent: #FF6A45;
+            --accent-2: #FF8A6E;
+            --accent-soft: #FF6A4522;
+            --grid: #efeae00f;
+
+            --ph-1: #8FABD6;
+            --ph-2: #6FB79E;
+            --ph-3: #A29DCD;
+            --ph-4: #C3A487;
+            --agree: #6FB79E;
+        }
+
+        html,
+        body {
+            background: var(--paper);
+            color: var(--ink);
+        }
+
+        body {
+            font-family: '"Inter Tight"', system-ui, sans-serif;
+            font-feature-settings: "ss01", "cv11";
+            -webkit-font-smoothing: antialiased;
+            text-rendering: geometricPrecision;
+        }
+
+        .font-serif {
+            font-family: 'Fraunces', Georgia, serif;
+            font-variation-settings: "opsz" 96, "SOFT" 30, "WONK" 0;
+            letter-spacing: -0.02em;
+        }
+
+        .font-mono {
+            font-family: '"JetBrains Mono"', ui-monospace, monospace;
+        }
+
+        a {
+            color: var(--accent);
+        }
+
+        a:hover {
+            color: var(--accent-2);
+        }
+
+        /* Paper grain */
+        .paper-grain {
+            background-image:
+                radial-gradient(circle at 25% 35%, var(--grid) 0.5px, transparent 0.5px),
+                radial-gradient(circle at 75% 65%, var(--grid) 0.5px, transparent 0.5px);
+            background-size: 4px 4px, 7px 7px;
+        }
+
+        /* Hairline rules */
+        .rule {
+            border-color: var(--rule);
+        }
+
+        .rule-t {
+            border-top: 1px solid var(--rule);
+        }
+
+        .rule-b {
+            border-bottom: 1px solid var(--rule);
+        }
+
+        .rule-l {
+            border-left: 1px solid var(--rule);
+        }
+
+        .rule-r {
+            border-right: 1px solid var(--rule);
+        }
+
+        @media (min-width: 768px) {
+            .md\:rule-r {
+                border-right: 1px solid var(--rule);
+            }
+
+            .md\:rule-l {
+                border-left: 1px solid var(--rule);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .lg\:rule-r {
+                border-right: 1px solid var(--rule);
+            }
+        }
+
+        /* Section tag */
+        .section-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 10px 5px 8px;
+            border-radius: 999px;
+            border: 1px solid var(--rule);
+            background: color-mix(in oklab, var(--hue, var(--accent)) 12%, transparent);
+            font-family: '"JetBrains Mono"', monospace;
+            font-size: 10.5px;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--ink-2);
+        }
+
+        .section-tag .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--hue, var(--accent));
+        }
+
+        /* Per-section muted hue ramp: warm → cool across nine sections */
+        .hue-amber {
+            --hue: #C97A3D;
+        }
+
+        .hue-coral {
+            --hue: #C0563A;
+        }
+
+        .hue-rose {
+            --hue: #B0494E;
+        }
+
+        .hue-plum {
+            --hue: #8E5F7A;
+        }
+
+        .hue-violet {
+            --hue: #6F6A9E;
+        }
+
+        .hue-sage {
+            --hue: #6E8A6A;
+        }
+
+        .hue-teal {
+            --hue: #4F8A86;
+        }
+
+        .hue-indigo {
+            --hue: #4A6E96;
+        }
+
+        html.dark .hue-amber {
+            --hue: #D9925A;
+        }
+
+        html.dark .hue-coral {
+            --hue: #D9785A;
+        }
+
+        html.dark .hue-rose {
+            --hue: #C77078;
+        }
+
+        html.dark .hue-plum {
+            --hue: #B486A0;
+        }
+
+        html.dark .hue-violet {
+            --hue: #9A95C7;
+        }
+
+        html.dark .hue-sage {
+            --hue: #93B58E;
+        }
+
+        html.dark .hue-teal {
+            --hue: #79B3AE;
+        }
+
+        html.dark .hue-indigo {
+            --hue: #7AA2C8;
+        }
+
+        .hue-wash {
+            background:
+                radial-gradient(110% 55% at 0% 0%, color-mix(in oklab, var(--hue) 9%, transparent) 0%, transparent 60%),
+                radial-gradient(80% 50% at 100% 100%, color-mix(in oklab, var(--hue) 5%, transparent) 0%, transparent 60%),
+                var(--paper);
+        }
+
+        .hue-wash-alt {
+            background:
+                radial-gradient(110% 55% at 100% 0%, color-mix(in oklab, var(--hue) 10%, transparent) 0%, transparent 60%),
+                radial-gradient(80% 50% at 0% 100%, color-mix(in oklab, var(--hue) 5%, transparent) 0%, transparent 60%),
+                var(--paper-2);
+        }
+
+        .hue-rule {
+            position: relative;
+        }
+
+        .hue-rule::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            height: 1px;
+            background: linear-gradient(90deg,
+                    transparent 0%,
+                    color-mix(in oklab, var(--hue) 55%, transparent) 18%,
+                    color-mix(in oklab, var(--hue) 55%, transparent) 82%,
+                    transparent 100%);
+        }
+
+        .palette-ribbon {
+            height: 3px;
+            background: linear-gradient(90deg,
+                    #C97A3D 0%,
+                    #C0563A 15%,
+                    #B0494E 30%,
+                    #8E5F7A 45%,
+                    #6F6A9E 60%,
+                    #6E8A6A 75%,
+                    #4F8A86 88%,
+                    #4A6E96 100%);
+            opacity: 0.6;
+        }
+
+        .eyebrow {
+            font-family: '"JetBrains Mono"', monospace;
+            font-size: 11px;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--ink-3);
+        }
+
+        .ink-link {
+            background-image: linear-gradient(currentColor, currentColor);
+            background-size: 100% 1px;
+            background-repeat: no-repeat;
+            background-position: 0 100%;
+            transition: background-size .3s ease;
+        }
+
+        .ink-link:hover {
+            background-size: 0% 1px;
+            background-position: 100% 100%;
+        }
+
+        /* ---------- LAYER 3: expand ---------- */
+        .expand {
+            border-top: 1px solid var(--rule);
+        }
+
+        .expand>summary {
+            list-style: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 20px 12px;
+            margin: 0 -12px;
+            border-radius: 6px;
+            transition: color .25s ease, background-color .25s ease;
+        }
+
+        .expand>summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .expand>summary:hover {
+            background: var(--paper-2);
+        }
+
+        .expand>summary:hover .exp-title {
+            color: var(--ink);
+        }
+
+        .exp-title {
+            font-family: '"JetBrains Mono"', monospace;
+            font-size: 12px;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--ink-2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .exp-title .lyr {
+            font-size: 9.5px;
+            letter-spacing: .1em;
+            padding: 2px 6px;
+            border-radius: 3px;
+            color: var(--ink-3);
+            border: 1px solid var(--rule);
+        }
+
+        .exp-mark {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            font-family: '"JetBrains Mono"', monospace;
+            font-size: 11px;
+            letter-spacing: .04em;
+            color: var(--ink-3);
+            white-space: nowrap;
+        }
+
+        .exp-icon {
+            position: relative;
+            width: 27px;
+            height: 27px;
+            border-radius: 50%;
+            border: 1px solid var(--rule);
+            background: var(--paper);
+            flex-shrink: 0;
+            transition: border-color .25s ease, background-color .25s ease;
+        }
+
+        .exp-icon::before,
+        .exp-icon::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 11px;
+            height: 1.4px;
+            background: var(--ink-2);
+            transform: translate(-50%, -50%);
+            transition: transform .3s cubic-bezier(.16, 1, .3, 1), opacity .3s ease, background-color .25s ease;
+        }
+
+        .exp-icon::after {
+            transform: translate(-50%, -50%) rotate(90deg);
+        }
+
+        .expand>summary:hover .exp-icon,
+        .expand[open]>summary .exp-icon {
+            border-color: var(--accent);
+            background: var(--accent-soft);
+        }
+
+        .expand>summary:hover .exp-icon::before,
+        .expand>summary:hover .exp-icon::after,
+        .expand[open]>summary .exp-icon::before,
+        .expand[open]>summary .exp-icon::after {
+            background: var(--accent);
+        }
+
+        .expand[open]>summary .exp-icon::after {
+            transform: translate(-50%, -50%) rotate(0deg);
+            opacity: 0;
+        }
+
+        .expand[open]>summary .exp-mark span.plus::after {
+            content: "Collapse";
+        }
+
+        .expand>summary .exp-mark span.plus::after {
+            content: "Expand";
+        }
+
+        .exp-body {
+            padding-bottom: 34px;
+        }
+
+        .expand[open] .exp-body {
+            animation: expIn .5s cubic-bezier(.16, 1, .3, 1) both;
+        }
+
+        @keyframes expIn {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: none;
+            }
+        }
+
+        /* ---------- IMAGE SLOTS ---------- */
+        .slot {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            border: 1px solid var(--rule);
+            background: var(--paper-2);
+            border-radius: 3px;
+        }
+
+        .slot-ph {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            place-items: center;
+            padding: 12px;
+            text-align: center;
+            background-image: repeating-linear-gradient(135deg,
+                    var(--grid) 0 1px,
+                    transparent 1px 9px);
+            transition: opacity .5s ease;
+        }
+
+        .slot-ph span {
+            font-family: '"JetBrains Mono"', monospace;
+            font-size: 10px;
+            letter-spacing: .16em;
+            text-transform: uppercase;
+            color: var(--ink-3);
+            opacity: .8;
+        }
+
+        .slot-cap+* {
+            margin-top: 0;
+        }
+
+        .slot.slot-cap-tall {
+            max-height: 440px;
+        }
+
+        .slot img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity .6s ease;
+        }
+
+        .slot.filled img {
+            opacity: 1;
+        }
+
+        .slot.filled .slot-ph {
+            opacity: 0;
+        }
+
+        .slot-cap {
+            font-size: 12.5px;
+            line-height: 1.55;
+            color: var(--ink-3);
+            margin-top: 10px;
+            max-width: 62ch;
+        }
+
+        /* hero background slot */
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .hero-bg img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 1.2s ease;
+            -webkit-mask-image: radial-gradient(75% 65% at 70% 40%, #000 0%, transparent 78%);
+            mask-image: radial-gradient(75% 65% at 70% 40%, #000 0%, transparent 78%);
+        }
+
+        .hero-bg.filled img {
+            opacity: .13;
+        }
+
+        html.dark .hero-bg.filled img {
+            opacity: .2;
+        }
+
+        /* ---------- DIAGRAMS ---------- */
+        .dgm {
+            width: 100%;
+            height: auto;
+            max-width: 760px;
+            display: block;
+        }
+
+        .dgm text {
+            font-family: '"Inter Tight"', system-ui, sans-serif;
+        }
+
+        .dgm .t-title {
+            font-size: 14px;
+            font-weight: 600;
+            fill: var(--ink);
+        }
+
+        .dgm .t-sub {
+            font-size: 11.5px;
+            fill: var(--ink-3);
+            font-style: italic;
+        }
+
+        .dgm .t-mono {
+            font-family: '"JetBrains Mono"', monospace;
+            font-size: 10px;
+            letter-spacing: .1em;
+        }
+
+        .dgm .t-lab {
+            font-size: 12.5px;
+            fill: var(--ink-2);
+        }
+
+        .dgm .card {
+            fill: var(--paper);
+            stroke: var(--rule);
+        }
+
+        .dgm .link {
+            stroke: var(--ink-3);
+            stroke-width: 1.2;
+            opacity: .5;
+            fill: none;
+        }
+
+        /* ---------- NPP matrix widget ---------- */
+        .cell {
+            transition: transform .15s ease, filter .15s ease;
+        }
+
+        .cell.hot {
+            background: var(--accent);
+        }
+
+        .cell.on {
+            background: var(--ink);
+        }
+
+        .cell.off {
+            background: transparent;
+        }
+
+        .npp-row.dim .cell {
+            opacity: 0.18;
+        }
+
+        .npp-row.lit .cell {
+            opacity: 1;
+        }
+
+        /* ---------- project rows ---------- */
+        .proj {
+            transition: background .35s ease;
+        }
+
+        .proj:hover {
+            background: color-mix(in oklab, var(--hue, var(--accent)) 5%, transparent);
+        }
+
+        /* ---------- palette / tweaks ---------- */
+        .palette-bg {
+            background: color-mix(in oklab, var(--paper) 70%, transparent);
+            backdrop-filter: blur(10px);
+        }
+
+        .palette-card {
+            background: var(--paper);
+        }
+
+        ::selection {
+            background: var(--accent);
+            color: var(--paper);
+        }
+
+        .tweaks {
+            position: fixed;
+            right: 24px;
+            bottom: 24px;
+            z-index: 60;
+            background: var(--paper);
+            border: 1px solid var(--rule);
+            box-shadow: 0 30px 60px -20px rgba(0, 0, 0, .25);
+            border-radius: 12px;
+            padding: 14px 16px;
+            min-width: 240px;
+            display: none;
+        }
+
+        .tweaks.open {
+            display: block;
+        }
+
+        .tweaks label {
+            font-size: 11px;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--ink-3);
+        }
+
+        /* ---------- section rail ---------- */
+        .rail {
+            position: fixed;
+            right: 22px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 30;
+            display: none;
+            flex-direction: column;
+            gap: 14px;
+            align-items: flex-end;
+        }
+
+        @media (min-width: 1280px) {
+            .rail {
+                display: flex;
+            }
+        }
+
+        .rail a {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: '"JetBrains Mono"', monospace;
+            font-size: 10px;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            color: transparent;
+            transition: color .3s ease;
+        }
+
+        .rail a .bar {
+            width: 14px;
+            height: 1px;
+            background: var(--ink-3);
+            opacity: .5;
+            transition: width .35s ease, background .35s ease, opacity .35s ease;
+        }
+
+        .rail:hover a {
+            color: var(--ink-3);
+        }
+
+        .rail a.active {
+            color: var(--ink-2);
+        }
+
+        .rail a.active .bar {
+            width: 26px;
+            background: var(--accent);
+            opacity: 1;
+        }
+
+        /* ---------- mobile menu ---------- */
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            inset-inline: 0;
+            top: 56px;
+            z-index: 39;
+            flex-direction: column;
+            background: var(--paper);
+            border-bottom: 1px solid var(--rule);
+            box-shadow: 0 24px 48px -24px rgba(0, 0, 0, .35);
+            max-height: calc(100vh - 56px);
+            overflow-y: auto;
+        }
+
+        .mobile-menu.open {
+            display: flex;
+            animation: mmIn .2s cubic-bezier(.16, 1, .3, 1) both;
+        }
+
+        @keyframes mmIn {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: none;
+            }
+        }
+
+        .mobile-nav-link {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-height: 52px;
+            padding: 0 24px;
+            font-size: 15px;
+            color: var(--ink-2);
+            border-top: 1px solid var(--rule);
+            transition: color .2s ease, background-color .2s ease;
+        }
+
+        .mobile-nav-link:first-child {
+            border-top: none;
+        }
+
+        .mobile-nav-link:hover,
+        .mobile-nav-link:active {
+            color: var(--ink);
+            background: var(--paper-2);
+        }
+
+        .mobile-nav-num {
+            font-family: '"JetBrains Mono"', monospace;
+            font-size: 10.5px;
+            letter-spacing: .1em;
+            color: var(--ink-3);
+            width: 20px;
+        }
+
+        /* ---------- motion ---------- */
+        [data-reveal] {
+            opacity: 0;
+            transform: translateY(16px);
+            transition: opacity .8s cubic-bezier(.16, 1, .3, 1), transform .8s cubic-bezier(.16, 1, .3, 1);
+        }
+
+        [data-reveal].in {
+            opacity: 1;
+            transform: none;
+        }
+
+        .pulse-dot {
+            position: relative;
+        }
+
+        .pulse-dot::before {
+            content: "";
+            position: absolute;
+            inset: -4px;
+            border-radius: 9999px;
+            border: 1px solid var(--accent);
+            animation: pulse 2.6s ease-out infinite;
+            opacity: 0;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(.8);
+                opacity: .9;
+            }
+
+            100% {
+                transform: scale(2.2);
+                opacity: 0;
+            }
+        }
+
+        .wonk {
+            font-variation-settings: "opsz" 144, "SOFT" 50, "WONK" 1;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* IRD logo rings */
+        @keyframes irdRotCW {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes irdRotCCW {
+            to {
+                transform: rotate(-360deg);
+            }
+        }
+
+        @keyframes irdCorePulse {
+
+            0%,
+            100% {
+                r: 6;
+            }
+
+            50% {
+                r: 8;
+            }
+        }
+
+        @keyframes irdGlowBreathe {
+
+            0%,
+            100% {
+                opacity: .16;
+            }
+
+            50% {
+                opacity: .38;
+            }
+        }
+
+        .ird-ring-outer {
+            animation: irdRotCW 28s linear infinite;
+            transform-origin: 60px 60px;
+        }
+
+        .ird-ring-mid {
+            animation: irdRotCCW 18s linear infinite;
+            transform-origin: 60px 60px;
+        }
+
+        .ird-ring-inner {
+            animation: irdRotCW 10s linear infinite;
+            transform-origin: 60px 60px;
+        }
+
+        .ird-nodes {
+            animation: irdRotCCW 22s linear infinite;
+            transform-origin: 60px 60px;
+        }
+
+        .ird-core-pulse {
+            animation: irdCorePulse 3s ease-in-out infinite;
+        }
+
+        .ird-glow {
+            animation: irdGlowBreathe 5s ease-in-out infinite;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+                animation-duration: .001ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: .001ms !important;
+            }
+
+            [data-reveal] {
+                opacity: 1;
+                transform: none;
+            }
+        }
+    </style>
+
+    <!-- Cloudflare Web Analytics -->
+    <script defer src='https://static.cloudflareinsights.com/beacon.min.js'
+        data-cf-beacon='{"token": "5cee066918584400a1f0dc135cd049a8"}'></script>
+    <!-- End Cloudflare Web Analytics -->
+</head>
+
+<body class="paper-grain">
+
+    <!-- ========== TOP BAR ========== -->
+    <header class="fixed top-0 inset-x-0 z-40 backdrop-blur"
+        style="background: color-mix(in oklab, var(--paper) 78%, transparent); border-bottom: 1px solid var(--rule);">
+        <div class="palette-ribbon"></div>
+        <div class="max-w-[1400px] mx-auto px-6 md:px-10 h-14 flex items-center justify-between">
+
+            <a href="#top" class="flex items-center gap-3 group" style="color: var(--ink);">
+                <svg width="28" height="28" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"
+                    class="shrink-0" aria-hidden="true">
+                    <defs>
+                        <filter id="nav-glow-t" x="-40%" y="-40%" width="180%" height="180%">
+                            <feGaussianBlur stdDeviation="3" result="b" />
+                            <feMerge>
+                                <feMergeNode in="b" />
+                                <feMergeNode in="SourceGraphic" />
+                            </feMerge>
+                        </filter>
+                        <filter id="nav-glow-c" x="-100%" y="-100%" width="300%" height="300%">
+                            <feGaussianBlur stdDeviation="5" result="b" />
+                            <feMerge>
+                                <feMergeNode in="b" />
+                                <feMergeNode in="SourceGraphic" />
+                            </feMerge>
+                        </filter>
+                        <radialGradient id="nav-cg" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" style="stop-color: color-mix(in oklab, var(--accent) 100%, white 25%)" />
+                            <stop offset="100%" style="stop-color: var(--accent)" />
+                        </radialGradient>
+                    </defs>
+                    <circle class="ird-glow" cx="60" cy="60" r="54" fill="none" stroke="var(--accent)" stroke-width="28"
+                        filter="url(#nav-glow-t)" opacity="0.16" />
+                    <g class="ird-ring-outer">
+                        <circle cx="60" cy="60" r="52" fill="none" stroke="var(--accent)" stroke-width="0.8"
+                            stroke-opacity="0.45" stroke-dasharray="4 8" />
+                        <rect x="59.2" y="7" width="1.6" height="5" rx="0.8" fill="var(--accent)" opacity="0.7" />
+                        <rect x="59.2" y="108" width="1.6" height="5" rx="0.8" fill="var(--accent)" opacity="0.7" />
+                        <rect x="7" y="59.2" width="5" height="1.6" rx="0.8" fill="var(--accent)" opacity="0.7" />
+                        <rect x="108" y="59.2" width="5" height="1.6" rx="0.8" fill="var(--accent)" opacity="0.7" />
+                    </g>
+                    <g class="ird-ring-mid">
+                        <circle cx="60" cy="60" r="38" fill="none" stroke="var(--accent)" stroke-width="1"
+                            stroke-opacity="0.6" stroke-dasharray="22 6" />
+                        <circle cx="60" cy="22" r="3" fill="var(--accent)" opacity="0.8" />
+                        <circle cx="93.04" cy="41" r="2.5" fill="var(--accent)" opacity="0.6" />
+                        <circle cx="93.04" cy="79" r="2.5" fill="var(--accent-2)" opacity="0.7" />
+                        <circle cx="60" cy="98" r="3" fill="var(--accent-2)" opacity="0.8" />
+                        <circle cx="26.96" cy="79" r="2.5" fill="var(--accent-2)" opacity="0.6" />
+                        <circle cx="26.96" cy="41" r="2.5" fill="var(--accent)" opacity="0.6" />
+                    </g>
+                    <g class="ird-ring-inner">
+                        <circle cx="60" cy="60" r="24" fill="none" stroke="var(--accent-2)" stroke-width="1.2"
+                            stroke-opacity="0.7" stroke-dasharray="12 5" />
+                        <circle cx="60" cy="36" r="2" fill="var(--accent-2)" opacity="0.95" />
+                        <circle cx="80.78" cy="72" r="2" fill="var(--accent-2)" opacity="0.9" />
+                        <circle cx="39.22" cy="72" r="2" fill="var(--accent-2)" opacity="0.9" />
+                    </g>
+                    <g class="ird-nodes" filter="url(#nav-glow-t)">
+                        <circle cx="60" cy="8" r="3.5" fill="var(--accent)" opacity="0.65" />
+                        <circle cx="112" cy="60" r="3" fill="var(--accent)" opacity="0.5" />
+                        <circle cx="8" cy="60" r="3" fill="var(--accent)" opacity="0.5" />
+                        <circle cx="105" cy="22" r="2.5" fill="var(--accent-2)" opacity="0.55" />
+                    </g>
+                    <circle class="ird-core-pulse" cx="60" cy="60" r="6" fill="url(#nav-cg)"
+                        filter="url(#nav-glow-c)" />
+                    <circle cx="60" cy="60" r="2.5" fill="var(--paper)" stroke="var(--ink)" stroke-width="1" />
+                </svg>
+
+                <span class="font-serif text-[18px] tracking-tight">Shalev Yaacov</span>
+                <span class="hidden lg:inline eyebrow ml-2">Builds systems for clinical genomics</span>
+            </a>
+
+            <nav class="hidden lg:flex items-center gap-6 text-[13px]" style="color: var(--ink-2);">
+                <a href="#problem" class="ink-link" style="color: inherit;">Problem</a>
+                <a href="#framework" class="ink-link" style="color: inherit;">Framework</a>
+                <a href="#engine" class="ink-link" style="color: inherit;">Engine</a>
+                <a href="#model" class="ink-link" style="color: inherit;">Model</a>
+                <a href="#work" class="ink-link" style="color: inherit;">Work</a>
+                <a href="#toolkit" class="ink-link" style="color: inherit;">Toolkit</a>
+                <a href="#contact" class="ink-link" style="color: inherit;">Contact</a>
+            </nav>
+
+            <div class="flex items-center gap-3">
+                <button id="cmdk-btn"
+                    class="hidden sm:flex items-center gap-2 px-2.5 py-1.5 rounded-md font-mono text-[11px]"
+                    style="border:1px solid var(--rule); color: var(--ink-3);">
+                    <span>Search</span>
+                    <kbd class="px-1.5 py-0.5 rounded" style="background: var(--paper-2); color: var(--ink-2);">⌘K</kbd>
+                </button>
+                <button id="theme-btn" aria-label="Toggle theme" class="w-9 h-9 grid place-items-center rounded-md"
+                    style="border:1px solid var(--rule); color: var(--ink-2);">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                        stroke-linecap="round">
+                        <circle cx="12" cy="12" r="4" />
+                        <path
+                            d="M12 2v2M12 20v2M2 12h2M20 12h2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+                    </svg>
+                </button>
+                <button id="mobile-menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu"
+                    class="lg:hidden w-9 h-9 grid place-items-center rounded-md"
+                    style="border:1px solid var(--rule); color: var(--ink-2);">
+                    <svg id="menu-icon-lines" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+                        <path d="M4 7h16M4 12h16M4 17h16" />
+                    </svg>
+                    <svg id="menu-icon-close" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="1.6" stroke-linecap="round" style="display:none;">
+                        <path d="M6 6l12 12M18 6L6 18" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ========== MOBILE MENU ========== -->
+    <nav id="mobile-menu" class="mobile-menu" aria-label="Section menu">
+        <a href="#problem" class="mobile-nav-link"><span class="mobile-nav-num">01</span>Problem</a>
+        <a href="#framework" class="mobile-nav-link"><span class="mobile-nav-num">02</span>Framework</a>
+        <a href="#engine" class="mobile-nav-link"><span class="mobile-nav-num">03</span>Engine</a>
+        <a href="#model" class="mobile-nav-link"><span class="mobile-nav-num">04</span>Model</a>
+        <a href="#work" class="mobile-nav-link"><span class="mobile-nav-num">05</span>Work</a>
+        <a href="#toolkit" class="mobile-nav-link"><span class="mobile-nav-num">07</span>Toolkit</a>
+        <a href="#contact" class="mobile-nav-link"><span class="mobile-nav-num">08</span>Contact</a>
+    </nav>
+
+    <!-- ========== SECTION RAIL ========== -->
+    <nav class="rail" id="rail" aria-label="Section index"></nav>
+
+    <!-- ========== §00 HERO ========== -->
+    <section id="top" class="relative pt-14 hue-amber">
+
+        <div class="relative max-w-[1400px] mx-auto px-6 md:px-10 pt-20 md:pt-28 pb-16 md:pb-24" style="z-index:1;">
+
+            <div class="section-tag mb-12" data-reveal>
+                <span class="dot"></span>§00 · Introduction
+            </div>
+
+            <div class="grid grid-cols-12 gap-x-8 gap-y-10">
+                <div class="col-span-12 lg:col-span-8">
+                    <h1 class="font-serif leading-[0.94] tracking-tight text-[11.5vw] md:text-[86px] lg:text-[104px]"
+                        data-reveal>
+                        <span class="block"><em class="italic" style="color: var(--accent);">Multi-modal
+                                models</em></span>
+                        <span class="block">for genetic
+                            diagnosis</span>
+                    </h1>
+                </div>
+
+                <div class="col-span-12 lg:col-span-4 lg:pt-4">
+                    <p class="text-[16.5px] leading-relaxed" style="color: var(--ink-2);" data-reveal data-delay="1">
+                        I build computational frameworks that fuse evolutionary conservation, protein-sequence
+                        embeddings, and interaction networks to rank candidate disease genes against clinical
+                        phenotypes — <span style="color: var(--ink);">validated on real patient cohorts, not
+                            benchmarks.</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Four figures — the fourth breaks the pattern -->
+            <div class="mt-16 md:mt-24 grid grid-cols-2 lg:grid-cols-4 rule-t rule-b" data-reveal data-delay="2">
+                <div class="p-6 md:p-8 rule-r">
+                    <div class="font-serif text-5xl md:text-6xl" data-count="3">3</div>
+                    <div class="eyebrow mt-3 leading-relaxed">modalities fused<br />in one model</div>
+                </div>
+                <div class="p-6 md:p-8 lg:rule-r">
+                    <div class="font-serif text-5xl md:text-6xl" data-count="19573">19,573</div>
+                    <div class="eyebrow mt-3 leading-relaxed">genes scored<br />genome-wide</div>
+                </div>
+                <div class="p-6 md:p-8 rule-r lg:border-t-0" style="border-top: 1px solid var(--rule);">
+                    <div class="font-serif text-5xl md:text-6xl" data-count="17">17</div>
+                    <div class="eyebrow mt-3 leading-relaxed">phenotypic<br />disease modules</div>
+                </div>
+
+                <!-- 4th figure: deliberately different -->
+                <a href="#engine" class="group relative p-6 md:p-8 block lg:border-t-0 overflow-hidden"
+                    style="border-top: 1px solid var(--rule); background: var(--accent-soft); color: var(--ink);">
+                    <div class="absolute left-0 top-0 bottom-0 w-[3px]" style="background: var(--accent);"></div>
+                    <div class="flex items-baseline gap-4">
+                        <div class="font-serif wonk text-6xl md:text-7xl" style="color: var(--accent);">1</div>
+                        <div class="font-mono text-[10px] tracking-[0.16em] uppercase pb-2"
+                            style="color: var(--accent);">shipped</div>
+                    </div>
+                    <div class="eyebrow mt-3 leading-relaxed" style="color: var(--ink-2);">deployed clinical<br />
+                        decision-support tool</div>
+                    <div class="mt-4 font-mono text-[11px] inline-flex items-center gap-2 group-hover:gap-3 transition-all"
+                        style="color: var(--accent);">see the engine →</div>
+                </a>
+            </div>
+
+            <!-- Status line -->
+            <div class="mt-8 flex flex-wrap items-center gap-x-5 gap-y-2 font-mono text-[11px] tracking-[0.1em] uppercase"
+                style="color: var(--ink-3);" data-reveal data-delay="3">
+                <span class="inline-flex items-center gap-2">
+                    <span class="pulse-dot inline-block w-[6px] h-[6px] rounded-full"
+                        style="background: var(--accent);"></span>
+                    Open to R&amp;D roles
+                </span>
+                <span style="color: var(--rule);">/</span>
+                <span>M.Sc. researcher · Tabach Lab, HUJI</span>
+                <span style="color: var(--rule);">/</span>
+                <span>Faculty Excellence Scholar 2024–26</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== §01 THE PROBLEM ========== -->
+    <section id="problem" class="py-24 md:py-36 hue-coral hue-wash hue-rule">
+        <div class="max-w-[1400px] mx-auto px-6 md:px-10">
+            <div class="grid grid-cols-12 gap-x-8 gap-y-10">
+
+                <div class="col-span-12 lg:col-span-4">
+                    <div class="section-tag mb-6" data-reveal><span class="dot"></span>§01 · The problem</div>
+                    <h2 class="font-serif text-4xl md:text-6xl leading-[0.96] tracking-tight lg:sticky lg:top-24"
+                        data-reveal>
+                        Where is the missing half hiding?
+                    </h2>
+                </div>
+
+                <div class="col-span-12 lg:col-span-7 lg:col-start-6 space-y-8 max-w-[62ch]">
+                    <p class="font-serif text-[26px] md:text-[32px] leading-[1.25]" style="color: var(--ink);"
+                        data-reveal>
+                        For roughly <em style="color: var(--accent);">40%</em> of patients with an inherited retinal
+                        disease, sequencing comes back inconclusive. The variants are there. The pipelines are asking
+                        the
+                        wrong question.
+                    </p>
+
+                    <p class="text-[17px] leading-[1.7]" style="color: var(--ink-2);" data-reveal data-delay="1">
+                        Diagnostic tools read one gene at a time and ask whether it spells a known disease. But genes
+                        don't work alone — they co-evolve in modules across hundreds of millions of years, leaving a
+                        graded trace of conservation and loss across the tree of life.
+                    </p>
+
+                    <p class="text-[17px] leading-[1.7]" style="color: var(--ink-2);" data-reveal data-delay="2">
+                        That trace is independent of anything anyone has published about the gene. <span
+                            style="color: var(--ink);">Which is exactly why it can point somewhere new.</span>
+                    </p>
+
+                    <!-- Transition line: carries the framing change -->
+                    <div class="mt-14 pt-10 pl-6 md:pl-8 relative" style="border-top: 1px solid var(--rule);"
+                        data-reveal data-delay="3">
+                        <div class="absolute left-0 top-10 bottom-0 w-[2px]"
+                            style="background: color-mix(in oklab, var(--hue) 70%, transparent);"></div>
+                        <p class="font-serif text-[24px] md:text-[30px] leading-[1.3] tracking-tight">
+                            Retinal disease is the test bed.<br />
+                            <span style="color: var(--ink-3);">The framework itself is agnostic to the organ.</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== §02 THE FRAMEWORK ========== -->
+    <section id="framework" class="py-24 md:py-36 hue-rose hue-wash-alt hue-rule">
+        <div class="max-w-[1400px] mx-auto px-6 md:px-10">
+
+            <div class="grid grid-cols-12 gap-x-8 gap-y-8 mb-14">
+                <div class="col-span-12 lg:col-span-4">
+                    <div class="section-tag mb-6" data-reveal><span class="dot"></span>§02 · The framework</div>
+                </div>
+                <div class="col-span-12 lg:col-span-8">
+                    <h2 class="font-serif text-4xl md:text-6xl leading-[0.96] tracking-tight max-w-[24ch]" data-reveal>
+                        Two phases, hinged on <em style="color: var(--accent);">one question</em>
+                    </h2>
+                </div>
+            </div>
+
+            <!-- D1 -->
+            <div class="mb-16" data-reveal>
+                <div class="p-5 md:p-8 rounded-[4px]" style="border:1px solid var(--rule); background: var(--paper);">
+
+                    <div class="flex items-center gap-4 mb-5">
+                        <span class="font-mono text-[10px] tracking-[0.16em] uppercase shrink-0"
+                            style="color: var(--ph-2);">Phase 1 · Characterisation</span>
+                        <span class="flex-1 h-px" style="background: var(--rule);"></span>
+                    </div>
+
+                    <svg class="dgm mx-auto" viewBox="0 0 720 214" role="img"
+                        aria-label="Phase one, characterisation: cluster, then validate, then infer.">
+                        <line class="link" x1="223.5" y1="100" x2="248.5" y2="100" />
+                        <line class="link" x1="471.5" y1="100" x2="496.5" y2="100" />
+
+                        <!-- 1 CLUSTER -->
+                        <g>
+                            <rect class="card" x="0.5" y="8.5" width="223" height="176" rx="5" />
+                            <path d="M0.5 13.5a5 5 0 0 1 5-5h213a5 5 0 0 1 5 5V30H0.5z" fill="var(--ph-1)" />
+                            <text class="t-mono" x="10" y="24" fill="var(--paper)" opacity="0.95">1</text>
+                            <g transform="translate(85.5,48)">
+                                <rect x="0" y="0" width="9" height="9" fill="var(--ph-1)" opacity=".85" />
+                                <rect x="11" y="0" width="9" height="9" fill="var(--ph-1)" opacity=".5" />
+                                <rect x="22" y="0" width="9" height="9" fill="var(--ph-1)" opacity=".14" />
+                                <rect x="33" y="0" width="9" height="9" fill="var(--ph-1)" opacity=".14" />
+                                <rect x="44" y="0" width="9" height="9" fill="var(--ph-1)" opacity=".2" />
+                                <rect x="0" y="11" width="9" height="9" fill="var(--ph-1)" opacity=".5" />
+                                <rect x="11" y="11" width="9" height="9" fill="var(--ph-1)" opacity=".85" />
+                                <rect x="22" y="11" width="9" height="9" fill="var(--ph-1)" opacity=".3" />
+                                <rect x="33" y="11" width="9" height="9" fill="var(--ph-1)" opacity=".14" />
+                                <rect x="44" y="11" width="9" height="9" fill="var(--ph-1)" opacity=".14" />
+                                <rect x="0" y="22" width="9" height="9" fill="var(--ph-1)" opacity=".14" />
+                                <rect x="11" y="22" width="9" height="9" fill="var(--ph-1)" opacity=".22" />
+                                <rect x="22" y="22" width="9" height="9" fill="var(--ph-1)" opacity=".85" />
+                                <rect x="33" y="22" width="9" height="9" fill="var(--ph-1)" opacity=".55" />
+                                <rect x="44" y="22" width="9" height="9" fill="var(--ph-1)" opacity=".18" />
+                                <rect x="0" y="33" width="9" height="9" fill="var(--ph-1)" opacity=".14" />
+                                <rect x="11" y="33" width="9" height="9" fill="var(--ph-1)" opacity=".14" />
+                                <rect x="22" y="33" width="9" height="9" fill="var(--ph-1)" opacity=".5" />
+                                <rect x="33" y="33" width="9" height="9" fill="var(--ph-1)" opacity=".85" />
+                                <rect x="44" y="33" width="9" height="9" fill="var(--ph-1)" opacity=".4" />
+                                <rect x="0" y="44" width="9" height="9" fill="var(--ph-1)" opacity=".18" />
+                                <rect x="11" y="44" width="9" height="9" fill="var(--ph-1)" opacity=".14" />
+                                <rect x="22" y="44" width="9" height="9" fill="var(--ph-1)" opacity=".2" />
+                                <rect x="33" y="44" width="9" height="9" fill="var(--ph-1)" opacity=".45" />
+                                <rect x="44" y="44" width="9" height="9" fill="var(--ph-1)" opacity=".85" />
+                            </g>
+                            <text class="t-title" x="112" y="138" text-anchor="middle">Cluster</text>
+                            <text class="t-sub" x="112" y="158" text-anchor="middle">442 genes → 17</text>
+                            <text class="t-sub" x="112" y="173" text-anchor="middle">modules</text>
+                        </g>
+
+                        <!-- 2 VALIDATE -->
+                        <g>
+                            <rect class="card" x="248.5" y="8.5" width="223" height="176" rx="5" />
+                            <path d="M248.5 13.5a5 5 0 0 1 5-5h213a5 5 0 0 1 5 5V30h-223z" fill="var(--ph-2)" />
+                            <text class="t-mono" x="258" y="24" fill="var(--paper)" opacity="0.95">2</text>
+                            <g transform="translate(325,62)">
+                                <rect x="0" y="0" width="38" height="6" rx="3" fill="var(--ph-2)" opacity=".6" />
+                                <path d="M48 3l6 7 14-16" fill="none" stroke="var(--ph-2)" stroke-width="3.4"
+                                    stroke-linecap="round" stroke-linejoin="round" />
+                                <rect x="0" y="24" width="28" height="6" rx="3" fill="var(--ph-2)" opacity=".35" />
+                                <path d="M48 27l6 7 14-16" fill="none" stroke="var(--ph-2)" stroke-width="3.4"
+                                    stroke-linecap="round" stroke-linejoin="round" opacity=".55" />
+                            </g>
+                            <text class="t-title" x="360" y="138" text-anchor="middle">Validate</text>
+                            <text class="t-sub" x="360" y="158" text-anchor="middle">two independent</text>
+                            <text class="t-sub" x="360" y="173" text-anchor="middle">tests</text>
+                        </g>
+
+                        <!-- 3 INFER -->
+                        <g>
+                            <rect class="card" x="496.5" y="8.5" width="223" height="176" rx="5" />
+                            <path d="M496.5 13.5a5 5 0 0 1 5-5h213a5 5 0 0 1 5 5V30h-223z" fill="var(--ph-4)" />
+                            <text class="t-mono" x="506" y="24" fill="var(--paper)" opacity="0.95">3</text>
+                            <g transform="translate(562,50)">
+                                <circle cx="4" cy="6" r="3.4" fill="var(--ph-4)" opacity=".6" />
+                                <circle cx="4" cy="20" r="3.4" fill="var(--ph-4)" opacity=".38" />
+                                <circle cx="4" cy="34" r="3.4" fill="var(--ph-4)" opacity=".6" />
+                                <circle cx="4" cy="48" r="3.4" fill="var(--ph-4)" opacity=".3" />
+                                <line x1="14" y1="27" x2="32" y2="27" stroke="var(--ph-4)" stroke-width="1.2"
+                                    opacity=".55" />
+                                <path d="M29 23l5 4-5 4" fill="none" stroke="var(--ph-4)" stroke-width="1.4"
+                                    stroke-linecap="round" stroke-linejoin="round" opacity=".8" />
+                                <rect x="44" y="4" width="48" height="7" rx="3.5" fill="var(--ph-4)" opacity=".85" />
+                                <rect x="44" y="17" width="36" height="7" rx="3.5" fill="var(--ph-4)" opacity=".5" />
+                                <rect x="44" y="30" width="26" height="7" rx="3.5" fill="var(--ph-4)" opacity=".32" />
+                                <rect x="44" y="43" width="18" height="7" rx="3.5" fill="var(--ph-4)" opacity=".2" />
+                            </g>
+                            <text class="t-title" x="608" y="138" text-anchor="middle">Infer</text>
+                            <text class="t-sub" x="608" y="158" text-anchor="middle">patient phenotypes →</text>
+                            <text class="t-sub" x="608" y="173" text-anchor="middle">ranked modules</text>
+                        </g>
+                    </svg>
+
+                    <!-- PIVOT -->
+                    <div class="mt-2">
+                        <div class="mx-auto w-px h-8" style="background: var(--rule);"></div>
+                        <div class="py-6 md:py-8 pl-6 md:pl-8 pr-5 rounded-[3px]"
+                            style="border-left: 2px solid var(--accent); background: var(--accent-soft);">
+                            <div class="font-mono text-[10px] tracking-[0.16em] uppercase mb-3"
+                                style="color: var(--accent);">Pivot</div>
+                            <p class="font-serif text-[26px] md:text-[38px] leading-[1.14] tracking-tight max-w-[26ch]">
+                                But what if the patient has no mutation in any <em style="color: var(--accent);">known
+                                    gene</em>?
+                            </p>
+                        </div>
+                        <div class="mx-auto w-px h-8" style="background: var(--rule);"></div>
+                    </div>
+
+                    <div class="flex items-center gap-4 mt-2 mb-5">
+                        <span class="font-mono text-[10px] tracking-[0.16em] uppercase shrink-0"
+                            style="color: var(--ph-3);">Phase 2 · Discovery</span>
+                        <span class="flex-1 h-px" style="background: var(--rule);"></span>
+                    </div>
+
+                    <svg class="dgm mx-auto" viewBox="0 0 720 214" role="img"
+                        aria-label="Phase two, discovery: expand, then score, then intersect.">
+                        <line class="link" x1="223.5" y1="100" x2="248.5" y2="100" />
+                        <line class="link" x1="471.5" y1="100" x2="496.5" y2="100" />
+
+                        <!-- 4 EXPAND -->
+                        <g>
+                            <rect class="card" x="0.5" y="8.5" width="223" height="176" rx="5" />
+                            <path d="M0.5 13.5a5 5 0 0 1 5-5h213a5 5 0 0 1 5 5V30H0.5z" fill="var(--ph-1)" />
+                            <text class="t-mono" x="10" y="24" fill="var(--paper)" opacity="0.95">4</text>
+                            <g transform="translate(72,45)">
+                                <rect x="0.7" y="0.7" width="78.6" height="58.6" rx="4" fill="none" stroke="var(--ph-1)"
+                                    stroke-width="1.4" stroke-dasharray="4 3" opacity=".65" />
+                                <rect x="18" y="14" width="44" height="32" rx="3" fill="var(--ph-1)" fill-opacity=".18"
+                                    stroke="var(--ph-1)" stroke-width="1.2" />
+                                <circle cx="9" cy="8" r="2.4" fill="var(--ph-1)" opacity=".75" />
+                                <circle cx="70" cy="9" r="2.4" fill="var(--ph-1)" opacity=".75" />
+                                <circle cx="10" cy="51" r="2.4" fill="var(--ph-1)" opacity=".75" />
+                                <circle cx="68" cy="50" r="2.4" fill="var(--ph-1)" opacity=".75" />
+                                <circle cx="40" cy="54" r="2.4" fill="var(--ph-1)" opacity=".75" />
+                            </g>
+                            <text class="t-title" x="112" y="138" text-anchor="middle">Expand</text>
+                            <text class="t-sub" x="112" y="158" text-anchor="middle">beyond research-</text>
+                            <text class="t-sub" x="112" y="173" text-anchor="middle">biased data</text>
+                        </g>
+
+                        <!-- 5 SCORE -->
+                        <g>
+                            <rect class="card" x="248.5" y="8.5" width="223" height="176" rx="5" />
+                            <path d="M248.5 13.5a5 5 0 0 1 5-5h213a5 5 0 0 1 5 5V30h-223z" fill="var(--ph-3)" />
+                            <text class="t-mono" x="258" y="24" fill="var(--paper)" opacity="0.95">5</text>
+                            <g transform="translate(326,52)">
+                                <rect x="0" y="0" width="11" height="11" rx="2" fill="var(--ph-3)" fill-opacity=".3"
+                                    stroke="var(--ph-3)" stroke-width="1.2" />
+                                <path d="M2.8 5.8l2.4 2.6 5-5.8" fill="none" stroke="var(--ph-3)" stroke-width="1.8"
+                                    stroke-linecap="round" stroke-linejoin="round" />
+                                <rect x="19" y="2" width="49" height="7" rx="3.5" fill="var(--ph-3)" opacity=".7" />
+
+                                <rect x="0" y="18" width="11" height="11" rx="2" fill="var(--ph-3)" fill-opacity=".3"
+                                    stroke="var(--ph-3)" stroke-width="1.2" />
+                                <path d="M2.8 23.8l2.4 2.6 5-5.8" fill="none" stroke="var(--ph-3)" stroke-width="1.8"
+                                    stroke-linecap="round" stroke-linejoin="round" />
+                                <rect x="19" y="20" width="40" height="7" rx="3.5" fill="var(--ph-3)" opacity=".5" />
+
+                                <rect x="0" y="36" width="11" height="11" rx="2" fill="none" stroke="var(--ph-3)"
+                                    stroke-width="1.2" opacity=".5" />
+                                <rect x="19" y="38" width="30" height="7" rx="3.5" fill="var(--ph-3)" opacity=".2" />
+                            </g>
+                            <text class="t-title" x="360" y="138" text-anchor="middle">Score</text>
+                            <text class="t-sub" x="360" y="158" text-anchor="middle">19,573 genes, three</text>
+                            <text class="t-sub" x="360" y="173" text-anchor="middle">models voting</text>
+                        </g>
+
+                        <!-- 6 INTERSECT -->
+                        <g>
+                            <rect class="card" x="496.5" y="8.5" width="223" height="176" rx="5" />
+                            <path d="M496.5 13.5a5 5 0 0 1 5-5h213a5 5 0 0 1 5 5V30h-223z" fill="var(--ph-4)" />
+                            <text class="t-mono" x="506" y="24" fill="var(--paper)" opacity="0.95">6</text>
+                            <g transform="translate(608,75)">
+                                <circle cx="-16" cy="0" r="25" fill="var(--ph-4)" fill-opacity=".14"
+                                    stroke="var(--ph-4)" stroke-width="1.4" />
+                                <circle cx="16" cy="0" r="25" fill="var(--ph-4)" fill-opacity=".14" stroke="var(--ph-4)"
+                                    stroke-width="1.4" />
+                                <circle cx="-5" cy="-6" r="2.6" fill="var(--ph-4)" />
+                                <circle cx="4" cy="2" r="2.6" fill="var(--ph-4)" />
+                                <circle cx="-1" cy="10" r="2.6" fill="var(--ph-4)" />
+                            </g>
+                            <text class="t-title" x="608" y="138" text-anchor="middle">Intersect</text>
+                            <text class="t-sub" x="608" y="158" text-anchor="middle">candidates ×</text>
+                            <text class="t-sub" x="608" y="173" text-anchor="middle">unexplained patients</text>
+                        </g>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Layer 1: six positions, two phases · Layer 2: heatmap beside Cluster -->
+            <div class="grid grid-cols-12 gap-x-8 gap-y-12">
+                <div class="col-span-12 lg:col-span-7">
+
+                    <div class="flex items-center gap-4 mb-5" data-reveal>
+                        <span class="font-mono text-[10px] tracking-[0.16em] uppercase shrink-0"
+                            style="color: var(--ph-2);">Characterisation</span>
+                        <span class="flex-1 h-px" style="background: var(--rule);"></span>
+                    </div>
+
+                    <ol class="grid gap-px" style="background: var(--rule); border-top: 1px solid var(--rule);">
+                        <li class="p-6 md:p-7" style="background: var(--paper);" data-reveal>
+                            <div class="flex items-baseline gap-4">
+                                <span class="font-mono text-[11px] shrink-0" style="color: var(--ph-1);">01</span>
+                                <div>
+                                    <span class="font-serif text-[22px] tracking-tight">Cluster.</span>
+                                    <span class="text-[16px] leading-[1.7] ml-1.5" style="color: var(--ink-2);">Group
+                                        442 known disease genes by phenotypic similarity across 5,654 HPO terms,
+                                        yielding 17 modules that reorganize classical disease boundaries around shared
+                                        biology.</span>
+
+                                    <details class="expand mt-5">
+                                        <summary>
+                                            <span class="exp-title"><span class="lyr">Layer 3</span> How the modules
+                                                are built</span>
+                                            <span class="exp-mark"><span class="exp-icon"></span><span
+                                                    class="plus"></span></span>
+                                        </summary>
+                                        <div class="exp-body">
+                                            <div data-slot="clustering"></div>
+                                        </div>
+                                    </details>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="p-6 md:p-7" style="background: var(--paper);" data-reveal data-delay="1">
+                            <div class="flex items-baseline gap-4">
+                                <span class="font-mono text-[11px] shrink-0" style="color: var(--ph-2);">02</span>
+                                <div>
+                                    <span class="font-serif text-[22px] tracking-tight">Validate.</span>
+                                    <span class="text-[16px] leading-[1.7] ml-1.5" style="color: var(--ink-2);">Two
+                                        independent tests, and the modules had to pass both. First: do they recover
+                                        disease groupings recognised in the clinical literature? Second: are they
+                                        coherent evolutionarily — do their genes share conservation patterns across
+                                        ~2,000 genomes? <span style="color: var(--ink);">The second test is the stronger
+                                            one, because evolutionary signal is blind to how much a gene has been
+                                            studied.</span></span>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="p-6 md:p-7" style="background: var(--paper);" data-reveal data-delay="2">
+                            <div class="flex items-baseline gap-4">
+                                <span class="font-mono text-[11px] shrink-0" style="color: var(--ph-4);">03</span>
+                                <div>
+                                    <span class="font-serif text-[22px] tracking-tight">Infer.</span>
+                                    <span class="text-[16px] leading-[1.7] ml-1.5" style="color: var(--ink-2);">A
+                                        patient's phenotype profile goes in; ranked disease modules come out, with
+                                        candidate genes ordered inside the top module. This narrows the diagnostic
+                                        search space before any sequencing result is reinterpreted.</span>
+                                    <a href="#engine" class="ink-link inline-block mt-3 font-mono text-[11.5px]"
+                                        style="color: var(--ink-3);">§03 The engine — this phase, built out in full
+                                        →</a>
+                                </div>
+                            </div>
+                        </li>
+                    </ol>
+
+                    <!-- PIVOT -->
+                    <div class="mt-12 mb-12 py-7 md:py-8 pl-6 md:pl-8 pr-5 rounded-[3px]" data-reveal
+                        style="border-left: 2px solid var(--accent); background: var(--accent-soft);">
+                        <div class="font-mono text-[10px] tracking-[0.16em] uppercase mb-3"
+                            style="color: var(--accent);">Pivot</div>
+                        <p class="font-serif text-[24px] md:text-[32px] leading-[1.18] tracking-tight max-w-[30ch]">
+                            But what if the patient carries no mutation in any <em style="color: var(--accent);">known
+                                disease gene</em>?
+                        </p>
+                        <p class="mt-5 text-[16.5px] leading-[1.7] max-w-[56ch]" style="color: var(--ink-2);">
+                            The search has to widen past the ~500 genes already on the list. The obstacle is that a gene
+                            nobody has studied has no phenotype annotation — <span style="color: var(--ink);">it is
+                                invisible to exactly the kind of data the first phase runs on.</span>
+                        </p>
+                    </div>
+
+                    <div class="flex items-center gap-4 mb-5" data-reveal>
+                        <span class="font-mono text-[10px] tracking-[0.16em] uppercase shrink-0"
+                            style="color: var(--ph-3);">Discovery</span>
+                        <span class="flex-1 h-px" style="background: var(--rule);"></span>
+                    </div>
+
+                    <ol class="grid gap-px" style="background: var(--rule); border-top: 1px solid var(--rule);">
+                        <li class="p-6 md:p-7" style="background: var(--paper);" data-reveal>
+                            <div class="flex items-baseline gap-4">
+                                <span class="font-mono text-[11px] shrink-0" style="color: var(--ph-1);">04</span>
+                                <div>
+                                    <span class="font-serif text-[22px] tracking-tight">Expand.</span>
+                                    <span class="text-[16px] leading-[1.7] ml-1.5" style="color: var(--ink-2);">Move to
+                                        data that doesn't depend on research history. Evolutionary conservation,
+                                        protein-sequence embeddings, and interaction-network topology give the same
+                                        coverage for a famous gene and an anonymous one.</span>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="p-6 md:p-7" style="background: var(--paper);" data-reveal data-delay="1">
+                            <div class="flex items-baseline gap-4">
+                                <span class="font-mono text-[11px] shrink-0" style="color: var(--ph-3);">05</span>
+                                <div>
+                                    <span class="font-serif text-[22px] tracking-tight">Score.</span>
+                                    <span class="text-[16px] leading-[1.7] ml-1.5" style="color: var(--ink-2);">A
+                                        supervised classifier scores all 19,573 genes. Three independent models vote,
+                                        and genes without agreement are filtered out — as are genes with no expression
+                                        in retinal tissue.</span>
+                                    <a href="#model" class="ink-link inline-block mt-3 font-mono text-[11.5px]"
+                                        style="color: var(--ink-3);">§04 The model — this phase, built out in full →</a>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="p-6 md:p-7" style="background: var(--paper);" data-reveal data-delay="2">
+                            <div class="flex items-baseline gap-4">
+                                <span class="font-mono text-[11px] shrink-0" style="color: var(--ph-4);">06</span>
+                                <div>
+                                    <span class="font-serif text-[22px] tracking-tight">Intersect.</span>
+                                    <span class="text-[16px] leading-[1.7] ml-1.5" style="color: var(--ink-2);">Cross
+                                        the surviving candidates with variants carried by patients who still have no
+                                        genetic explanation, producing ranked gene–patient hypotheses for clinical
+                                        follow-up.</span>
+                                </div>
+                            </div>
+                        </li>
+                    </ol>
+
+                    <p class="mt-10 font-serif text-[22px] md:text-[26px] leading-[1.3] tracking-tight max-w-[46ch]"
+                        data-reveal>
+                        The framework doesn't claim to find causal genes. <span style="color: var(--accent);">It
+                            produces
+                            a much shorter list of candidates worth investigating.</span>
+                    </p>
+                </div>
+
+                <!-- heatmap slot, beside Cluster -->
+                <div class="col-span-12 lg:col-span-4 lg:col-start-9" data-reveal data-delay="1">
+                    <div class="lg:sticky lg:top-24">
+                        <div class="eyebrow mb-3">Module structure</div>
+                        <div data-slot="heatmap"></div>
+                        <div class="eyebrow mb-3 mt-8">Network view</div>
+                        <div data-slot="umap"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LAYER 3 -->
+            <details class="expand mt-16" id="npp-expand">
+                <summary>
+                    <span class="exp-title"><span class="lyr">Layer 3</span> How the evolutionary signal is read</span>
+                    <span class="exp-mark"><span class="exp-icon"></span><span class="plus"></span></span>
+                </summary>
+                <div class="exp-body">
+                    <div class="grid grid-cols-12 gap-x-8 gap-y-10">
+
+                        <div class="col-span-12 lg:col-span-5 space-y-5">
+                            <p class="text-[15.5px] leading-[1.7]" style="color: var(--ink-2);">
+                                The evolutionary layer is a normalized phylogenetic profile (NPP). Every human gene gets
+                                a continuous vector of similarity scores — one per species — normalized against
+                                phylogenetic distance so that a gene's conservation can be compared across clades
+                                without the tree's own shape dominating the signal.
+                            </p>
+                            <p class="text-[15.5px] leading-[1.7]" style="color: var(--ink-2);">
+                                When several genes lose that conservation in the same clade at the same time, the
+                                columns of the matrix drop in concert. That aligned drop — a co-loss signature — is the
+                                evidence that the genes share a function. <span style="color: var(--accent);">Genes
+                                    that travel together work together.</span>
+                            </p>
+
+                            <div class="grid gap-px mt-2"
+                                style="background: var(--rule); border-top:1px solid var(--rule);">
+                                <div class="p-5" style="background: var(--paper);">
+                                    <div class="font-serif text-lg mb-1">Phylogenetic profile</div>
+                                    <p class="text-[13px]" style="color: var(--ink-3);">A continuous vector of
+                                        normalized similarity scores, one per species, describing how conserved a gene
+                                        is across the tree of life.</p>
+                                </div>
+                                <div class="p-5" style="background: var(--paper);">
+                                    <div class="font-serif text-lg mb-1">Co-evolution</div>
+                                    <p class="text-[13px]" style="color: var(--ink-3);">Two genes co-evolve when their
+                                        normalized profiles rise and fall together across clades, suggesting shared
+                                        function.</p>
+                                </div>
+                                <div class="p-5" style="background: var(--paper);">
+                                    <div class="font-serif text-lg mb-1">HPO</div>
+                                    <p class="text-[13px]" style="color: var(--ink-3);">Human Phenotype Ontology, a
+                                        controlled vocabulary describing patient symptoms, used to link genes to
+                                        organs.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-span-12 lg:col-span-6 lg:col-start-7">
+                            <div class="eyebrow mb-4">The five steps</div>
+                            <ol class="space-y-3 text-[14.5px]" style="color: var(--ink-2);">
+                                <li class="flex gap-3"><span class="font-mono text-[11px] mt-1 shrink-0"
+                                        style="color: var(--accent);">01</span><span>Map each human gene's orthologs
+                                        across ~2,000 eukaryotic genomes.</span></li>
+                                <li class="flex gap-3"><span class="font-mono text-[11px] mt-1 shrink-0"
+                                        style="color: var(--accent);">02</span><span>Score conservation as a continuous
+                                        similarity, normalized against phylogenetic distance so the tree's own shape
+                                        doesn't dominate.</span></li>
+                                <li class="flex gap-3"><span class="font-mono text-[11px] mt-1 shrink-0"
+                                        style="color: var(--accent);">03</span><span>Read each gene as a profile — a
+                                        vector of one score per species.</span></li>
+                                <li class="flex gap-3"><span class="font-mono text-[11px] mt-1 shrink-0"
+                                        style="color: var(--accent);">04</span><span>Compare profiles across genes:
+                                        those that lose conservation in the same clades at the same time are
+                                        co-evolving.</span></li>
+                                <li class="flex gap-3"><span class="font-mono text-[11px] mt-1 shrink-0"
+                                        style="color: var(--accent);">05</span><span>Treat that shared loss pattern as
+                                        evidence of shared function, independent of anything published about the
+                                        gene.</span></li>
+                            </ol>
+
+                            <div class="mt-9 pl-5" style="border-left: 2px solid var(--accent);">
+                                <p class="text-[15.5px] leading-[1.7]" style="color: var(--ink-2);">
+                                    <span style="color: var(--ink);">NPP does two jobs here.</span> In the first phase
+                                    it independently validates the modules. In the second it becomes one of the three
+                                    inputs to the classifier.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Interactive NPP matrix, reduced scale -->
+                        <div class="col-span-12">
+                            <div class="text-[13.5px] leading-[1.65] mb-4 max-w-[78ch]" style="color: var(--ink-3);">
+                                Each row is a gene,
+                                each column a species. Dark means conserved, pale means lost. <span
+                                    style="color: var(--ink-2);">Genes with matching patterns are co-evolving</span> —
+                                hover any row to read its profile.</div>
+                            <div style="border:1px solid var(--rule); background: var(--paper); border-radius: 4px;">
+                                <div class="flex items-center justify-between px-4 py-2.5 rule-b font-mono text-[10.5px]"
+                                    style="color: var(--ink-3);">
+                                    <span>NPP_MATRIX · 13 genes × 30 species (schematic)</span>
+                                    <span id="hover-readout" style="color: var(--ink);">hover a cell to read</span>
+                                </div>
+                                <div class="grid grid-cols-[110px_1fr] md:grid-cols-[150px_1fr]">
+                                    <div class="rule-r" id="gene-labels"></div>
+                                    <div class="relative overflow-x-auto no-scrollbar" id="matrix-wrap">
+                                        <div id="matrix"></div>
+                                        <div id="species-axis" class="font-mono text-[10px] flex"></div>
+                                    </div>
+                                </div>
+                                <div class="p-4 rule-t">
+                                    <div class="flex flex-wrap items-center gap-x-6 gap-y-2 font-mono text-[11px]"
+                                        style="color: var(--ink-2);">
+                                        <div class="flex items-center gap-2"><span class="inline-block w-3 h-3"
+                                                style="background: var(--ink);"></span> High similarity</div>
+                                        <div class="flex items-center gap-2"><span class="inline-block w-3 h-3"
+                                                style="background: var(--accent);"></span> Co-loss signature</div>
+                                        <div class="flex items-center gap-2"><span class="inline-block w-3 h-3"
+                                                style="border:1px solid var(--rule);"></span> Low / absent</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </details>
+        </div>
+    </section>
+
+    <!-- ========== §03 THE ENGINE ========== -->
+    <section id="engine" class="py-24 md:py-36 hue-plum hue-wash hue-rule">
+        <div class="max-w-[1400px] mx-auto px-6 md:px-10">
+
+            <div class="grid grid-cols-12 gap-x-8 gap-y-8 mb-12">
+                <div class="col-span-12 lg:col-span-4">
+                    <div class="section-tag mb-6" data-reveal><span class="dot"></span>§03 · The engine</div>
+                </div>
+                <div class="col-span-12 lg:col-span-8">
+                    <h2 class="font-serif text-4xl md:text-6xl leading-[0.96] tracking-tight max-w-[22ch]" data-reveal>
+                        From patient phenotypes to <em style="color: var(--accent);">ranked genes</em>
+                    </h2>
+                    <p class="mt-7 font-serif text-[22px] md:text-[26px] leading-[1.35] max-w-[48ch]"
+                        style="color: var(--ink-2);" data-reveal data-delay="1">
+                        A clinician enters what they observe. The engine returns a ranked list of disease modules and
+                        candidate genes, <span style="color: var(--ink);">with the reasoning behind every score.</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Layer 1 image: engine overview -->
+            <div class="mb-16" data-reveal>
+                <div data-slot="engineTop"></div>
+            </div>
+
+            <!-- Layer 2: score explanation + validation -->
+            <div class="grid grid-cols-12 gap-x-8 gap-y-12">
+                <div class="col-span-12 lg:col-span-8" data-reveal>
+                    <div data-slot="engineScore"></div>
+                </div>
+
+                <div class="col-span-12 lg:col-span-4" data-reveal data-delay="1">
+                    <div class="pl-6 relative">
+                        <div class="absolute left-0 top-1 bottom-1 w-[2px]"
+                            style="background: color-mix(in oklab, var(--hue) 70%, transparent);"></div>
+                        <div class="eyebrow mb-3">Validation</div>
+                        <p class="text-[16.5px] leading-[1.7]" style="color: var(--ink-2);">
+                            Validated against solved cases from the <span style="color: var(--ink);">Molecular
+                                Ophthalmology Laboratory at Hadassah Medical Center</span>, which holds one of the
+                            world's largest inherited retinal disease cohorts.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LAYER 3 -->
+            <details class="expand mt-14">
+                <summary>
+                    <span class="exp-title"><span class="lyr">Layer 3</span> Inference and scoring</span>
+                    <span class="exp-mark"><span class="exp-icon"></span><span class="plus"></span></span>
+                </summary>
+                <div class="exp-body">
+                    <p class="text-[16px] leading-[1.75] max-w-[70ch]" style="color: var(--ink-2);">
+                        Naive Bayes module inference with a module-leakage parameter, gene scoring via SMA-GS, and an
+                        optional population-frequency layer trained without supervision on solved cases. The layer
+                        independently recovered known founder effects — <span style="color: var(--ink);">including
+                            FAM161A in North African Jewish patients</span> — which were never given to it as input.
+                    </p>
+                </div>
+            </details>
+        </div>
+    </section>
+
+    <!-- ========== §04 THE MODEL ========== -->
+    <section id="model" class="py-24 md:py-36 hue-violet hue-wash-alt hue-rule">
+        <div class="max-w-[1400px] mx-auto px-6 md:px-10">
+
+            <div class="grid grid-cols-12 gap-x-8 gap-y-8 mb-12">
+                <div class="col-span-12 lg:col-span-4">
+                    <div class="section-tag mb-6" data-reveal><span class="dot"></span>§04 · The model</div>
+                </div>
+                <div class="col-span-12 lg:col-span-8">
+                    <h2 class="font-serif text-4xl md:text-6xl leading-[0.96] tracking-tight" data-reveal>
+                        Three towers, <em style="color: var(--accent);">one prediction</em>
+                    </h2>
+                    <p class="mt-7 text-[17px] leading-[1.7] max-w-[64ch]" style="color: var(--ink-2);" data-reveal
+                        data-delay="1">
+                        This is the answer to the discovery problem: a three-tower PyTorch network that fuses
+                        evolutionary conservation, ESM2 protein-language embeddings, and PPI network topology to score
+                        genes that phenotype data alone can't reach.
+                    </p>
+                </div>
+            </div>
+
+            <!-- D2 -->
+            <div class="mb-12" data-reveal>
+                <div class="p-5 md:p-8 rounded-[4px]" style="border:1px solid var(--rule); background: var(--paper);">
+                    <svg class="dgm mx-auto" viewBox="0 0 720 292" role="img"
+                        aria-label="Three-tower architecture: NPP, ESM2 and PPI towers converge on a fusion layer that outputs one of 17 modules.">
+                        <!-- convergence paths -->
+                        <path class="link" d="M232 46 C264 46 268 118 300 132" />
+                        <path class="link" d="M232 146 C264 146 272 146 300 146" />
+                        <path class="link" d="M232 246 C264 246 268 174 300 160" />
+                        <path class="link" d="M420 146 L500 146" />
+                        <path d="M500 146l-9-4.5v9z" fill="var(--ink-3)" opacity=".6" />
+
+                        <!-- tower 1 NPP -->
+                        <g>
+                            <rect class="card" x="0.5" y="14.5" width="231" height="64" rx="4" />
+                            <rect x="0.5" y="14.5" width="3" height="64" fill="var(--ph-1)" />
+                            <g transform="translate(20,32)">
+                                <rect x="0" y="14" width="3" height="14" fill="var(--ph-1)" opacity=".5" />
+                                <rect x="5" y="8" width="3" height="20" fill="var(--ph-1)" opacity=".7" />
+                                <rect x="10" y="18" width="3" height="10" fill="var(--ph-1)" opacity=".4" />
+                                <rect x="15" y="4" width="3" height="24" fill="var(--ph-1)" opacity=".85" />
+                                <rect x="20" y="12" width="3" height="16" fill="var(--ph-1)" opacity=".6" />
+                            </g>
+                            <text class="t-title" x="58" y="42">NPP</text>
+                            <text class="t-sub" x="58" y="61">conservation, ~2,000 genomes</text>
+                        </g>
+
+                        <!-- tower 2 ESM2 -->
+                        <g>
+                            <rect class="card" x="0.5" y="114.5" width="231" height="64" rx="4" />
+                            <rect x="0.5" y="114.5" width="3" height="64" fill="var(--ph-2)" />
+                            <g transform="translate(20,132)">
+                                <circle cx="4" cy="8" r="3.4" fill="var(--ph-2)" opacity=".8" />
+                                <circle cx="14" cy="8" r="3.4" fill="var(--ph-2)" opacity=".45" />
+                                <circle cx="4" cy="20" r="3.4" fill="var(--ph-2)" opacity=".45" />
+                                <circle cx="14" cy="20" r="3.4" fill="var(--ph-2)" opacity=".8" />
+                                <circle cx="24" cy="14" r="3.4" fill="var(--ph-2)" opacity=".6" />
+                            </g>
+                            <text class="t-title" x="58" y="142">ESM2</text>
+                            <text class="t-sub" x="58" y="161">protein-language embedding</text>
+                        </g>
+
+                        <!-- tower 3 PPI -->
+                        <g>
+                            <rect class="card" x="0.5" y="214.5" width="231" height="64" rx="4" />
+                            <rect x="0.5" y="214.5" width="3" height="64" fill="var(--ph-3)" />
+                            <g transform="translate(20,230)">
+                                <line x1="5" y1="9" x2="20" y2="5" stroke="var(--ph-3)" stroke-width="1.2"
+                                    opacity=".6" />
+                                <line x1="5" y1="9" x2="12" y2="22" stroke="var(--ph-3)" stroke-width="1.2"
+                                    opacity=".6" />
+                                <line x1="20" y1="5" x2="24" y2="19" stroke="var(--ph-3)" stroke-width="1.2"
+                                    opacity=".6" />
+                                <line x1="12" y1="22" x2="24" y2="19" stroke="var(--ph-3)" stroke-width="1.2"
+                                    opacity=".6" />
+                                <circle cx="5" cy="9" r="3.4" fill="var(--ph-3)" />
+                                <circle cx="20" cy="5" r="3.4" fill="var(--ph-3)" opacity=".75" />
+                                <circle cx="12" cy="22" r="3.4" fill="var(--ph-3)" opacity=".75" />
+                                <circle cx="24" cy="19" r="3.4" fill="var(--ph-3)" opacity=".55" />
+                            </g>
+                            <text class="t-title" x="58" y="242">PPI</text>
+                            <text class="t-sub" x="58" y="261">interaction-network topology</text>
+                        </g>
+
+                        <!-- fusion -->
+                        <g>
+                            <rect x="300.5" y="90.5" width="119" height="112" rx="4" fill="var(--paper-2)"
+                                stroke="var(--rule)" />
+                            <line x1="316" y1="112" x2="404" y2="112" stroke="var(--ink-3)" stroke-width="1"
+                                opacity=".3" />
+                            <line x1="316" y1="126" x2="404" y2="126" stroke="var(--ink-3)" stroke-width="1"
+                                opacity=".3" />
+                            <text class="t-title" x="360" y="152" text-anchor="middle">Fusion</text>
+                            <text class="t-sub" x="360" y="170" text-anchor="middle">concatenate → MLP</text>
+                            <line x1="316" y1="184" x2="404" y2="184" stroke="var(--ink-3)" stroke-width="1"
+                                opacity=".3" />
+                        </g>
+
+                        <!-- output: 17 modules -->
+                        <g>
+                            <rect class="card" x="516.5" y="70.5" width="203" height="152" rx="4" />
+                            <text class="t-mono" x="532" y="94" fill="var(--ink-3)">OUTPUT · 17 CLASSES</text>
+                            <g transform="translate(532,110)">
+                                <rect x="0" y="0" width="18" height="18" rx="2" fill="var(--ph-4)" opacity=".22" />
+                                <rect x="24" y="0" width="18" height="18" rx="2" fill="var(--ph-4)" opacity=".22" />
+                                <rect x="48" y="0" width="18" height="18" rx="2" fill="var(--ph-4)" opacity=".9" />
+                                <rect x="72" y="0" width="18" height="18" rx="2" fill="var(--ph-4)" opacity=".22" />
+                                <rect x="96" y="0" width="18" height="18" rx="2" fill="var(--ph-4)" opacity=".22" />
+                                <rect x="120" y="0" width="18" height="18" rx="2" fill="var(--ph-4)" opacity=".22" />
+                                <rect x="0" y="24" width="18" height="18" rx="2" fill="var(--ph-4)" opacity=".22" />
+                                <rect x="24" y="24" width="18" height="18" rx="2" fill="var(--ph-4)" opacity=".22" />
+                                <rect x="48" y="24" width="18" height="18" rx="2" fill="var(--ph-4)" opacity=".22" />
+                                <rect x="72" y="24" width="18" height="18" rx="2" fill="var(--ph-4)" opacity=".22" />
+                                <rect x="96" y="24" width="18" height="18" rx="2" fill="var(--ph-4)" opacity=".22" />
+                                <rect x="120" y="24" width="18" height="18" rx="2" fill="var(--ph-4)" opacity=".22" />
+                                <rect x="0" y="48" width="18" height="18" rx="2" fill="var(--ph-4)" opacity=".22" />
+                                <rect x="24" y="48" width="18" height="18" rx="2" fill="var(--ph-4)" opacity=".22" />
+                                <rect x="48" y="48" width="18" height="18" rx="2" fill="var(--ph-4)" opacity=".22" />
+                                <rect x="72" y="48" width="18" height="18" rx="2" fill="var(--ph-4)" opacity=".22" />
+                                <rect x="96" y="48" width="18" height="18" rx="2" fill="var(--ph-4)" opacity=".22" />
+                            </g>
+                            <text class="t-sub" x="532" y="204">one phenotypic module per gene</text>
+                        </g>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- three figures -->
+            <div class="grid grid-cols-1 md:grid-cols-3 rule-t rule-b mb-20" data-reveal>
+                <div class="p-6 md:p-8 md:rule-r">
+                    <div class="font-serif text-4xl md:text-5xl">0.44</div>
+                    <div class="text-[14px] mt-3 leading-relaxed" style="color: var(--ink-3);">macro-F1 on a 17-class
+                        problem, about <span style="color: var(--ink-2);">7.5× the random baseline</span></div>
+                </div>
+                <div class="p-6 md:p-8 md:rule-r" style="border-top: 1px solid var(--rule);">
+                    <div class="font-serif text-4xl md:text-5xl">434</div>
+                    <div class="text-[14px] mt-3 leading-relaxed" style="color: var(--ink-3);">labeled genes, <span
+                            style="color: var(--ink-2);">5-fold stratified cross-validation</span></div>
+                </div>
+                <div class="p-6 md:p-8" style="border-top: 1px solid var(--rule);">
+                    <div class="font-serif text-4xl md:text-5xl">19,573</div>
+                    <div class="text-[14px] mt-3 leading-relaxed" style="color: var(--ink-3);">genes scored <span
+                            style="color: var(--ink-2);">genome-wide</span></div>
+                </div>
+            </div>
+
+            <!-- Layer 2: the ablation finding -->
+            <div class="grid grid-cols-12 gap-x-8 gap-y-8 mb-20">
+                <div class="col-span-12 lg:col-span-3">
+                    <div class="eyebrow" data-reveal>The ablation finding</div>
+                </div>
+                <div class="col-span-12 lg:col-span-8 lg:col-start-5">
+                    <p class="font-serif text-[24px] md:text-[30px] leading-[1.32] tracking-tight max-w-[46ch]"
+                        data-reveal>
+                        All seven possible tower combinations were trained and compared. <span
+                            style="color: var(--accent);">PPI network topology alone turned out to be the strongest
+                            single predictor</span> — stronger than evolutionary conservation, stronger than protein
+                        sequence, and stronger than all three fused.
+                    </p>
+                    <p class="mt-6 text-[17px] leading-[1.75] max-w-[62ch]" style="color: var(--ink-2);" data-reveal
+                        data-delay="1">
+                        The fusion model was more stable across folds and covered small modules better, which is why it
+                        remained the working model, but the honest headline is that the network signal dominates.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Layer 2: concordance + D3 -->
+            <div class="grid grid-cols-12 gap-x-8 gap-y-10 items-start">
+                <div class="col-span-12 lg:col-span-4">
+                    <div class="eyebrow mb-4" data-reveal>Genome-wide concordance</div>
+                    <p class="text-[16.5px] leading-[1.7]" style="color: var(--ink-2);" data-reveal data-delay="1">
+                        Three independent models score all 19,573 unlabeled genes: the fused three-tower network, an
+                        NPP-only model, and a PPI-only model. Genes are retained only where at least two of the three
+                        agree on module assignment, and flagged as highest confidence where all three converge.
+                        <span style="color: var(--ink);">Disagreement is treated as a filter, not as noise to be
+                            averaged over.</span>
+                    </p>
+                </div>
+
+                <div class="col-span-12 lg:col-span-8" data-reveal data-delay="1">
+                    <div class="p-5 md:p-8 rounded-[4px]"
+                        style="border:1px solid var(--rule); background: var(--paper);">
+                        <svg class="dgm mx-auto" viewBox="0 0 720 268" role="img"
+                            aria-label="Model concordance: three independent models overlap; agreement level defines confidence tiers.">
+                            <!-- leaders -->
+                            <line class="link" x1="118" y1="62" x2="152" y2="78" />
+                            <line class="link" x1="392" y1="62" x2="358" y2="78" />
+                            <line class="link" x1="255" y1="236" x2="255" y2="220" />
+
+                            <!-- three circles: alpha stacking = agreement depth -->
+                            <circle cx="220" cy="104" r="62" fill="var(--agree)" fill-opacity="0.18"
+                                stroke="var(--ph-3)" stroke-width="1.4" />
+                            <circle cx="290" cy="104" r="62" fill="var(--agree)" fill-opacity="0.18"
+                                stroke="var(--ph-1)" stroke-width="1.4" />
+                            <circle cx="255" cy="164" r="62" fill="var(--agree)" fill-opacity="0.18"
+                                stroke="var(--ph-2)" stroke-width="1.4" />
+
+                            <text class="t-lab" x="114" y="58" text-anchor="end">Fused three-tower</text>
+                            <text class="t-lab" x="396" y="58" text-anchor="start">NPP only</text>
+                            <text class="t-lab" x="255" y="252" text-anchor="middle">PPI only</text>
+
+                            <!-- tier legend -->
+                            <g transform="translate(478,52)">
+                                <text class="t-mono" x="0" y="0" fill="var(--ink-3)">CONFIDENCE TIERS</text>
+
+                                <rect x="0" y="22" width="20" height="20" rx="2" fill="var(--agree)" fill-opacity="0.54"
+                                    stroke="var(--rule)" />
+                                <text class="t-title" x="32" y="31">All three agree</text>
+                                <text class="t-sub" x="32" y="48">highest confidence</text>
+
+                                <rect x="0" y="76" width="20" height="20" rx="2" fill="var(--agree)" fill-opacity="0.34"
+                                    stroke="var(--rule)" />
+                                <text class="t-title" x="32" y="85">Two of three agree</text>
+                                <text class="t-sub" x="32" y="102">retained</text>
+
+                                <rect x="0" y="130" width="20" height="20" rx="2" fill="none" stroke="var(--ink-3)"
+                                    stroke-width="1.2" stroke-dasharray="3 3" opacity=".7" />
+                                <text class="t-title" x="32" y="139">No majority</text>
+                                <text class="t-sub" x="32" y="156">filtered out</text>
+                            </g>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LAYER 3 -->
+            <div class="mt-16">
+                <details class="expand">
+                    <summary>
+                        <span class="exp-title"><span class="lyr">Layer 3</span> Reproducibility</span>
+                        <span class="exp-mark"><span class="exp-icon"></span><span class="plus"></span></span>
+                    </summary>
+                    <div class="exp-body">
+                        <p class="text-[16px] leading-[1.75] max-w-[70ch]" style="color: var(--ink-2);">
+                            Fixed seeds across torch, numpy and the fold splitter, so all seven variants see identical
+                            splits and ablation comparisons aren't confounded by fold assignment. A runtime assertion
+                            verifies each gene is evaluated exactly once on a model that never trained on it.
+                        </p>
+                    </div>
+                </details>
+                <details class="expand">
+                    <summary>
+                        <span class="exp-title"><span class="lyr">Layer 3</span> Where it breaks</span>
+                        <span class="exp-mark"><span class="exp-icon"></span><span class="plus"></span></span>
+                    </summary>
+                    <div class="exp-body">
+                        <p class="text-[16px] leading-[1.75] max-w-[70ch]" style="color: var(--ink-2);">
+                            Per-module F1 ranges from 0.08 to 0.77. Modules with high internal coherence are learned
+                            well; heterogeneous ones aren't. The distribution is reported, not averaged away.
+                        </p>
+                    </div>
+                </details>
+            </div>
+
+            <!-- closing CTA -->
+            <div class="mt-12">
+                <a href="https://github.com/Shalev-CompBio/pytorch-multimodal-gene-classifier" target="_blank"
+                    rel="noopener" class="group flex items-center justify-between gap-4 px-6 py-5 rounded-[4px]"
+                    style="border:1px solid var(--accent); background: var(--paper);">
+                    <span class="font-mono text-[13px] tracking-wide" style="color: var(--accent);">Code,
+                        architecture and evaluation</span>
+                    <span class="font-mono text-xl group-hover:translate-x-1 transition-transform"
+                        style="color: var(--accent);">→</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== §05 FIELD NOTEBOOK ========== -->
+    <section id="work" class="py-24 md:py-36 hue-sage hue-wash hue-rule">
+        <div class="max-w-[1400px] mx-auto px-6 md:px-10">
+
+            <div class="grid grid-cols-12 gap-x-8 gap-y-8 mb-12">
+                <div class="col-span-12 lg:col-span-4">
+                    <div class="section-tag mb-6" data-reveal><span class="dot"></span>§05 · Field notebook</div>
+                </div>
+                <div class="col-span-12 lg:col-span-8">
+                    <h2 class="font-serif text-4xl md:text-6xl leading-[0.96] tracking-tight" data-reveal>Field
+                        notebook</h2>
+                    <p class="mt-6 text-[17px] leading-[1.7]" style="color: var(--ink-2);" data-reveal data-delay="1">
+                        Five more projects that make up the framework. Each one shipped, each one on GitHub.
+                    </p>
+                </div>
+            </div>
+
+            <div id="projects" class="rule-t"></div>
+        </div>
+    </section>
+
+    <!-- ========== §06 INDUSTRY PRACTICUM ========== -->
+    <section id="practicum" class="py-24 md:py-36 hue-teal hue-wash-alt hue-rule">
+        <div class="max-w-[1400px] mx-auto px-6 md:px-10">
+            <div class="grid grid-cols-12 gap-x-8 gap-y-10">
+
+                <div class="col-span-12 lg:col-span-4">
+                    <div class="section-tag mb-6" data-reveal><span class="dot"></span>§06 · Industry practicum</div>
+                    <h2 class="font-serif text-4xl md:text-5xl leading-[0.98] tracking-tight" data-reveal>Industry
+                        practicum</h2>
+                    <p class="mt-6 font-serif text-[21px] leading-[1.35]" style="color: var(--ink-2);" data-reveal
+                        data-delay="1">
+                        Six months at Pre-Cure Biotech, a personalized oncology startup, building the data
+                        infrastructure the science runs on.
+                    </p>
+                </div>
+
+                <div class="col-span-12 lg:col-span-7 lg:col-start-6 space-y-7 max-w-[62ch]">
+                    <p class="text-[17px] leading-[1.75]" style="color: var(--ink-2);" data-reveal>
+                        Designed and deployed a relational data management system that replaced spreadsheet-based
+                        clinical workflows with structured, queryable infrastructure.
+                    </p>
+                    <p class="text-[17px] leading-[1.75]" style="color: var(--ink-2);" data-reveal data-delay="1">
+                        Cloud deployment, LLM-assisted data entry, and a schema built around how the team actually works
+                        rather than how the data happened to arrive.
+                    </p>
+                    <p class="text-[17px] leading-[1.75] pt-7"
+                        style="border-top: 1px solid var(--rule); color: var(--ink);" data-reveal data-delay="2">
+                        The research half of this portfolio asks what the data means. This half is about making the data
+                        usable in the first place — <span style="color: var(--accent);">and in a company, that comes
+                            first.</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== §07 TOOLKIT ========== -->
+    <section id="toolkit" class="py-24 md:py-36 hue-indigo hue-wash hue-rule">
+        <div class="max-w-[1400px] mx-auto px-6 md:px-10">
+
+            <div class="grid grid-cols-12 gap-x-8 gap-y-8 mb-12">
+                <div class="col-span-12 lg:col-span-4">
+                    <div class="section-tag mb-6" data-reveal><span class="dot"></span>§07 · Toolkit</div>
+                </div>
+                <div class="col-span-12 lg:col-span-8">
+                    <h2 class="font-serif text-4xl md:text-6xl leading-[0.96] tracking-tight" data-reveal>
+                        What's in the <em style="color: var(--accent);">drawer</em>
+                    </h2>
+                    <p class="mt-6 text-[17px] leading-[1.7] max-w-[60ch]" style="color: var(--ink-2);" data-reveal
+                        data-delay="1">
+                        Built on Python and R, with the wet-lab background that keeps me honest about what the data
+                        actually came from.
+                    </p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-px rule-t" style="background: var(--rule);">
+                <div class="p-7 md:p-8" style="background: var(--paper);" data-reveal>
+                    <div class="flex items-baseline justify-between mb-5">
+                        <div class="font-serif text-2xl">Languages</div>
+                        <span class="font-mono text-[10px]" style="color: var(--ink-3);">A</span>
+                    </div>
+                    <p class="text-[15px] leading-[1.8]" style="color: var(--ink-2);">
+                        Python <span style="color: var(--ink-3);">(PyTorch, scikit-learn, pandas, Biopython)</span>, R
+                        <span style="color: var(--ink-3);">(tidyverse, Bioconductor, ComplexHeatmap)</span>, bash, git
+                    </p>
+                </div>
+                <div class="p-7 md:p-8" style="background: var(--paper);" data-reveal data-delay="1">
+                    <div class="flex items-baseline justify-between mb-5">
+                        <div class="font-serif text-2xl">Methods</div>
+                        <span class="font-mono text-[10px]" style="color: var(--ink-3);">B</span>
+                    </div>
+                    <p class="text-[15px] leading-[1.8]" style="color: var(--ink-2);">
+                        Multi-modal deep learning, protein language models, network embeddings, phylogenetic profiling,
+                        unsupervised clustering, Bayesian inference
+                    </p>
+                </div>
+                <div class="p-7 md:p-8 relative" style="background: var(--paper);" data-reveal data-delay="2">
+                    <div class="absolute left-0 top-0 bottom-0 w-[2px]"
+                        style="background: color-mix(in oklab, var(--hue) 70%, transparent);"></div>
+                    <div class="flex items-baseline justify-between mb-5">
+                        <div class="font-serif text-2xl">Infrastructure</div>
+                        <span class="font-mono text-[10px]" style="color: var(--ink-3);">C</span>
+                    </div>
+                    <p class="text-[15px] leading-[1.8]" style="color: var(--ink-2);">
+                        HPC and SLURM job submission, reproducible pipelines with fixed-seed validation, cloud
+                        deployment, LLM-assisted workflows
+                    </p>
+                </div>
+            </div>
+
+            <div class="mt-12">
+                <details class="expand">
+                    <summary>
+                        <span class="exp-title"><span class="lyr">Layer 3</span> Databases and tools</span>
+                        <span class="exp-mark"><span class="exp-icon"></span><span class="plus"></span></span>
+                    </summary>
+                    <div class="exp-body">
+                        <div class="flex flex-wrap gap-2.5 text-[12px] font-mono">
+                            <div class="px-3 py-2 rounded" style="background: var(--paper-2);">Clustal Omega</div>
+                            <div class="px-3 py-2 rounded" style="background: var(--paper-2);">BLAST</div>
+                            <div class="px-3 py-2 rounded" style="background: var(--paper-2);">PyMOL</div>
+                            <div class="px-3 py-2 rounded" style="background: var(--paper-2);">PDB</div>
+                            <div class="px-3 py-2 rounded" style="background: var(--paper-2);">AlphaFold</div>
+                            <div class="px-3 py-2 rounded" style="background: var(--paper-2);">Rummagene</div>
+                            <div class="px-3 py-2 rounded" style="background: var(--paper-2);">FUMA</div>
+                            <div class="px-3 py-2 rounded" style="background: var(--paper-2);">EnrichR</div>
+                            <div class="px-3 py-2 rounded" style="background: var(--paper-2);">Cytoscape</div>
+                            <div class="px-3 py-2 rounded" style="background: var(--paper-2);">STRING</div>
+                            <div class="px-3 py-2 rounded" style="background: var(--paper-2);">UniProt</div>
+                            <div class="px-3 py-2 rounded" style="background: var(--paper-2);">GeneCards</div>
+                            <div class="px-3 py-2 rounded" style="background: var(--paper-2);">OMIM</div>
+                            <div class="px-3 py-2 rounded" style="background: var(--paper-2);">ClinVar</div>
+                            <div class="px-3 py-2 rounded" style="background: var(--paper-2);">gnomAD</div>
+                            <div class="px-3 py-2 rounded" style="background: var(--paper-2);">UCSC Genome Browser</div>
+                            <div class="px-3 py-2 rounded" style="background: var(--paper-2);">NCBI</div>
+                            <div class="px-3 py-2 rounded" style="background: var(--paper-2);">Ensembl</div>
+                            <div class="px-3 py-2 rounded" style="background: var(--paper-2);">Seurat</div>
+                            <div class="px-3 py-2 rounded" style="background: var(--paper-2);">Scanpy</div>
+                            <div class="px-3 py-2 rounded" style="background: var(--paper-2);">Claude Code</div>
+                            <div class="px-3 py-2 rounded" style="background: var(--paper-2);">Cursor</div>
+                            <div class="px-3 py-2 rounded" style="background: var(--paper-2);">Codex</div>
+                            <div class="px-3 py-2 rounded" style="background: var(--paper-2);">Ollama</div>
+                            <div class="px-3 py-2 rounded" style="background: var(--paper-2);">Budibase</div>
+                        </div>
+                    </div>
+                </details>
+
+                <details class="expand">
+                    <summary>
+                        <span class="exp-title"><span class="lyr">Layer 3</span> Before the matrices</span>
+                        <span class="exp-mark"><span class="exp-icon"></span><span class="plus"></span></span>
+                    </summary>
+                    <div class="exp-body">
+                        <div class="grid grid-cols-12 gap-x-8 gap-y-8">
+                            <div class="col-span-12 lg:col-span-6">
+                                <div class="eyebrow mb-3">Wet-lab craft</div>
+                                <p class="text-[15.5px] leading-[1.75] mb-5" style="color: var(--ink-2);">
+                                    Before the matrices, there were pipettes. Recombinant expression of bovine
+                                    lactoferrin and human keratin in <em>E. coli</em> and <em>Arabidopsis</em>, in
+                                    collaboration with <a href="https://www.miruku.com/" target="_blank" rel="noopener"
+                                        class="ink-link font-medium">Miruku</a> at Prof. Oded Shoseyov's
+                                    lab — including a co-authored chapter in <em>Alternative Dairy Products and
+                                        Technologies</em>.
+                                </p>
+                                <div class="flex flex-wrap gap-2.5 text-[12px] font-mono mb-5">
+                                    <div class="px-3 py-2 rounded" style="background: var(--paper-2);">cloning</div>
+                                    <div class="px-3 py-2 rounded" style="background: var(--paper-2);">FPLC</div>
+                                    <div class="px-3 py-2 rounded" style="background: var(--paper-2);">qPCR</div>
+                                    <div class="px-3 py-2 rounded" style="background: var(--paper-2);">ELISA</div>
+                                    <div class="px-3 py-2 rounded" style="background: var(--paper-2);">plant
+                                        transformation</div>
+                                    <div class="px-3 py-2 rounded" style="background: var(--paper-2);">protein
+                                        purification</div>
+                                    <div class="px-3 py-2 rounded" style="background: var(--paper-2);">recombinant
+                                        expression</div>
+                                </div>
+                                <a href="https://doi.org/10.1016/B978-0-443-28890-6.00017-5" target="_blank"
+                                    rel="noopener"
+                                    class="inline-flex items-center gap-2 text-[13px] ink-link font-mono">
+                                    Co-authored book chapter →
+                                </a>
+                                <p class="text-[13px] mt-4" style="color: var(--ink-3);">
+                                    <em>References available upon request.</em>
+                                </p>
+                            </div>
+                            <div class="col-span-12 lg:col-span-5 lg:col-start-8">
+                                <div class="eyebrow mb-3">Origin story</div>
+                                <div class="font-serif text-xl mb-2">B.Sc. · Octopus motor learning</div>
+                                <p class="text-[13.5px] mb-4" style="color: var(--ink-3);">B.Sc. Marine Biotechnology,
+                                    internship in Marine Agriculture, Ruppin Academic Center · GPA 91/100</p>
+                                <p class="text-[15px] leading-[1.75]" style="color: var(--ink-2);">
+                                    Designed and analyzed behavioral experiments on octopus learning strategies. Where
+                                    my taste for data on stubborn, complex biological systems began.
+                                </p>
+                                <p class="text-[13px] mt-4" style="color: var(--ink-3);">
+                                    <em>References available upon request.</em>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== §08 CONTACT ========== -->
+    <section id="contact" class="py-24 md:py-36 hue-amber hue-wash-alt hue-rule">
+        <div class="max-w-[1400px] mx-auto px-6 md:px-10">
+            <div class="grid grid-cols-12 gap-x-8 gap-y-12">
+                <div class="col-span-12 lg:col-span-7">
+                    <div class="section-tag mb-6" data-reveal><span class="dot"></span>§08 · Correspond</div>
+                    <h2 class="font-serif text-5xl md:text-[104px] leading-[0.92] tracking-tight" data-reveal>
+                        Let's <em style="color: var(--accent);">talk</em><br />biology<br />and data.
+                    </h2>
+                    <p class="mt-8 text-[17px] leading-[1.7] max-w-[46ch]" style="color: var(--ink-2);" data-reveal
+                        data-delay="1">
+                        Open to R&amp;D roles in computational biology and machine learning, research collaborations,
+                        and anything in between.
+                    </p>
+                </div>
+
+                <div class="col-span-12 lg:col-span-5 lg:col-start-8" data-reveal data-delay="1">
+                    <div class="rule-t">
+                        <a href="mailto:shalev.yaacov1@mail.huji.ac.il" id="email-card" class="block py-6 rule-b group"
+                            style="color: var(--ink);">
+                            <div class="flex items-center justify-between gap-4">
+                                <div>
+                                    <div class="eyebrow mb-2">Email · click to copy</div>
+                                    <div class="font-serif text-xl md:text-2xl tracking-tight" id="email-text">
+                                        shalev.yaacov1@mail.huji.ac.il</div>
+                                </div>
+                                <span class="font-mono text-2xl group-hover:translate-x-1 transition-transform"
+                                    style="color: var(--accent);">→</span>
+                            </div>
+                        </a>
+                        <a href="https://www.linkedin.com/in/shalev-yaacov-bio-tech/" target="_blank" rel="noopener"
+                            class="block py-6 rule-b group" style="color: var(--ink);">
+                            <div class="flex items-center justify-between gap-4">
+                                <div>
+                                    <div class="eyebrow mb-2">LinkedIn</div>
+                                    <div class="font-serif text-xl md:text-2xl tracking-tight">
+                                        @shalev-yaacov-bio-tech</div>
+                                </div>
+                                <span class="font-mono text-2xl group-hover:translate-x-1 transition-transform"
+                                    style="color: var(--accent);">↗</span>
+                            </div>
+                        </a>
+                        <a href="https://github.com/shalev-compbio/Shalev-Evolutionary-Genomics-Portfolio"
+                            target="_blank" rel="noopener" class="block py-6 rule-b group" style="color: var(--ink);">
+                            <div class="flex items-center justify-between gap-4">
+                                <div>
+                                    <div class="eyebrow mb-2">GitHub</div>
+                                    <div class="font-serif text-xl md:text-2xl tracking-tight">@shalev-compbio</div>
+                                </div>
+                                <span class="font-mono text-2xl group-hover:translate-x-1 transition-transform"
+                                    style="color: var(--accent);">↗</span>
+                            </div>
+                        </a>
+                        <a href="CV_Shalev_Yaacov.pdf" download class="block py-6 rule-b group"
+                            style="color: var(--ink);">
+                            <div class="flex items-center justify-between gap-4">
+                                <div>
+                                    <div class="eyebrow mb-2">Curriculum Vitae</div>
+                                    <div class="font-serif text-xl md:text-2xl tracking-tight">Download · PDF</div>
+                                </div>
+                                <span class="font-mono text-2xl group-hover:translate-x-1 transition-transform"
+                                    style="color: var(--accent);">↓</span>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="mt-6 font-mono text-[11px] tracking-[0.02em]" style="color: var(--ink-3);">
+                        31.7683° N, 35.2137° E · Jerusalem</div>
+                </div>
+            </div>
+
+            <div class="mt-20 pt-8 rule-t flex flex-col md:flex-row md:items-center md:justify-between gap-3 eyebrow">
+                <div>© 2026 Shalev Yaacov · Hebrew University of Jerusalem</div>
+                <div>Continuously evolving.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== COMMAND PALETTE ========== -->
+    <div id="palette" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 palette-bg" id="palette-bg-click"></div>
+        <div class="relative max-w-xl mx-auto mt-[18vh] palette-card rounded-xl overflow-hidden"
+            style="border: 1px solid var(--rule); box-shadow: 0 30px 80px -20px rgba(0,0,0,.3);">
+            <div class="flex items-center gap-3 p-4 rule-b">
+                <span class="font-mono text-[12px]" style="color: var(--ink-3);">⌘K</span>
+                <input id="palette-input" type="text" placeholder="Jump to a section, project, or skill…"
+                    class="flex-1 bg-transparent outline-none text-[15px]" />
+                <kbd class="font-mono text-[11px] px-2 py-1 rounded"
+                    style="background: var(--paper-2); color: var(--ink-3);">esc</kbd>
+            </div>
+            <div id="palette-results" class="max-h-[50vh] overflow-y-auto p-2"></div>
+        </div>
+    </div>
+
+    <!-- ========== TWEAKS PANEL ========== -->
+    <div id="tweaks-panel" class="tweaks">
+        <div class="flex items-center justify-between mb-4">
+            <div class="font-serif text-lg">Tweaks</div>
+            <button id="tweaks-close" class="font-mono text-xs" style="color: var(--ink-3);">close ✕</button>
+        </div>
+
+        <div class="space-y-4">
+            <div>
+                <label>Accent</label>
+                <div class="flex gap-2 mt-2">
+                    <button data-accent="#E14B2A" class="w-7 h-7 rounded-full"
+                        style="background:#E14B2A; outline: 2px solid var(--accent); outline-offset: 2px;"></button>
+                    <button data-accent="#1E5BFF" class="w-7 h-7 rounded-full" style="background:#1E5BFF;"></button>
+                    <button data-accent="#0A8F5A" class="w-7 h-7 rounded-full" style="background:#0A8F5A;"></button>
+                    <button data-accent="#7A2BE6" class="w-7 h-7 rounded-full" style="background:#7A2BE6;"></button>
+                    <button data-accent="#C5A100" class="w-7 h-7 rounded-full" style="background:#C5A100;"></button>
+                </div>
+            </div>
+
+            <div>
+                <label>Theme</label>
+                <div class="flex gap-2 mt-2 font-mono text-[11px]">
+                    <button data-theme="light" class="px-3 py-1.5 rounded"
+                        style="border:1px solid var(--rule);">Paper</button>
+                    <button data-theme="dark" class="px-3 py-1.5 rounded"
+                        style="border:1px solid var(--rule);">Carbon</button>
+                </div>
+            </div>
+
+            <div>
+                <label>Display heading</label>
+                <div class="flex gap-2 mt-2 font-mono text-[11px]">
+                    <button data-font="serif" class="px-3 py-1.5 rounded"
+                        style="border:1px solid var(--rule);">Fraunces</button>
+                    <button data-font="sans" class="px-3 py-1.5 rounded" style="border:1px solid var(--rule);">Inter
+                        Tight</button>
+                </div>
+            </div>
+
+            <div>
+                <label>Layer 3 detail</label>
+                <div class="flex gap-2 mt-2 font-mono text-[11px]">
+                    <button data-layer3="collapsed" class="px-3 py-1.5 rounded"
+                        style="border:1px solid var(--rule);">Collapsed</button>
+                    <button data-layer3="open" class="px-3 py-1.5 rounded" style="border:1px solid var(--rule);">All
+                        open</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== SCRIPTS ========== -->
+    <script>
+        /* ====== IMAGE SLOTS — drop files into Figures/ to fill these ====== */
+        const IMG = {
+            engineTop: 'Figures/engine_overview.png',   // wide, shallow UI crop
+            engineScore: 'Figures/engine_explain.png',    // wide, shallow UI crop
+            heatmap: 'Figures/hpo_heatmap.png',       // square
+            umap: 'Figures/umap_network.png',      // wide, background texture
+            clustering: 'Figures/clustering_pipeline.png' // landscape ~3:2
+        };
+
+        const SLOTS = {
+            engineTop: {
+                src: IMG.engineTop, ratio: '938 / 1134', label: 'engine overview · wide UI crop',
+                alt: 'Seventeen modules ranked by posterior probability, with the uniform prior marked.',
+                caption: 'Seventeen modules ranked by posterior probability. The red marker is the uniform prior at 5.9% — the top module reaches 57.4%.'
+            },
+            engineScore: {
+                src: IMG.engineScore, ratio: '1231 / 980', label: 'score explanation · wide UI crop',
+                alt: 'Score decomposition: phenotype contributions, population-frequency adjustment and final score.',
+                caption: 'Every score decomposed: which phenotype contributed what, how the population-frequency layer adjusted it, and why. Nothing is a black box the clinician has to trust blindly.'
+            },
+            heatmap: {
+                src: IMG.heatmap, ratio: '4902 / 3566', label: 'gene × gene similarity · square',
+                alt: 'Gene-by-gene phenotypic similarity heatmap ordered by module, with blocks along the diagonal.',
+                caption: 'Gene-by-gene phenotypic similarity, ordered by module. The blocks along the diagonal are the modules — they emerge from the data, not from disease labels.'
+            },
+            clustering: {
+                src: IMG.clustering, ratio: '3 / 2', label: 'clustering pipeline · landscape',
+                alt: 'Clustering pipeline overview, from the gene-by-HPO matrix through community detection to module characterisation.',
+                caption: 'Pipeline from the gene × HPO matrix through similarity aggregation, graph construction and community detection to module characterisation.'
+            },
+            umap: {
+                src: IMG.umap, ratio: '3185 / 2503', label: 'UMAP network · square',
+                alt: 'UMAP projection of the gene similarity network, colored by module.',
+                caption: 'UMAP projection of the same gene similarity network, colored by module.'
+            }
+        };
+
+        function buildSlot(host, key) {
+            const cfg = SLOTS[key];
+            if (!cfg) return;
+            const wrap = document.createElement('figure');
+            wrap.className = 'm-0';
+            wrap.innerHTML = `
+                <div class="slot${host.dataset.capTall ? ' slot-cap-tall' : ''}" style="aspect-ratio: ${cfg.ratio};">
+                    <div class="slot-ph"><span>${cfg.label}</span></div>
+                    <img alt="${cfg.alt.replace(/"/g, '&quot;')}" loading="lazy" />
+                </div>
+                <figcaption class="slot-cap">${cfg.caption}</figcaption>`;
+            host.replaceWith(wrap);
+            const box = wrap.querySelector('.slot');
+            const img = wrap.querySelector('img');
+            img.addEventListener('load', () => box.classList.add('filled'));
+            img.addEventListener('error', () => img.remove());
+            img.src = cfg.src;
+        }
+
+        document.querySelectorAll('[data-slot]').forEach(el => {
+            buildSlot(el, el.dataset.slot);
+        });
+
+        /* ====== TWEAKS DEFAULTS ====== */
+        const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+            "accent": "#0A8F5A",
+            "theme": "dark",
+            "fontHeading": "sans",
+            "layer3": "collapsed"
+        }/*EDITMODE-END*/;
+
+        const $ = (s, p = document) => p.querySelector(s);
+        const $$ = (s, p = document) => Array.from(p.querySelectorAll(s));
+
+        /* ====== THEME ====== */
+        function applyTheme(t) {
+            document.documentElement.classList.toggle('dark', t === 'dark');
+            localStorage.setItem('shalev:theme', t);
+        }
+        function applyAccent(hex) {
+            document.documentElement.style.setProperty('--accent', hex);
+            document.documentElement.style.setProperty('--accent-soft', hex + '1a');
+            localStorage.setItem('shalev:accent', hex);
+        }
+        function applyHeadingFont(f) {
+            $$('.font-serif').forEach(el => {
+                if (f === 'sans') {
+                    el.style.fontFamily = '"Inter Tight", system-ui, sans-serif';
+                    el.style.fontVariationSettings = '';
+                } else {
+                    el.style.fontFamily = '';
+                    el.style.fontVariationSettings = '';
+                }
+            });
+            localStorage.setItem('shalev:font', f);
+        }
+        function applyLayer3(mode) {
+            $$('details.expand').forEach(d => { d.open = (mode === 'open'); });
+            localStorage.setItem('shalev:layer3', mode);
+        }
+
+        applyTheme(localStorage.getItem('shalev:theme') || TWEAK_DEFAULTS.theme);
+        applyAccent(localStorage.getItem('shalev:accent') || TWEAK_DEFAULTS.accent);
+        applyHeadingFont(localStorage.getItem('shalev:font') || TWEAK_DEFAULTS.fontHeading);
+
+        $('#theme-btn').addEventListener('click', () => {
+            applyTheme(document.documentElement.classList.contains('dark') ? 'light' : 'dark');
+        });
+
+        /* ====== SMOOTH SCROLL (no scrollIntoView) ====== */
+        function scrollToEl(el, offset = 78) {
+            if (!el) return;
+            const y = el.getBoundingClientRect().top + window.scrollY - offset;
+            window.scrollTo({ top: y, behavior: 'smooth' });
+        }
+
+        /* ====== HERO NUMBER COUNT-UP ====== */
+        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        function countUp(el) {
+            const target = +el.dataset.count;
+            if (!target || reduce || target < 5) return;
+            const dur = 1100, t0 = performance.now();
+            const fmt = n => n.toLocaleString('en-US');
+            function step(t) {
+                const p = Math.min(1, (t - t0) / dur);
+                const eased = 1 - Math.pow(1 - p, 3);
+                el.textContent = fmt(Math.round(target * eased));
+                if (p < 1) requestAnimationFrame(step);
+            }
+            requestAnimationFrame(step);
+        }
+
+        /* ====== REVEAL ON SCROLL ====== */
+        const io = new IntersectionObserver(entries => {
+            entries.forEach(en => {
+                if (!en.isIntersecting) return;
+                const el = en.target;
+                el.style.transitionDelay = ((+el.dataset.delay || 0) * 90) + 'ms';
+                el.classList.add('in');
+                $$('[data-count]', el).forEach(countUp);
+                io.unobserve(el);
+            });
+        }, { threshold: 0.18, rootMargin: '0px 0px -6% 0px' });
+
+        function observeReveals() { $$('[data-reveal]:not(.in)').forEach(el => io.observe(el)); }
+        observeReveals();
+
+        /* ====== SECTION RAIL ====== */
+        const RAIL = [
+            ['top', '00 Intro'], ['problem', '01 Problem'], ['framework', '02 Framework'],
+            ['engine', '03 Engine'], ['model', '04 Model'], ['work', '05 Notebook'],
+            ['practicum', '06 Practicum'], ['toolkit', '07 Toolkit'], ['contact', '08 Contact']
+        ];
+        const rail = $('#rail');
+        rail.innerHTML = RAIL.map(([id, label]) =>
+            `<a href="#${id}" data-rail="${id}"><span>${label}</span><span class="bar"></span></a>`).join('');
+        rail.addEventListener('click', e => {
+            const a = e.target.closest('a[data-rail]');
+            if (!a) return;
+            e.preventDefault();
+            scrollToEl(document.getElementById(a.dataset.rail));
+        });
+        const railIo = new IntersectionObserver(entries => {
+            entries.forEach(en => {
+                const link = rail.querySelector(`[data-rail="${en.target.id}"]`);
+                if (link && en.isIntersecting) {
+                    $$('a', rail).forEach(a => a.classList.remove('active'));
+                    link.classList.add('active');
+                }
+            });
+        }, { rootMargin: '-45% 0px -45% 0px' });
+        RAIL.forEach(([id]) => { const s = document.getElementById(id); if (s) railIo.observe(s); });
+
+        /* ====== NPP MATRIX (layer 3, reduced scale) ====== */
+        const genes = [
+            { id: 'IRD-A1', cluster: 'A · IRD', note: 'co-loss · vertebrate clade' },
+            { id: 'IRD-A2', cluster: 'A · IRD', note: 'co-loss · vertebrate clade' },
+            { id: 'IRD-A3', cluster: 'A · IRD', note: 'co-loss · vertebrate clade' },
+            { id: 'IRD-A4', cluster: 'A · IRD', note: 'co-loss · vertebrate clade' },
+            { id: 'IRD-A5', cluster: 'A · IRD', note: 'co-loss · vertebrate clade' },
+            { id: 'CIL-B1', cluster: 'B · cilia', note: 'co-loss · alveolate clade' },
+            { id: 'CIL-B2', cluster: 'B · cilia', note: 'co-loss · alveolate clade' },
+            { id: 'CIL-B3', cluster: 'B · cilia', note: 'co-loss · alveolate clade' },
+            { id: 'CIL-B4', cluster: 'B · cilia', note: 'co-loss · alveolate clade' },
+            { id: 'NSE-01', cluster: 'C · noise', note: 'no aligned signal' },
+            { id: 'NSE-02', cluster: 'C · noise', note: 'no aligned signal' },
+            { id: 'NSE-03', cluster: 'C · noise', note: 'no aligned signal' },
+            { id: 'NSE-04', cluster: 'C · noise', note: 'no aligned signal' },
+        ];
+        const matrix = [
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 0, 2, 2, 2, 2, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 0, 1, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 0, 0, 0, 1, 1],
+            [1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 0, 0, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 0, 0, 0, 0, 1, 1],
+            [1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 0, 1, 0, 1, 1],
+            [1, 1, 0, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1],
+            [0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0],
+            [1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1],
+            [0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 1, 0],
+        ];
+        const speciesNames = [
+            'S. cerevisiae', 'C. albicans', 'N. crassa', 'U. maydis', 'C. cinerea',
+            'A. thaliana', 'O. sativa', 'C. reinhardtii', 'D. discoideum',
+            'M. brevicollis', 'S. rosetta', 'C. owczarzaki', 'A. macrogynus',
+            'T. adhaerens', 'N. vectensis', 'H. magnipapillata',
+            'C. elegans', 'D. melanogaster', 'S. purpuratus', 'B. floridae',
+            'D. rerio', 'X. tropicalis', 'G. gallus', 'M. musculus', 'H. sapiens',
+            'P. tetraurelia', 'T. thermophila', 'P. falciparum', 'D. discoideum-2', 'C. merolae',
+        ];
+
+        const matrixEl = $('#matrix');
+        const labelsEl = $('#gene-labels');
+        const axisEl = $('#species-axis');
+        const readout = $('#hover-readout');
+
+        labelsEl.innerHTML = genes.map((g, i) => `
+            <div class="px-3 py-1 flex items-center justify-between font-mono text-[10px] cursor-pointer rule-b" data-row="${i}" style="height:18px;">
+                <span style="color: var(--ink);">${g.id}</span>
+                <span style="color: var(--ink-3);">${g.cluster.split(' ')[0]}</span>
+            </div>`).join('');
+
+        const cellH = 18;
+        matrixEl.style.display = 'grid';
+        matrixEl.style.gridTemplateRows = `repeat(${genes.length}, ${cellH}px)`;
+        matrixEl.style.minWidth = '560px';
+        matrixEl.innerHTML = matrix.map((row, ri) => `
+            <div class="npp-row grid rule-b" data-row="${ri}" style="grid-template-columns: repeat(${row.length}, 1fr);">
+                ${row.map((v, ci) => {
+            const cls = v === 2 ? 'hot' : (v === 1 ? 'on' : 'off');
+            return `<div class="cell ${cls}" data-row="${ri}" data-col="${ci}" style="border-right:1px solid var(--rule);"></div>`;
+        }).join('')}
+            </div>`).join('');
+
+        axisEl.style.minWidth = '560px';
+        axisEl.innerHTML = `
+            <div class="grid w-full" style="grid-template-columns: repeat(${speciesNames.length}, 1fr); border-top:1px solid var(--rule);">
+                ${speciesNames.map((s, i) => `
+                    <div class="text-center" data-col="${i}" style="font-size:8px; color:var(--ink-3); writing-mode: vertical-rl; transform: rotate(180deg); height: 68px; padding-top: 5px;">${s}</div>
+                `).join('')}
+            </div>`;
+
+        function clearHighlights() {
+            $$('.npp-row').forEach(r => r.classList.remove('lit', 'dim'));
+        }
+        matrixEl.addEventListener('mouseleave', () => { clearHighlights(); readout.textContent = 'hover a cell to read'; });
+        labelsEl.addEventListener('mouseleave', () => { clearHighlights(); readout.textContent = 'hover a cell to read'; });
+
+        matrixEl.addEventListener('mousemove', e => {
+            const cell = e.target.closest('.cell');
+            if (!cell) return;
+            const ri = +cell.dataset.row, ci = +cell.dataset.col;
+            $$('.npp-row').forEach(r => {
+                r.classList.toggle('lit', +r.dataset.row === ri);
+                r.classList.toggle('dim', +r.dataset.row !== ri);
+            });
+            const v = matrix[ri][ci];
+            const state = v === 2 ? 'co-loss hotspot' : (v === 1 ? 'present (conserved)' : 'absent');
+            readout.innerHTML = `<span style="color:var(--ink-3)">gene</span> <span style="color:var(--ink)">${genes[ri].id}</span> &nbsp;·&nbsp; <span style="color:var(--ink-3)">species</span> <span style="color:var(--ink)">${speciesNames[ci]}</span> &nbsp;·&nbsp; <span style="color:${v === 2 ? 'var(--accent)' : 'var(--ink-2)'}">${state}</span>`;
+        });
+
+        labelsEl.addEventListener('mousemove', e => {
+            const lab = e.target.closest('[data-row]');
+            if (!lab) return;
+            const ri = +lab.dataset.row;
+            $$('.npp-row').forEach(r => {
+                r.classList.toggle('lit', +r.dataset.row === ri);
+                r.classList.toggle('dim', +r.dataset.row !== ri);
+            });
+            readout.innerHTML = `<span style="color:var(--ink-3)">cluster</span> <span style="color:var(--ink)">${genes[ri].cluster}</span> &nbsp;·&nbsp; <span style="color:var(--ink-3)">${genes[ri].note}</span>`;
+        });
+
+        /* ====== FIELD NOTEBOOK ====== */
+        const projects = [
+            {
+                n: '01',
+                title: 'IRD Phenotype Clustering',
+                stack: ['Python', 'Unsupervised clustering', 'HPO'],
+                oneline: 'Reorganizes 442 disease genes into 17 modules by phenotypic similarity, then scores candidates bidirectionally: genes from phenotypes, phenotypes from genes.',
+                bullets: [
+                    'Data-driven reconstruction of classical disease boundaries into highly specific functional modules.',
+                    'Features engineered from HPO term hierarchies and continuous NPP similarity vectors.',
+                    'Ensemble classification models (XGBoost, Random Forest) validated against an established set of 450+ IRD genes.',
+                    'Output: ranked candidates supporting bidirectional inference — genes from phenotypes and phenotypes from genes.',
+                ],
+                href: 'https://github.com/shalev-compbio/Shalev-Evolutionary-Genomics-Portfolio/tree/main/projects/IRD_Phenotype_Clustering',
+            },
+            {
+                n: '02',
+                title: 'Cilia Module Discovery',
+                stack: ['R', 'NPP', 'Phylogenetics'],
+                oneline: 'Recovers ciliary co-evolutionary modules from ~2,000 genomes, matching known clusters and surfacing candidates above what random grouping produces.',
+                bullets: [
+                    'Reproducible R pipeline joining NPP correlations with cilia-related GO terms.',
+                    'Recovered known ciliary clusters and surfaced novel candidates whose enrichment exceeded random clustering.',
+                    'Output: prioritized ciliary candidate list, ranked by cluster score and functional convergence.',
+                ],
+                href: 'https://github.com/shalev-compbio/Shalev-Evolutionary-Genomics-Portfolio/tree/main/projects/Cilia_Module_Validation',
+            },
+            {
+                n: '03',
+                title: 'High-Dimensional Visualization',
+                stack: ['R', 'ComplexHeatmap'],
+                oneline: 'Rendering pipeline for 20,000-gene × 2,000-species similarity matrices at publication quality, now used across the lab\'s manuscripts.',
+                bullets: [
+                    'Custom row and column annotation tracks (clade, function, phenotype burden).',
+                    'Rendering optimized for very wide matrices, readable without losing structure.',
+                    'Output: figure-ready visuals adopted across lab manuscripts and presentations.',
+                ],
+                href: 'https://github.com/shalev-compbio/Shalev-Evolutionary-Genomics-Portfolio/tree/main/projects/LPP_NPP_Heatmap_Visualization',
+            },
+            {
+                n: '04',
+                title: 'Local Barcode Segmentation',
+                stack: ['Python', 'Algorithms'],
+                oneline: 'Recovers co-evolutionary signal from fragmented genomic regions where whole-gene similarity washes it out. Python module, unit tested.',
+                bullets: [
+                    'Local Barcode Segmentation translated into a Python module with unit tests.',
+                    'Isolates clade-aligned signal that whole-gene NPP can miss.',
+                    'Output: segment-level profiles that downstream NPP clustering treats as more separable.',
+                ],
+                href: 'https://github.com/shalev-compbio/Shalev-Evolutionary-Genomics-Portfolio/tree/main/projects/LBS_Consensus_Profiling',
+            },
+            {
+                n: '05',
+                title: 'HPO Anatomogram',
+                stack: ['R', 'HPO', 'gganatogram'],
+                oneline: 'Maps fine-grained phenotype terms to organ systems and renders them as anatomical figures a clinician can read without a legend.',
+                bullets: [
+                    'Traverses the HPO ontology to map fine-grained terms to organ systems.',
+                    'Aggregates per cluster: share of genes carrying terms mapped to each organ.',
+                    'Output: anatomograms adopted as the lay-translation layer of the lab\'s outputs.',
+                ],
+                href: 'https://github.com/shalev-compbio/Shalev-Evolutionary-Genomics-Portfolio/tree/main/projects/IRD_HPO_Anatomogram',
+            },
+        ];
+
+        $('#projects').innerHTML = projects.map((p, i) => `
+            <article class="proj rule-b" data-proj="${i}">
+                <div class="grid grid-cols-12 gap-x-8 gap-y-5 py-9 px-2">
+                    <div class="col-span-12 lg:col-span-4">
+                        <div class="flex items-baseline gap-4">
+                            <span class="font-mono text-[11px]" style="color: var(--ink-3);">${p.n}</span>
+                            <h3 class="font-serif text-[28px] md:text-[32px] leading-[1.06] tracking-tight">${p.title}</h3>
+                        </div>
+                        <div class="flex flex-wrap gap-2 mt-4 ml-0 lg:ml-8 font-mono text-[10.5px]" style="color: var(--ink-3);">
+                            ${p.stack.map(s => `<span class="px-2 py-1 rounded" style="background: var(--paper-2); border:1px solid var(--rule);">${s}</span>`).join('')}
+                        </div>
+                    </div>
+                    <div class="col-span-12 lg:col-span-7 lg:col-start-6">
+                        <p class="text-[16.5px] leading-[1.7]" style="color: var(--ink-2);">${p.oneline}</p>
+                        <details class="expand mt-5">
+                            <summary>
+                                <span class="exp-title"><span class="lyr">Layer 3</span> Methods and outputs</span>
+                                <span class="exp-mark"><span class="exp-icon"></span><span class="plus"></span></span>
+                            </summary>
+                            <div class="exp-body">
+                                <ul class="space-y-3 text-[14.5px]" style="color: var(--ink-2);">
+                                    ${p.bullets.map(b => `<li class="flex gap-3"><span class="font-mono shrink-0 mt-1 text-[10px]" style="color: var(--hue);">▸</span><span>${b}</span></li>`).join('')}
+                                </ul>
+                            </div>
+                        </details>
+                        <a href="${p.href}" target="_blank" rel="noopener"
+                            class="inline-flex items-center gap-2 mt-1 font-mono text-[12px] ink-link"
+                            style="color: var(--accent);">Code, pipeline and outputs →</a>
+                    </div>
+                </div>
+            </article>`).join('');
+
+        applyLayer3(localStorage.getItem('shalev:layer3') || TWEAK_DEFAULTS.layer3);
+        observeReveals();
+
+        /* ====== COMMAND PALETTE ====== */
+        const paletteItems = [
+            ...RAIL.map(([id, label]) => ({ label: 'Section: ' + label.slice(3), kind: 'section', href: '#' + id })),
+            ...projects.map((p, i) => ({ label: 'Project: ' + p.title, kind: 'project', href: '#work', idx: i })),
+            { label: 'The engine · clinical decision support', kind: 'section', href: '#engine' },
+            { label: 'The model · three-tower network', kind: 'section', href: '#model' },
+            { label: 'Email Shalev', kind: 'action', href: 'mailto:shalev.yaacov1@mail.huji.ac.il' },
+            { label: 'Open LinkedIn', kind: 'action', href: 'https://www.linkedin.com/in/shalev-yaacov-bio-tech/' },
+            { label: 'Open GitHub', kind: 'action', href: 'https://github.com/shalev-compbio/Shalev-Evolutionary-Genomics-Portfolio' },
+            { label: 'Download CV', kind: 'action', href: 'CV_Shalev_Yaacov.pdf' },
+            { label: 'Toggle theme', kind: 'action', action: () => $('#theme-btn').click() },
+            { label: 'Expand all detail (layer 3)', kind: 'action', action: () => applyLayer3('open') },
+            { label: 'Collapse all detail (layer 3)', kind: 'action', action: () => applyLayer3('collapsed') },
+            { label: 'Open Tweaks panel', kind: 'action', action: () => openTweaks() },
+        ];
+
+        const palette = $('#palette');
+        const paletteInput = $('#palette-input');
+        const paletteResults = $('#palette-results');
+
+        function renderPalette(q = '') {
+            const items = paletteItems.filter(i => i.label.toLowerCase().includes(q.toLowerCase())).slice(0, 8);
+            paletteResults.innerHTML = items.map((i, idx) => `
+                <button data-idx="${idx}" class="w-full text-left px-3 py-2.5 rounded-md flex items-center justify-between hover:bg-[var(--paper-2)] transition-colors">
+                    <span class="text-[14px]">${i.label}</span>
+                    <span class="font-mono text-[10px]" style="color: var(--ink-3);">${i.kind}</span>
+                </button>`).join('') ||
+                `<div class="px-3 py-6 text-center font-mono text-[12px]" style="color: var(--ink-3);">no matches</div>`;
+            paletteResults._items = items;
+        }
+        function openPalette() {
+            palette.classList.remove('hidden');
+            paletteInput.value = '';
+            renderPalette('');
+            setTimeout(() => paletteInput.focus(), 30);
+        }
+        function closePalette() { palette.classList.add('hidden'); }
+
+        document.addEventListener('keydown', e => {
+            if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); openPalette(); }
+            if (e.key === 'Escape') { closePalette(); closeTweaks(); }
+        });
+        $('#cmdk-btn').addEventListener('click', openPalette);
+        $('#palette-bg-click').addEventListener('click', closePalette);
+        paletteInput.addEventListener('input', e => renderPalette(e.target.value));
+        paletteResults.addEventListener('click', e => {
+            const btn = e.target.closest('button[data-idx]');
+            if (!btn) return;
+            const item = paletteResults._items[+btn.dataset.idx];
+            if (!item) return;
+            if (item.action) item.action();
+            else if (item.href.startsWith('#')) scrollToEl(document.querySelector(item.href));
+            else if (item.href.startsWith('mailto:') || item.href.endsWith('.pdf')) window.location.href = item.href;
+            else window.open(item.href, '_blank');
+            closePalette();
+            if (item.kind === 'project') {
+                setTimeout(() => {
+                    const card = document.querySelector(`[data-proj="${item.idx}"]`);
+                    if (!card) return;
+                    const d = card.querySelector('details');
+                    if (d) d.open = true;
+                    scrollToEl(card, 120);
+                }, 420);
+            }
+        });
+
+        /* ====== MOBILE MENU ====== */
+        const mobileMenuBtn = $('#mobile-menu-btn');
+        const mobileMenu = $('#mobile-menu');
+        const menuIconLines = $('#menu-icon-lines');
+        const menuIconClose = $('#menu-icon-close');
+        function setMobileMenu(open) {
+            mobileMenu.classList.toggle('open', open);
+            mobileMenuBtn.setAttribute('aria-expanded', String(open));
+            menuIconLines.style.display = open ? 'none' : '';
+            menuIconClose.style.display = open ? '' : 'none';
+        }
+        mobileMenuBtn.addEventListener('click', () => setMobileMenu(!mobileMenu.classList.contains('open')));
+        mobileMenu.addEventListener('click', e => { if (e.target.closest('a')) setMobileMenu(false); });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') setMobileMenu(false); });
+        document.addEventListener('click', e => {
+            if (mobileMenu.classList.contains('open') && !mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+                setMobileMenu(false);
+            }
+        });
+        window.addEventListener('resize', () => { if (window.innerWidth >= 1024) setMobileMenu(false); });
+
+        /* ====== NAV ANCHORS ====== */
+        document.addEventListener('click', e => {
+            const a = e.target.closest('a[href^="#"]');
+            if (!a || a.dataset.rail) return;
+            const id = a.getAttribute('href');
+            if (id === '#') return;
+            const target = document.querySelector(id);
+            if (!target) return;
+            e.preventDefault();
+            scrollToEl(target, id === '#top' ? 0 : 78);
+        });
+
+        /* ====== EMAIL COPY ====== */
+        $('#email-card').addEventListener('click', e => {
+            e.preventDefault();
+            navigator.clipboard?.writeText('shalev.yaacov1@mail.huji.ac.il');
+            const t = $('#email-text');
+            const orig = t.textContent;
+            t.textContent = 'copied to clipboard ✓';
+            t.style.color = 'var(--accent)';
+            setTimeout(() => { t.textContent = orig; t.style.color = ''; }, 1400);
+        });
+
+        /* ====== TWEAKS PANEL ====== */
+        const tweaksPanel = $('#tweaks-panel');
+        function openTweaks() { tweaksPanel.classList.add('open'); }
+        function closeTweaks() { tweaksPanel.classList.remove('open'); }
+        $('#tweaks-close').addEventListener('click', closeTweaks);
+
+        window.addEventListener('message', e => {
+            if (!e.data || typeof e.data !== 'object') return;
+            if (e.data.type === '__activate_edit_mode') openTweaks();
+            if (e.data.type === '__deactivate_edit_mode') closeTweaks();
+        });
+        window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+
+        $$('[data-accent]', tweaksPanel).forEach(b => {
+            b.addEventListener('click', () => {
+                const c = b.dataset.accent;
+                applyAccent(c);
+                $$('[data-accent]', tweaksPanel).forEach(x => x.style.outline = '');
+                b.style.outline = '2px solid var(--accent)'; b.style.outlineOffset = '2px';
+                window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { accent: c } }, '*');
+            });
+        });
+        $$('[data-theme]', tweaksPanel).forEach(b => {
+            b.addEventListener('click', () => {
+                const t = b.dataset.theme; applyTheme(t);
+                window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { theme: t } }, '*');
+            });
+        });
+        $$('[data-font]', tweaksPanel).forEach(b => {
+            b.addEventListener('click', () => {
+                const f = b.dataset.font; applyHeadingFont(f);
+                window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { fontHeading: f } }, '*');
+            });
+        });
+        $$('[data-layer3]', tweaksPanel).forEach(b => {
+            b.addEventListener('click', () => {
+                const m = b.dataset.layer3; applyLayer3(m);
+                window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { layer3: m } }, '*');
+            });
+        });
+    </script>
+</body>
+
+</html>
